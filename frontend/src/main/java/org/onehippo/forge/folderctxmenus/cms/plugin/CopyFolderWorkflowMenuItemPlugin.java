@@ -15,41 +15,41 @@
  */
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
-import org.hippoecm.addon.workflow.StdWorkflow;
-import org.hippoecm.addon.workflow.WorkflowDescriptorModel;
+import org.hippoecm.frontend.dialog.AbstractDialog;
+import org.hippoecm.frontend.model.JcrNodeModel;
 import org.hippoecm.frontend.plugin.IPluginContext;
 import org.hippoecm.frontend.plugin.config.IPluginConfig;
-import org.hippoecm.frontend.service.render.RenderPlugin;
-import org.hippoecm.repository.api.WorkflowDescriptor;
-import org.hippoecm.repository.standardworkflow.FolderWorkflow;
 
-public class CopyFolderWorkflowMenuItemPlugin extends RenderPlugin<WorkflowDescriptor> {
+public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkflowMenuItemPlugin {
 
     private static final long serialVersionUID = 1L;
 
     public CopyFolderWorkflowMenuItemPlugin(IPluginContext context, IPluginConfig config) {
         super(context, config);
- 
-        add(new StdWorkflow<FolderWorkflow>("menuItem",
-                new StringResourceModel("menuItem.label", this, null),
-                (WorkflowDescriptorModel) getModel()) {
- 
-            @Override
-            protected ResourceReference getIcon() {
-                return new PackageResourceReference(getClass(), "copy-folder-16.png");
-            }
- 
-            @Override
-            protected String execute(FolderWorkflow workflow) throws Exception {
-                String category = "new-document";
-                String type = "nt:unstructured";
-                String relPath = "index";
-                workflow.add(category, type, relPath);
-                return null;
-            }
-        });
     }
+
+    @Override
+    protected IModel<String> getMenuItemLabelModel() {
+        return new StringResourceModel("menuItem.label", this, null, "Copy folder...");
+    }
+
+    @Override
+    protected ResourceReference getMenuItemIconResourceReference() {
+        return new PackageResourceReference(getClass(), "copy-folder-16.png");
+    }
+
+    @Override
+    protected IModel<String> getDialogTitleModel() {
+        return new StringResourceModel("copy.dialog.title", this, null, "Copy folder...");
+    }
+
+    @Override
+    protected AbstractDialog<JcrNodeModel> createDialogInstance() {
+        return new CopyOrMoveFolderDialog(getDialogTitleModel(), null);
+    }
+
 }
