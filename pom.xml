@@ -18,6 +18,7 @@
   <groupId>org.onehippo.forge.folderctxmenus</groupId>
   <artifactId>folderctxmenus</artifactId>
   <version>0.2.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
   <url>http://folderctxmenus.forge.onehippo.org/</url>
 
   <properties>
@@ -107,95 +108,87 @@
     </repository>
   </repositories>
 
-  <dependencies>
+  <dependencyManagement>
 
-    <dependency>
-      <groupId>javax.jcr</groupId>
-      <artifactId>jcr</artifactId>
-      <version>${jcr.version}</version>
-      <scope>provided</scope>
-    </dependency>
+    <dependencies>
 
-    <dependency>
-      <groupId>org.onehippo.cms7</groupId>
-      <artifactId>hippo-repository-api</artifactId>
-      <version>${hippo.repository.version}</version>
-      <scope>provided</scope>
-    </dependency>
+      <dependency>
+        <groupId>javax.jcr</groupId>
+        <artifactId>jcr</artifactId>
+        <version>${jcr.version}</version>
+      </dependency>
 
-    <dependency>
-      <groupId>org.onehippo.cms7</groupId>
-      <artifactId>hippo-repository-utilities</artifactId>
-      <version>${hippo.repository.version}</version>
-      <scope>provided</scope>
-    </dependency>
+      <dependency>
+        <groupId>org.onehippo.cms7</groupId>
+        <artifactId>hippo-repository-api</artifactId>
+        <version>${hippo.repository.version}</version>
+      </dependency>
 
-    <dependency>
-      <groupId>org.onehippo.cms7</groupId>
-      <artifactId>hippo-repository-workflow</artifactId>
-      <version>${hippo.repository.version}</version>
-      <scope>provided</scope>
-    </dependency>
+      <dependency>
+        <groupId>org.onehippo.cms7</groupId>
+        <artifactId>hippo-repository-utilities</artifactId>
+        <version>${hippo.repository.version}</version>
+      </dependency>
 
-    <dependency>
-      <groupId>org.onehippo.cms7</groupId>
-      <artifactId>hippo-cms-api</artifactId>
-      <version>${hippo.cms.version}</version>
-      <scope>provided</scope>
-    </dependency>
+      <dependency>
+        <groupId>org.onehippo.cms7</groupId>
+        <artifactId>hippo-repository-workflow</artifactId>
+        <version>${hippo.repository.version}</version>
+      </dependency>
 
-    <dependency>
-      <groupId>org.onehippo.cms7</groupId>
-      <artifactId>hippo-cms-builtin</artifactId>
-      <version>${hippo.cms.version}</version>
-      <scope>provided</scope>
-    </dependency>
+      <dependency>
+        <groupId>org.onehippo.cms7</groupId>
+        <artifactId>hippo-cms-api</artifactId>
+        <version>${hippo.cms.version}</version>
+      </dependency>
 
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>${lib.slf4j.version}</version>
-      <scope>provided</scope>
-    </dependency>
+      <dependency>
+        <groupId>org.onehippo.cms7</groupId>
+        <artifactId>hippo-cms-builtin</artifactId>
+        <version>${hippo.cms.version}</version>
+      </dependency>
 
-    <!-- TEST DEPENDENCIES -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${lib.slf4j.version}</version>
+      </dependency>
 
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <version>${lib.slf4j.version}</version>
-      <scope>test</scope>
-    </dependency>
+      <!-- TEST DEPENDENCIES -->
 
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jcl-over-slf4j</artifactId>
-      <version>${lib.slf4j.version}</version>
-      <scope>test</scope>
-    </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>${lib.slf4j.version}</version>
+      </dependency>
 
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>${lib.log4j.version}</version>
-      <scope>test</scope>
-    </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <version>${lib.slf4j.version}</version>
+      </dependency>
 
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${lib.junit.version}</version>
-      <scope>test</scope>
-    </dependency>
+      <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>${lib.log4j.version}</version>
+      </dependency>
 
-    <dependency>
-      <groupId>org.easymock</groupId>
-      <artifactId>easymock</artifactId>
-      <version>${lib.easymock.version}</version>
-      <scope>test</scope>
-    </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${lib.junit.version}</version>
+      </dependency>
 
-  </dependencies>
+      <dependency>
+        <groupId>org.easymock</groupId>
+        <artifactId>easymock</artifactId>
+        <version>${lib.easymock.version}</version>
+      </dependency>
+
+    </dependencies>
+
+  </dependencyManagement>
 
   <reporting>
     <plugins>
@@ -227,6 +220,8 @@
         <configuration>
           <encoding>${project.build.sourceEncoding}</encoding>
           <skip>false</skip>
+          <aggregate>true</aggregate>
+          <sourcepath>${basedir}/frontend/src/main/java</sourcepath>
         </configuration>
         <reportSets>
           <reportSet>
@@ -248,6 +243,11 @@
       </plugin>
     </plugins>
   </reporting>
+
+  <modules>
+    <module>repository</module>
+    <module>frontend</module>
+  </modules>
 
   <build>
 
