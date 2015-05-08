@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC
+  "-//Apache Software Foundation//DTD XDOC 1.0//EN"
+  "http://maven.apache.org/dtd/xdoc_1_0.dtd">
+<!--
+    Copyright 2015 Hippo
+
+    Licensed under the Apache License, Version 2.0 (the  "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS"
+    BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<document>
+  <properties>
+    <title>Hippo CMS Extra Folder Context Menus</title>
+  </properties>
+  <body>
+    <section name="Hippo CMS Extra Folder Context Menus">
+      <p>
+        This project provides extra Folder Context Menu items
+        for Hippo CMS 7 with extendable base implementations for developers.
+      </p>
+    </section>
+    <section name="Demo Application">
+      <subsection name="Demo Application with Hippo CMS 7.9.x">
+        <p>You can check out, build and run demo application, which contains all the examples explained in this site documentation.</p>
+        <p>Here are example commands to check out, build and run demo application:</p>
+        <div class="brush: bash">
+          <source><![CDATA[
+  $ svn checkout https://forge.onehippo.org/svn/folderctxmenus/folderctxmenus-demo/trunk folderctxmenus-demo-TRUNK
+  $ cd folderctxmenus-demo-TRUNK
+  $ mvn clean verify
+  $ mvn -P cargo.run
+          ]]></source>
+        </div>
+        <p>
+          Visit http://localhost:8080/cms/.
+        </p>
+      </subsection>
+    </section>
+    <section name="Testing External Document Field Picker with Demo Application">
+      <p>
+        TODO: Log on to the CMS application and select a folder.
+      </p>
+    </section>
+  </body>
+</document>
