@@ -7,7 +7,6 @@ frontend/src/main/resources/org/onehippo/forge/folderctxmenus/cms/plugin/copy-fo
 frontend/src/main/resources/org/onehippo/forge/folderctxmenus/cms/plugin/move-folder-16.png -text
 /pom.xml -text svneol=unset#application/xml
 repository/pom.xml -text svneol=unset#text/plain
-src/main/java/org/onehippo/forge/folderctxmenus/cms/plugin/CopyFolderWorkflowMenuItemPlugin.java -text svneol=unset#text/plain
 src/site/resources/highlight-source-elements.js -text
 src/site/resources/jquery-1.11.3.min.js -text
 src/site/resources/sh/scripts/shAutoloader.js -text
