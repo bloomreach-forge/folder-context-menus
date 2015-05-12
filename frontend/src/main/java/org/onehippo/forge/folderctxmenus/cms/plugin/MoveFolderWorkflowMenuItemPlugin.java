@@ -15,6 +15,10 @@
  */
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
@@ -23,6 +27,7 @@ import org.apache.wicket.request.resource.ResourceReference;
 import org.hippoecm.frontend.dialog.AbstractDialog;
 import org.hippoecm.frontend.plugin.IPluginContext;
 import org.hippoecm.frontend.plugin.config.IPluginConfig;
+import org.hippoecm.frontend.session.UserSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,17 +61,41 @@ public class MoveFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
         return new CopyOrMoveFolderDialog(getPluginContext(), getPluginConfig(), getDialogTitleModel(), new Model<FolderActionDocumentArguments>(folderActionDocumentModel)) {
             @Override
             protected void onOk() {
-                moveFolder(getSourceFolderIdentifier(), getSourceFolderPathDisplay(),
-                           getDestinationFolderIdentifier(), getDestinationFolderPathDisplay(),
-                           getNewFolderName(), getNewFolderUrlName());
-                super.onOk();
+                try {
+                    moveFolder(getSourceFolderIdentifier(), getSourceFolderPathDisplay(),
+                               getDestinationFolderIdentifier(), getDestinationFolderPathDisplay(),
+                               getNewFolderName(), getNewFolderUrlName());
+                    super.onOk();
+                } catch (Exception e) {
+                    error(e.getLocalizedMessage());
+                }
             }
         };
     }
 
     protected void moveFolder(final String sourceFolderIdentifier, final String sourceFolderPathDisplay,
                               final String destinationFolderIdentifier, final String destinationFolderPathDisplay,
-                              final String newFolderName, final String newFolderUrlName) {
+                              final String newFolderName, final String newFolderUrlName) throws RepositoryException {
         log.debug("Moving folder: from '{}' to '{}/{}'.", sourceFolderPathDisplay, destinationFolderPathDisplay, newFolderUrlName);
+
+        Session jcrSession = UserSession.get().getJcrSession();
+        Node sourceFolderNode = jcrSession.getNodeByIdentifier(sourceFolderIdentifier);
+        Node destParentFolderNode = jcrSession.getNodeByIdentifier(destinationFolderIdentifier);
+
+        if (sourceFolderNode.getParent().isSame(destParentFolderNode)) {
+            throw new RuntimeException("Cannot move to the same folder: " + destinationFolderPathDisplay);
+        }
+
+        if (sourceFolderNode.isSame(destParentFolderNode)) {
+            throw new RuntimeException("Cannot move to the folder itself: " + destinationFolderPathDisplay);
+        }
+
+        String destFolderPath = destParentFolderNode.getPath() + "/" + newFolderUrlName;
+
+        if (jcrSession.nodeExists(destFolderPath)) {
+            throw new RuntimeException("Destination folder already exists: " + destinationFolderPathDisplay + " / " + newFolderName);
+        }
+
+        jcrSession.move(sourceFolderNode.getPath(), destFolderPath);
     }
 }
