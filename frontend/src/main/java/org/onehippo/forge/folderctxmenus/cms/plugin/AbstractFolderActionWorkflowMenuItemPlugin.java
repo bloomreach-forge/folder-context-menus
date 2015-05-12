@@ -17,8 +17,13 @@ package org.onehippo.forge.folderctxmenus.cms.plugin;
 
 import java.util.Locale;
 
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.resource.ResourceReference;
@@ -128,6 +133,26 @@ public abstract class AbstractFolderActionWorkflowMenuItemPlugin extends RenderP
                 return createDialogInstance(folderActionDocumentModel);
             }
         };
+    }
+
+    protected void updateFolderTranslations(final Node folderNode, final String translatedName, String ... langsToFind) {
+        try {
+            if (StringUtils.isNotBlank(translatedName) && folderNode.isNodeType("hippo:translated")) {
+                Node translationNode;
+                String language;
+
+                for (NodeIterator nodeIt = folderNode.getNodes("hippo:translation"); nodeIt.hasNext(); ) {
+                    translationNode = nodeIt.nextNode();
+                    language = JcrUtils.getStringProperty(translationNode, "hippo:language", null);
+
+                    if (StringUtils.isBlank(language) || ArrayUtils.contains(langsToFind, language)) {
+                        translationNode.setProperty("hippo:message", translatedName);
+                    }
+                }
+            }
+        } catch (RepositoryException e) {
+            
+        }
     }
 
     protected abstract AbstractDialog<FolderActionDocumentArguments> createDialogInstance(final FolderActionDocumentArguments folderActionDocumentModel);

@@ -16,7 +16,6 @@
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
 import javax.jcr.Node;
-import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
@@ -103,23 +102,16 @@ public class MoveFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
 
         jcrSession.move(sourceFolderNode.getPath(), destFolderPath);
 
-        Node destFolderNode = jcrSession.getNode(destFolderPath);
+        Node destFolderNode = JcrUtils.getNodeIfExists(destParentFolderNode, newFolderUrlName);
 
-        if (StringUtils.isNotBlank(newFolderName) && destFolderNode.isNodeType("hippo:translated")) {
-            Node translationNode;
-            String userLang = UserSession.get().getLocale().getLanguage();
-            String language;
+        updateFolderTranslations(destFolderNode, UserSession.get().getLocale().getLanguage());
 
-            for (NodeIterator nodeIt = destFolderNode.getNodes("hippo:translation"); nodeIt.hasNext(); ) {
-                translationNode = nodeIt.nextNode();
-                language = JcrUtils.getStringProperty(translationNode, "hippo:language", null);
-
-                if (StringUtils.isBlank(language) || StringUtils.equals(userLang, language)) {
-                    translationNode.setProperty("hippo:message", newFolderName);
-                }
-            }
-        }
+        afterMoveFolder(sourceFolderNode, destFolderNode);
 
         jcrSession.save();
     }
+
+    protected void afterMoveFolder(final Node destFolderNode, final Node sourceFolderNode) {
+    }
+
 }

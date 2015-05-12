@@ -15,9 +15,13 @@
  */
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
+import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryResult;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.model.IModel;
@@ -29,6 +33,8 @@ import org.hippoecm.frontend.dialog.AbstractDialog;
 import org.hippoecm.frontend.plugin.IPluginContext;
 import org.hippoecm.frontend.plugin.config.IPluginConfig;
 import org.hippoecm.frontend.session.UserSession;
+import org.hippoecm.repository.util.JcrUtils;
+import org.hippoecm.repository.util.RepoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,6 +103,72 @@ public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
 
         if (jcrSession.nodeExists(destFolderPath)) {
             throw new RuntimeException("Destination folder already exists: " + destinationFolderPathDisplay + " / " + newFolderName);
+        }
+
+        JcrUtils.copy(sourceFolderNode, newFolderUrlName, destParentFolderNode);
+
+        Node destFolderNode = JcrUtils.getNodeIfExists(destParentFolderNode, newFolderUrlName);
+
+        updateFolderTranslations(destFolderNode, UserSession.get().getLocale().getLanguage());
+
+        afterCopyFolder(sourceFolderNode, destFolderNode);
+
+        jcrSession.save();
+    }
+
+    protected void afterCopyFolder(final Node destFolderNode, final Node sourceFolderNode) {
+        resetHippoDocBaseLinks(destFolderNode, sourceFolderNode);
+    }
+
+    /**
+     * Search all the link holder nodes having hippo:docbase property under destFolderNode
+     * and reset the hippo:docbase properties to the copied nodes under destFolderNode
+     * by comparing the relative paths with the corresponding nodes under the sourceFolderNode.
+     * @param destFolderNode
+     * @param sourceFolderNode
+     */
+    protected void resetHippoDocBaseLinks(final Node destFolderNode, final Node sourceFolderNode) {
+        try {
+            Session jcrSession = UserSession.get().getJcrSession();
+            String destFolderNodePath = destFolderNode.getPath();
+            String statement = "/jcr:root" + destFolderNodePath + "//element(*)[@hippo:docbase]";
+            Query query =
+                jcrSession.getWorkspace().getQueryManager().createQuery(RepoUtils.encodeXpath(statement), Query.XPATH);
+            QueryResult result = query.execute();
+
+            String destFolderBase = destFolderNodePath + "/";
+            Node destLinkHolderNode;
+            String destLinkDocBase;
+            Node sourceLinkedNode;
+            String sourceLinkedNodeRelPath;
+            Node destLinkedNode;
+
+            for (NodeIterator nodeIt = result.getNodes(); nodeIt.hasNext(); ) {
+                destLinkHolderNode = nodeIt.nextNode();
+
+                if (destLinkHolderNode.hasProperty("hippo:docbase")) {
+                    destLinkDocBase = JcrUtils.getStringProperty(destLinkHolderNode, "hippo:docbase", null);
+
+                    if (StringUtils.isNotBlank(destLinkDocBase)) {
+                        try {
+                            sourceLinkedNode = jcrSession.getNodeByIdentifier(destLinkDocBase);
+
+                            if (StringUtils.startsWith(sourceLinkedNode.getPath(), destFolderBase)) {
+                                sourceLinkedNodeRelPath = StringUtils.removeStart(sourceLinkedNode.getPath(), destFolderBase);
+                                destLinkedNode = JcrUtils.getNodeIfExists(destFolderNode, sourceLinkedNodeRelPath);
+
+                                if (destLinkedNode != null) {
+                                    log.error("$$$$$ Updating the linked node at ''.", destLinkHolderNode.getPath());
+                                    destLinkHolderNode.setProperty("hippo:docbase", destLinkedNode.getIdentifier());
+                                }
+                            }
+                        } catch (ItemNotFoundException ignore) {
+                        }
+                    }
+                }
+            }
+        } catch (RepositoryException e) {
+            log.error("Failed to reset link Nodes,", e);
         }
     }
 }
