@@ -16,17 +16,21 @@
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.hippoecm.frontend.dialog.AbstractDialog;
-import org.hippoecm.frontend.model.JcrNodeModel;
 import org.hippoecm.frontend.plugin.IPluginContext;
 import org.hippoecm.frontend.plugin.config.IPluginConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkflowMenuItemPlugin {
 
     private static final long serialVersionUID = 1L;
+
+    private static Logger log = LoggerFactory.getLogger(CopyFolderWorkflowMenuItemPlugin.class);
 
     public CopyFolderWorkflowMenuItemPlugin(IPluginContext context, IPluginConfig config) {
         super(context, config);
@@ -48,8 +52,8 @@ public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
     }
 
     @Override
-    protected AbstractDialog<JcrNodeModel> createDialogInstance() {
-        return new CopyOrMoveFolderDialog(getPluginContext(), getPluginConfig(), getDialogTitleModel(), null) {
+    protected AbstractDialog<FolderActionDocumentArguments> createDialogInstance(final FolderActionDocumentArguments folderActionDocumentModel) {
+        return new CopyOrMoveFolderDialog(getPluginContext(), getPluginConfig(), getDialogTitleModel(), new Model<FolderActionDocumentArguments>(folderActionDocumentModel)) {
             @Override
             protected void onOk() {
                 copyFolder(getSourceFolderIdentifier(), getSourceFolderPathDisplay(),
@@ -63,6 +67,6 @@ public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
     protected void copyFolder(final String sourceFolderIdentifier, final String sourceFolderPathDisplay,
                               final String destinationFolderIdentifier, final String destinationFolderPathDisplay,
                               final String newFolderName, final String newFolderUrlName) {
-        // TODO
+        log.debug("Copying folder: from '{}' to '{}/{}'.", sourceFolderPathDisplay, destinationFolderPathDisplay, newFolderUrlName);
     }
 }

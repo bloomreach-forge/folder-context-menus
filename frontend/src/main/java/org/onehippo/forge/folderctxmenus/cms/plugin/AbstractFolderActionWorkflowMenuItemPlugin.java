@@ -15,6 +15,10 @@
  */
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
+import java.util.Locale;
+
+import javax.jcr.RepositoryException;
+
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.resource.ResourceReference;
@@ -23,14 +27,20 @@ import org.hippoecm.addon.workflow.WorkflowDescriptorModel;
 import org.hippoecm.frontend.dialog.AbstractDialog;
 import org.hippoecm.frontend.dialog.IDialogFactory;
 import org.hippoecm.frontend.dialog.IDialogService;
-import org.hippoecm.frontend.model.JcrNodeModel;
 import org.hippoecm.frontend.plugin.IPluginContext;
 import org.hippoecm.frontend.plugin.config.IPluginConfig;
 import org.hippoecm.frontend.service.render.RenderPlugin;
+import org.hippoecm.frontend.session.UserSession;
+import org.hippoecm.repository.api.HippoNode;
+import org.hippoecm.repository.api.Localized;
 import org.hippoecm.repository.api.WorkflowDescriptor;
 import org.hippoecm.repository.standardworkflow.FolderWorkflow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractFolderActionWorkflowMenuItemPlugin extends RenderPlugin<WorkflowDescriptor> {
+
+    private static Logger log = LoggerFactory.getLogger(AbstractFolderActionWorkflowMenuItemPlugin.class);
 
     private String destinationIdentifier;
 
@@ -49,6 +59,8 @@ public abstract class AbstractFolderActionWorkflowMenuItemPlugin extends RenderP
                                             getMenuItemLabelModel(),
                                             (WorkflowDescriptorModel) getModel()) {
 
+            private FolderActionDocumentArguments folderActionDocumentModel;
+
             @Override
             protected ResourceReference getIcon() {
                 return getMenuItemIconResourceReference();
@@ -59,11 +71,41 @@ public abstract class AbstractFolderActionWorkflowMenuItemPlugin extends RenderP
                 final IDialogService dialogService = getDialogService();
 
                 if (!dialogService.isShowingDialog()) {
-                    final IDialogFactory dialogFactory = createDialogFactory();
+                    folderActionDocumentModel = createFolderActionDocumentModel();
+                    final IDialogFactory dialogFactory = createDialogFactory(folderActionDocumentModel);
                     dialogService.show(dialogFactory.createDialog());
                 }
 
                 return null;
+            }
+
+            private String getLocalizedNameForSession(final HippoNode node) throws RepositoryException {
+                final Locale cmsLocale = UserSession.get().getLocale();
+                final Localized cmsLocalized = Localized.getInstance(cmsLocale);
+                return node.getLocalizedName(cmsLocalized);
+            }
+
+            private FolderActionDocumentArguments createFolderActionDocumentModel() {
+                FolderActionDocumentArguments model = new FolderActionDocumentArguments();
+
+                try {
+                    HippoNode node = (HippoNode) ((WorkflowDescriptorModel) getDefaultModel()).getNode();
+
+                    model.setSourceFolderIdentifier(node.getIdentifier());
+                    model.setSourceFolderName(getLocalizedNameForSession(node));
+                    model.setSourceFolderUriName(node.getName());
+                    model.setSourceFolderNodeType(node.getPrimaryNodeType().getName());
+                    model.setSourceFolderLocalizedNames(node.getLocalizedNames());
+                } catch (RepositoryException e) {
+                    log.error("Could not retrieve folder action workflow document", e);
+
+                    model.setSourceFolderName("");
+                    model.setSourceFolderUriName("");
+                    model.setSourceFolderNodeType(null);
+                    model.setSourceFolderLocalizedNames(null);
+                }
+
+                return model;
             }
         });
     }
@@ -78,16 +120,16 @@ public abstract class AbstractFolderActionWorkflowMenuItemPlugin extends RenderP
         return new StringResourceModel("folder.action.dialog.title", this, null, "Folder Action");
     }
 
-    protected IDialogFactory createDialogFactory() {
+    protected IDialogFactory createDialogFactory(final FolderActionDocumentArguments folderActionDocumentModel) {
         return new IDialogFactory() {
             private static final long serialVersionUID = 1L;
 
-            public AbstractDialog<JcrNodeModel> createDialog() {
-                return createDialogInstance();
+            public AbstractDialog<FolderActionDocumentArguments> createDialog() {
+                return createDialogInstance(folderActionDocumentModel);
             }
         };
     }
 
-    protected abstract AbstractDialog<JcrNodeModel> createDialogInstance();
+    protected abstract AbstractDialog<FolderActionDocumentArguments> createDialogInstance(final FolderActionDocumentArguments folderActionDocumentModel);
 
 }

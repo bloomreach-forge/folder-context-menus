@@ -26,13 +26,12 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.value.IValueMap;
 import org.apache.wicket.util.value.ValueMap;
 import org.hippoecm.frontend.dialog.AbstractDialog;
-import org.hippoecm.frontend.model.JcrNodeModel;
 import org.hippoecm.frontend.plugin.IPluginContext;
 import org.hippoecm.frontend.plugin.config.IPluginConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractFolderDialog extends AbstractDialog<JcrNodeModel> {
+public abstract class AbstractFolderDialog extends AbstractDialog<FolderActionDocumentArguments> {
 
     private static final long serialVersionUID = 1L;
 
@@ -45,7 +44,7 @@ public abstract class AbstractFolderDialog extends AbstractDialog<JcrNodeModel> 
 
     private final IModel<String> titleModel;
 
-    public AbstractFolderDialog(IPluginContext pluginContext, IPluginConfig pluginConfig, IModel<String> titleModel, IModel<JcrNodeModel> model) {
+    public AbstractFolderDialog(IPluginContext pluginContext, IPluginConfig pluginConfig, IModel<String> titleModel, IModel<FolderActionDocumentArguments> model) {
         super(model);
 
         this.pluginContext = pluginContext;
@@ -73,6 +72,26 @@ public abstract class AbstractFolderDialog extends AbstractDialog<JcrNodeModel> 
         return titleModel;
     }
 
+    protected String getDisplayNameOfNode(final Node node) {
+        String displayName = "";
+
+        if (node != null) {
+            try {
+                if (node.hasNode("hippo:translation")) {
+                    displayName = node.getNode("hippo:translation").getProperty("hippo:message").getString();
+                }
+
+                if (StringUtils.isBlank(displayName)) {
+                    displayName = node.getName();
+                }
+            } catch (RepositoryException e) {
+                log.warn("Failed to get display node path", e);
+            }
+        }
+
+        return displayName;
+    }
+
     protected String getDisplayPathOfNode(final Node node) {
         List<String> pathItemList = new LinkedList<String>();
 
@@ -91,16 +110,7 @@ public abstract class AbstractFolderDialog extends AbstractDialog<JcrNodeModel> 
                     break;
                 }
 
-                String nodeDisplayName = null;
-
-                if (curNode.hasNode("hippo:translation")) {
-                    nodeDisplayName = curNode.getNode("hippo:translation").getProperty("hippo:message").getString();
-                }
-
-                if (StringUtils.isBlank(nodeDisplayName)) {
-                    nodeDisplayName = curNode.getName();
-                }
-
+                String nodeDisplayName = getDisplayNameOfNode(curNode);
                 pathItemList.add(0, nodeDisplayName);
 
                 curNode = curNode.getParent();

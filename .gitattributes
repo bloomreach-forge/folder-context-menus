@@ -4,6 +4,7 @@ frontend/src/main/java/org/onehippo/forge/folderctxmenus/cms/plugin/AbstractFold
 frontend/src/main/java/org/onehippo/forge/folderctxmenus/cms/plugin/AbstractFolderDialog.java -text svneol=unset#text/plain
 frontend/src/main/java/org/onehippo/forge/folderctxmenus/cms/plugin/CopyFolderWorkflowMenuItemPlugin.java -text svneol=unset#text/plain
 frontend/src/main/java/org/onehippo/forge/folderctxmenus/cms/plugin/CopyOrMoveFolderDialog.java -text svneol=unset#text/plain
+frontend/src/main/java/org/onehippo/forge/folderctxmenus/cms/plugin/FolderActionDocumentArguments.java -text svneol=unset#text/plain
 frontend/src/main/java/org/onehippo/forge/folderctxmenus/cms/plugin/FolderOnlyDocumentListFilter.java -text svneol=unset#text/plain
 frontend/src/main/java/org/onehippo/forge/folderctxmenus/cms/plugin/FolderSelectionCmsJcrTree.java -text svneol=unset#text/plain
 frontend/src/main/java/org/onehippo/forge/folderctxmenus/cms/plugin/ITreeNodeEventListener.java -text svneol=unset#text/plain
@@ -12,6 +13,7 @@ frontend/src/main/resources/org/onehippo/forge/folderctxmenus/cms/plugin/Abstrac
 frontend/src/main/resources/org/onehippo/forge/folderctxmenus/cms/plugin/AbstractFolderActionWorkflowMenuItemPlugin.properties -text svneol=unset#text/plain
 frontend/src/main/resources/org/onehippo/forge/folderctxmenus/cms/plugin/CopyOrMoveFolderDialog.css -text svneol=unset#text/plain
 frontend/src/main/resources/org/onehippo/forge/folderctxmenus/cms/plugin/CopyOrMoveFolderDialog.html -text svneol=unset#text/plain
+frontend/src/main/resources/org/onehippo/forge/folderctxmenus/cms/plugin/CopyOrMoveFolderDialog.properties -text svneol=unset#text/plain
 frontend/src/main/resources/org/onehippo/forge/folderctxmenus/cms/plugin/copy-folder-16.png -text
 frontend/src/main/resources/org/onehippo/forge/folderctxmenus/cms/plugin/move-folder-16.png -text
 /pom.xml -text svneol=unset#application/xml

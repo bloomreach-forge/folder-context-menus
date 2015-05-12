@@ -20,7 +20,7 @@
       <tr>
         <td>
           <div class="field-label">
-            Source Folder:
+            <wicket:message key="folder.action.label.source.folder.path">Source Folder:</wicket:message>
           </div>
         </td>
         <td>
@@ -32,7 +32,7 @@
       <tr>
         <td>
           <div class="field-label">
-            Destination:
+            <wicket:message key="folder.action.label.destination.folder.path">Destination:</wicket:message>
           </div>
         </td>
         <td>
@@ -45,7 +45,7 @@
       <tr>
         <td>
           <div class="field-label">
-            Folder Name:
+            <wicket:message key="folder.action.label.destination.folder.name">Folder Name:</wicket:message>
           </div>
         </td>
         <td>
@@ -57,13 +57,15 @@
       <tr>
         <td>
           <div class="field-label">
-            URL Name:
+            <wicket:message key="folder.action.label.destination.folder.url.name">URL Name:</wicket:message>
           </div>
         </td>
         <td>
           <div class="field-value">
             <input type="text" wicket:id="newFolderUrlName" />
-            <a href="#" wicket:id="editFolderUrlName">Edit</a>
+            <a href="#" wicket:id="resetFolderUrlName">
+              <wicket:message key="folder.action.label.destination.folder.url.reset">Reset</wicket:message>
+            </a>
           </div>
         </td>
       </tr>
