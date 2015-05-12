@@ -1,2 +1,31 @@
-.folderctxmenus-dialog-panel {
+
+.folderctxmenus-dialog {
+}
+
+.folderctxmenus-dialog td {
+  vertical-align: top;
+}
+
+.folderctxmenus-dialog .field-label {
+  
+}
+
+.folderctxmenus-dialog .field-value {
+  
+}
+
+.folderctxmenus-dialog .field-value input[type=text] {
+  width: 480px;
+}
+
+.folderctxmenus-dialog .field-value input[type=text]:disabled {
+  background: #efefef;
+}
+
+.folderctxmenus-dialog .folder-tree {
+  background-color: white;
+  border: 1px solid lightgrey;
+  height: 200px;
+  overflow: auto;
+  width: 486px;
 }

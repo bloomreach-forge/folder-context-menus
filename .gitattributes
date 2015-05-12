@@ -1,10 +1,15 @@
 * text=auto !eol
 frontend/pom.xml -text svneol=unset#text/plain
 frontend/src/main/java/org/onehippo/forge/folderctxmenus/cms/plugin/AbstractFolderActionWorkflowMenuItemPlugin.java -text svneol=unset#text/plain
+frontend/src/main/java/org/onehippo/forge/folderctxmenus/cms/plugin/AbstractFolderDialog.java -text svneol=unset#text/plain
 frontend/src/main/java/org/onehippo/forge/folderctxmenus/cms/plugin/CopyFolderWorkflowMenuItemPlugin.java -text svneol=unset#text/plain
 frontend/src/main/java/org/onehippo/forge/folderctxmenus/cms/plugin/CopyOrMoveFolderDialog.java -text svneol=unset#text/plain
-frontend/src/main/resources/org/onehippo/forge/folderctxmenus/cms/plugin/CopyFolderWorkflowMenuItemPlugin.html -text svneol=unset#text/plain
-frontend/src/main/resources/org/onehippo/forge/folderctxmenus/cms/plugin/CopyFolderWorkflowMenuItemPlugin.properties -text svneol=unset#text/plain
+frontend/src/main/java/org/onehippo/forge/folderctxmenus/cms/plugin/FolderOnlyDocumentListFilter.java -text svneol=unset#text/plain
+frontend/src/main/java/org/onehippo/forge/folderctxmenus/cms/plugin/FolderSelectionCmsJcrTree.java -text svneol=unset#text/plain
+frontend/src/main/java/org/onehippo/forge/folderctxmenus/cms/plugin/ITreeNodeEventListener.java -text svneol=unset#text/plain
+frontend/src/main/java/org/onehippo/forge/folderctxmenus/cms/plugin/MoveFolderWorkflowMenuItemPlugin.java -text svneol=unset#text/plain
+frontend/src/main/resources/org/onehippo/forge/folderctxmenus/cms/plugin/AbstractFolderActionWorkflowMenuItemPlugin.html -text svneol=unset#text/plain
+frontend/src/main/resources/org/onehippo/forge/folderctxmenus/cms/plugin/AbstractFolderActionWorkflowMenuItemPlugin.properties -text svneol=unset#text/plain
 frontend/src/main/resources/org/onehippo/forge/folderctxmenus/cms/plugin/CopyOrMoveFolderDialog.css -text svneol=unset#text/plain
 frontend/src/main/resources/org/onehippo/forge/folderctxmenus/cms/plugin/CopyOrMoveFolderDialog.html -text svneol=unset#text/plain
 frontend/src/main/resources/org/onehippo/forge/folderctxmenus/cms/plugin/copy-folder-16.png -text
@@ -12,6 +17,7 @@ frontend/src/main/resources/org/onehippo/forge/folderctxmenus/cms/plugin/move-fo
 /pom.xml -text svneol=unset#application/xml
 repository/pom.xml -text svneol=unset#text/plain
 repository/src/main/resources/folderctxmenus/folder-copy-menuitem.xml -text svneol=unset#text/plain
+repository/src/main/resources/folderctxmenus/folder-move-menuitem.xml -text svneol=unset#text/plain
 repository/src/main/resources/hippoecm-extension.xml -text svneol=unset#text/plain
 src/site/resources/highlight-source-elements.js -text
 src/site/resources/jquery-1.11.3.min.js -text

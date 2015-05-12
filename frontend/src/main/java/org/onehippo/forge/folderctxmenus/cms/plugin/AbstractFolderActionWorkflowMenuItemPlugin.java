@@ -32,6 +32,16 @@ import org.hippoecm.repository.standardworkflow.FolderWorkflow;
 
 public abstract class AbstractFolderActionWorkflowMenuItemPlugin extends RenderPlugin<WorkflowDescriptor> {
 
+    private String destinationIdentifier;
+
+    public String getDestinationIdentifier() {
+        return destinationIdentifier;
+    }
+
+    public void setDestinationIdentifier(String destinationIdentifier) {
+        this.destinationIdentifier = destinationIdentifier;
+    }
+
     public AbstractFolderActionWorkflowMenuItemPlugin(IPluginContext context, IPluginConfig config) {
         super(context, config);
 

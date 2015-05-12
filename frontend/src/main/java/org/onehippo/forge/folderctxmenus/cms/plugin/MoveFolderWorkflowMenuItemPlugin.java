@@ -24,27 +24,27 @@ import org.hippoecm.frontend.model.JcrNodeModel;
 import org.hippoecm.frontend.plugin.IPluginContext;
 import org.hippoecm.frontend.plugin.config.IPluginConfig;
 
-public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkflowMenuItemPlugin {
+public class MoveFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkflowMenuItemPlugin {
 
     private static final long serialVersionUID = 1L;
 
-    public CopyFolderWorkflowMenuItemPlugin(IPluginContext context, IPluginConfig config) {
+    public MoveFolderWorkflowMenuItemPlugin(IPluginContext context, IPluginConfig config) {
         super(context, config);
     }
 
     @Override
     protected IModel<String> getMenuItemLabelModel() {
-        return new StringResourceModel("folder.action.copy.menuitem.label", this, null, "Copy folder...");
+        return new StringResourceModel("folder.action.move.menuitem.label", this, null, "Move Folder...");
     }
 
     @Override
     protected ResourceReference getMenuItemIconResourceReference() {
-        return new PackageResourceReference(getClass(), "copy-folder-16.png");
+        return new PackageResourceReference(getClass(), "move-folder-16.png");
     }
 
     @Override
     protected IModel<String> getDialogTitleModel() {
-        return new StringResourceModel("folder.action.copy.dialog.label", this, null, "Copy folder...");
+        return new StringResourceModel("folder.action.move.dialog.label", this, null, "Move Folder...");
     }
 
     @Override
@@ -52,7 +52,7 @@ public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
         return new CopyOrMoveFolderDialog(getPluginContext(), getPluginConfig(), getDialogTitleModel(), null) {
             @Override
             protected void onOk() {
-                copyFolder(getSourceFolderIdentifier(), getSourceFolderPathDisplay(),
+                moveFolder(getSourceFolderIdentifier(), getSourceFolderPathDisplay(),
                            getDestinationFolderIdentifier(), getDestinationFolderPathDisplay(),
                            getNewFolderName(), getNewFolderUrlName());
                 super.onOk();
@@ -60,7 +60,7 @@ public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
         };
     }
 
-    protected void copyFolder(final String sourceFolderIdentifier, final String sourceFolderPathDisplay,
+    protected void moveFolder(final String sourceFolderIdentifier, final String sourceFolderPathDisplay,
                               final String destinationFolderIdentifier, final String destinationFolderPathDisplay,
                               final String newFolderName, final String newFolderUrlName) {
         // TODO
