@@ -16,9 +16,12 @@
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
@@ -83,7 +86,9 @@ public class MoveFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
         Node destParentFolderNode = jcrSession.getNodeByIdentifier(destinationFolderIdentifier);
 
         if (sourceFolderNode.getParent().isSame(destParentFolderNode)) {
-            throw new RuntimeException("Cannot move to the same folder: " + destinationFolderPathDisplay);
+            if (StringUtils.equals(sourceFolderNode.getName(), newFolderUrlName)) {
+                throw new RuntimeException("Cannot move to the same folder: " + destinationFolderPathDisplay + " / " + newFolderName);
+            }
         }
 
         if (sourceFolderNode.isSame(destParentFolderNode)) {
@@ -97,5 +102,24 @@ public class MoveFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
         }
 
         jcrSession.move(sourceFolderNode.getPath(), destFolderPath);
+
+        Node destFolderNode = jcrSession.getNode(destFolderPath);
+
+        if (StringUtils.isNotBlank(newFolderName) && destFolderNode.isNodeType("hippo:translated")) {
+            Node translationNode;
+            String userLang = UserSession.get().getLocale().getLanguage();
+            String language;
+
+            for (NodeIterator nodeIt = destFolderNode.getNodes("hippo:translation"); nodeIt.hasNext(); ) {
+                translationNode = nodeIt.nextNode();
+                language = JcrUtils.getStringProperty(translationNode, "hippo:language", null);
+
+                if (StringUtils.isBlank(language) || StringUtils.equals(userLang, language)) {
+                    translationNode.setProperty("hippo:message", newFolderName);
+                }
+            }
+        }
+
+        jcrSession.save();
     }
 }
