@@ -111,23 +111,25 @@ public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
 
         updateFolderTranslations(destFolderNode, UserSession.get().getLocale().getLanguage());
 
+        jcrSession.save();
+
         afterCopyFolder(sourceFolderNode, destFolderNode);
 
         jcrSession.save();
     }
 
-    protected void afterCopyFolder(final Node destFolderNode, final Node sourceFolderNode) {
-        resetHippoDocBaseLinks(destFolderNode, sourceFolderNode);
+    protected void afterCopyFolder(final Node sourceFolderNode, final Node destFolderNode) {
+        resetHippoDocBaseLinks(sourceFolderNode, destFolderNode);
     }
 
     /**
      * Search all the link holder nodes having hippo:docbase property under destFolderNode
      * and reset the hippo:docbase properties to the copied nodes under destFolderNode
      * by comparing the relative paths with the corresponding nodes under the sourceFolderNode.
-     * @param destFolderNode
      * @param sourceFolderNode
+     * @param destFolderNode
      */
-    protected void resetHippoDocBaseLinks(final Node destFolderNode, final Node sourceFolderNode) {
+    protected void resetHippoDocBaseLinks(final Node sourceFolderNode, final Node destFolderNode) {
         try {
             Session jcrSession = UserSession.get().getJcrSession();
             String destFolderNodePath = destFolderNode.getPath();
@@ -136,7 +138,7 @@ public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
                 jcrSession.getWorkspace().getQueryManager().createQuery(RepoUtils.encodeXpath(statement), Query.XPATH);
             QueryResult result = query.execute();
 
-            String destFolderBase = destFolderNodePath + "/";
+            String sourceFolderBase = sourceFolderNode.getPath() + "/";
             Node destLinkHolderNode;
             String destLinkDocBase;
             Node sourceLinkedNode;
@@ -153,12 +155,12 @@ public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
                         try {
                             sourceLinkedNode = jcrSession.getNodeByIdentifier(destLinkDocBase);
 
-                            if (StringUtils.startsWith(sourceLinkedNode.getPath(), destFolderBase)) {
-                                sourceLinkedNodeRelPath = StringUtils.removeStart(sourceLinkedNode.getPath(), destFolderBase);
+                            if (StringUtils.startsWith(sourceLinkedNode.getPath(), sourceFolderBase)) {
+                                sourceLinkedNodeRelPath = StringUtils.removeStart(sourceLinkedNode.getPath(), sourceFolderBase);
                                 destLinkedNode = JcrUtils.getNodeIfExists(destFolderNode, sourceLinkedNodeRelPath);
 
                                 if (destLinkedNode != null) {
-                                    log.error("$$$$$ Updating the linked node at ''.", destLinkHolderNode.getPath());
+                                    log.debug("Updating the linked node at '{}'.", destLinkHolderNode.getPath());
                                     destLinkHolderNode.setProperty("hippo:docbase", destLinkedNode.getIdentifier());
                                 }
                             }

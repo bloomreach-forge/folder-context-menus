@@ -22,7 +22,6 @@ import javax.swing.tree.TreeNode;
 import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.form.Form;
@@ -135,16 +134,6 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
 
         form.add(folderTree);
 
-        final TextField<String> newFolderNameField =
-            new TextField<String>("newFolderName", new PropertyModel<String>(this, "newFolderName"));
-        newFolderNameField.setOutputMarkupId(true);
-        newFolderNameField.add(new AjaxFormComponentUpdatingBehavior("onchange") {
-            @Override
-            protected void onUpdate(final AjaxRequestTarget target) {
-            }
-        });
-        form.add(newFolderNameField);
-
         final TextField<String> newFolderUrlNameField =
             new TextField<String>("newFolderUrlName", new PropertyModel<String>(this, "newFolderUrlName"));
         newFolderUrlNameField.setOutputMarkupId(true);
@@ -155,14 +144,17 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
         });
         form.add(newFolderUrlNameField);
 
-        final AjaxLink newFolderUrlResetLink = new AjaxLink("resetFolderUrlName") {
+        final TextField<String> newFolderNameField =
+            new TextField<String>("newFolderName", new PropertyModel<String>(this, "newFolderName"));
+        newFolderNameField.setOutputMarkupId(true);
+        newFolderNameField.add(new AjaxFormComponentUpdatingBehavior("onchange") {
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            protected void onUpdate(final AjaxRequestTarget target) {
                 newFolderUrlName = codecModel.getObject().encode(getNewFolderName());
                 target.add(newFolderUrlNameField);
             }
-        };
-        form.add(newFolderUrlResetLink);
+        });
+        form.add(newFolderNameField);
 
         add(form);
     }

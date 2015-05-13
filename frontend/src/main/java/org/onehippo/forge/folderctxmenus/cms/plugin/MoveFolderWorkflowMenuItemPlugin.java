@@ -106,12 +106,14 @@ public class MoveFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
 
         updateFolderTranslations(destFolderNode, UserSession.get().getLocale().getLanguage());
 
+        jcrSession.save();
+
         afterMoveFolder(sourceFolderNode, destFolderNode);
 
         jcrSession.save();
     }
 
-    protected void afterMoveFolder(final Node destFolderNode, final Node sourceFolderNode) {
+    protected void afterMoveFolder(final Node sourceFolderNode, final Node destFolderNode) {
     }
 
 }
