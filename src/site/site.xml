@@ -45,7 +45,6 @@
     <menu name="Main">
       <item name="Welcome" href="index.html" />
       <item name="Installation" href="install.html" />
-      <item name="Developer's How-to" href="dev-howto.html" />
       <item name="Javadoc (latest)" href="apidocs/index.html" />
       <item name="Release Notes" href="release-notes.html" />
     </menu>

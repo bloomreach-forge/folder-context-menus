@@ -54,9 +54,16 @@
         <!-- SNIP -->
 
         <!-- NOTE: You should set a property named 'forge.folderctxmenus.version' to a version of this plugin! -->
+
         <dependency>
           <groupId>org.onehippo.forge.folderctxmenus</groupId>
-          <artifactId>folderctxmenus</artifactId>
+          <artifactId>folderctxmenus-repository</artifactId>
+          <version>${forge.folderctxmenus.version}</version>
+        </dependency>
+
+        <dependency>
+          <groupId>org.onehippo.forge.folderctxmenus</groupId>
+          <artifactId>folderctxmenus-frontend</artifactId>
           <version>${forge.folderctxmenus.version}</version>
         </dependency>
 
@@ -80,7 +87,12 @@
 
       <dependency>
         <groupId>org.onehippo.forge.folderctxmenus</groupId>
-        <artifactId>folderctxmenus</artifactId>
+        <artifactId>folderctxmenus-repository</artifactId>
+      </dependency>
+
+      <dependency>
+        <groupId>org.onehippo.forge.folderctxmenus</groupId>
+        <artifactId>folderctxmenus-frontend</artifactId>
       </dependency>
 
       <!-- SNIP -->

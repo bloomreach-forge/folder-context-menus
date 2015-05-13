@@ -69,7 +69,6 @@ src/site/resources/sh/styles/shThemeMDUltra.css -text
 src/site/resources/sh/styles/shThemeMidnight.css -text
 src/site/resources/sh/styles/shThemeRDark.css -text
 src/site/site.xml -text svneol=unset#application/xml
-src/site/xdoc/dev-howto.xml -text svneol=unset#application/xml
 src/site/xdoc/index.xml -text svneol=unset#application/xml
 src/site/xdoc/install.xml -text svneol=unset#application/xml
 src/site/xdoc/release-notes.xml -text svneol=unset#application/xml

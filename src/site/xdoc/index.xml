@@ -24,7 +24,7 @@
   <body>
     <section name="Hippo CMS Extra Folder Context Menus">
       <p>
-        This project provides extra Folder Context Menu items
+        This project provides extra Folder Context Menu items such as 'Copy folder...' and 'Move folder...'
         for Hippo CMS 7 with extendable base implementations for developers.
       </p>
     </section>
@@ -44,11 +44,6 @@
           Visit http://localhost:8080/cms/.
         </p>
       </subsection>
-    </section>
-    <section name="Testing External Document Field Picker with Demo Application">
-      <p>
-        TODO: Log on to the CMS application and select a folder.
-      </p>
     </section>
   </body>
 </document>
