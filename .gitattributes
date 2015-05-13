@@ -22,6 +22,11 @@ repository/src/main/resources/folderctxmenus/folder-copy-menuitem.xml -text svne
 repository/src/main/resources/folderctxmenus/folder-move-menuitem.xml -text svneol=unset#text/plain
 repository/src/main/resources/hippoecm-extension.xml -text svneol=unset#text/plain
 src/site/resources/highlight-source-elements.js -text
+src/site/resources/images/copyfolder1.png -text
+src/site/resources/images/copyfolder2.png -text
+src/site/resources/images/foldercpmvmenus.png -text
+src/site/resources/images/movefolder1.png -text
+src/site/resources/images/movefolder2.png -text
 src/site/resources/jquery-1.11.3.min.js -text
 src/site/resources/sh/scripts/shAutoloader.js -text
 src/site/resources/sh/scripts/shBrushAS3.js -text

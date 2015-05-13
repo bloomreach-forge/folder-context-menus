@@ -27,6 +27,40 @@
         This project provides extra Folder Context Menu items such as 'Copy folder...' and 'Move folder...'
         for Hippo CMS 7 with extendable base implementations for developers.
       </p>
+      <p>
+        The best way to explain this feature is probably to show screenshots.
+      </p>
+
+      <img alt="Folder copy and move context menu"
+           src="images/foldercpmvmenus.png" />
+      <p>After installing this plugin, you will be able to see 'Copy folder...' and 'Move folder...' context menus.</p>
+
+      <img alt="Folder copy dialog"
+           src="images/copyfolder1.png" />
+      <p>
+        In the Folder Copy dialog, you can select the destination folder, folder name and folder URL name.
+      </p>
+
+      <img alt="After copying a folder"
+           src="images/copyfolder2.png" />
+      <p>
+        The local links (link nodes under the copied root folder) are automatically
+        reset to the corresponding copied nodes under the copied root folder if exists.
+      </p>
+
+      <img alt="Folder move dialog"
+           src="images/movefolder1.png" />
+      <p>
+        In the Folder Move dialog, you can select the destination folder, folder name and folder URL name.
+      </p>
+
+      <img alt="After moving a folder"
+           src="images/movefolder2.png" />
+      <p>
+        The local links (link nodes under the copied root folder) are not affected by moving
+        because all the internal links are based on UUIDs.
+      </p>
+
     </section>
     <section name="Demo Application">
       <subsection name="Demo Application with Hippo CMS 7.9.x">
