@@ -17,7 +17,7 @@
   <description>Hippo CMS Extra Folder Context Menus</description>
   <groupId>org.onehippo.forge.folderctxmenus</groupId>
   <artifactId>folderctxmenus</artifactId>
-  <version>0.2.2</version>
+  <version>0.2.3-SNAPSHOT</version>
   <packaging>pom</packaging>
   <url>http://folderctxmenus.forge.onehippo.org/</url>
 
@@ -78,9 +78,9 @@
   </developers>
 
   <scm>
-    <connection>scm:svn:https://forge.onehippo.org/svn/folderctxmenus/folderctxmenus/tags/folderctxmenus-0.2.2</connection>
-    <developerConnection>scm:svn:https://forge.onehippo.org/svn/folderctxmenus/folderctxmenus/tags/folderctxmenus-0.2.2</developerConnection>
-    <url>https://forge.onehippo.org/svn/folderctxmenus/folderctxmenus/tags/folderctxmenus-0.2.2</url>
+    <connection>scm:svn:https://forge.onehippo.org/svn/folderctxmenus/folderctxmenus/trunk</connection>
+    <developerConnection>scm:svn:https://forge.onehippo.org/svn/folderctxmenus/folderctxmenus/trunk</developerConnection>
+    <url>https://forge.onehippo.org/svn/folderctxmenus/folderctxmenus/trunk</url>
   </scm>
 
   <issueManagement>
