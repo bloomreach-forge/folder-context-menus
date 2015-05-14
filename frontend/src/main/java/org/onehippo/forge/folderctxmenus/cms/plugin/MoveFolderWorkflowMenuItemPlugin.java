@@ -104,7 +104,7 @@ public class MoveFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
 
         Node destFolderNode = JcrUtils.getNodeIfExists(destParentFolderNode, newFolderUrlName);
 
-        updateFolderTranslations(destFolderNode, UserSession.get().getLocale().getLanguage());
+        updateFolderTranslations(destFolderNode, newFolderName, UserSession.get().getLocale().getLanguage());
 
         jcrSession.save();
 
