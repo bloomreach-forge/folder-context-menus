@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-    Copyright 2014 Hippo
+    Copyright 2015 Hippo
 
     Licensed to the Apache Software Foundation (ASF) under one or more
     contributor license agreements.  See the NOTICE file distributed with
@@ -36,6 +36,12 @@
       </table>
     </section>
     <section name="Release Notes">
+      <subsection name="0.2.2">
+        <p>Re-label the destination folder field to 'Destination Folder'.</p>
+      </subsection>
+      <subsection name="0.2.1">
+        <p>Fixing a bug that the destination translated folder was labeled to the user language name.</p>
+      </subsection>
       <subsection name="0.2.0">
         <p>Initial Release for 7.9.x</p>
       </subsection>
