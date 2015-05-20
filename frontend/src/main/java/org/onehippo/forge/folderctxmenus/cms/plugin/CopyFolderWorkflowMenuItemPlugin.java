@@ -23,6 +23,7 @@ import javax.jcr.Session;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -120,6 +121,7 @@ public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
 
     protected void afterCopyFolder(final Node sourceFolderNode, final Node destFolderNode) {
         resetHippoDocBaseLinks(sourceFolderNode, destFolderNode);
+        takeOfflineHippoDocs(sourceFolderNode, destFolderNode);
     }
 
     /**
@@ -171,6 +173,33 @@ public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
             }
         } catch (RepositoryException e) {
             log.error("Failed to reset link Nodes,", e);
+        }
+    }
+
+    /**
+     * Takes offline all the hippo documents under the {@code destFolderNode}.
+     * @param sourceFolderNode
+     * @param destFolderNode
+     */
+    protected void takeOfflineHippoDocs(final Node sourceFolderNode, final Node destFolderNode) {
+        try {
+            Session jcrSession = UserSession.get().getJcrSession();
+            String destFolderNodePath = destFolderNode.getPath();
+            String statement =
+                "/jcr:root" + destFolderNodePath + "//element(*,hippostdpubwf:document)[@hippo:availability='live' and @hippostd:state='published']";
+            Query query =
+                jcrSession.getWorkspace().getQueryManager().createQuery(RepoUtils.encodeXpath(statement), Query.XPATH);
+            QueryResult result = query.execute();
+
+            Node liveVariant;
+
+            for (NodeIterator nodeIt = result.getNodes(); nodeIt.hasNext(); ) {
+                liveVariant = nodeIt.nextNode();
+                liveVariant.setProperty("hippo:availability", ArrayUtils.EMPTY_STRING_ARRAY);
+                liveVariant.setProperty("hippostd:stateSummary", "new");
+            }
+        } catch (RepositoryException e) {
+            log.error("Failed to take offline link hippostd:publishableSummary nodes,", e);
         }
     }
 }
