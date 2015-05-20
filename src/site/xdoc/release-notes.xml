@@ -36,6 +36,9 @@
       </table>
     </section>
     <section name="Release Notes">
+      <subsection name="0.2.3">
+        <p>Take offline all the copied documents initially after copying a folder by default.</p>
+      </subsection>
       <subsection name="0.2.2">
         <p>Re-label the destination folder field to 'Destination Folder'.</p>
       </subsection>
