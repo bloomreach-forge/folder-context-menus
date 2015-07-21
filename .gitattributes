@@ -9,6 +9,7 @@ frontend/src/main/java/org/onehippo/forge/folderctxmenus/cms/plugin/FolderOnlyDo
 frontend/src/main/java/org/onehippo/forge/folderctxmenus/cms/plugin/FolderSelectionCmsJcrTree.java -text svneol=unset#text/plain
 frontend/src/main/java/org/onehippo/forge/folderctxmenus/cms/plugin/ITreeNodeEventListener.java -text svneol=unset#text/plain
 frontend/src/main/java/org/onehippo/forge/folderctxmenus/cms/plugin/MoveFolderWorkflowMenuItemPlugin.java -text svneol=unset#text/plain
+frontend/src/main/java/org/onehippo/forge/folderctxmenus/cms/plugin/UUIDUtils.java -text svneol=unset#text/plain
 frontend/src/main/resources/org/onehippo/forge/folderctxmenus/cms/plugin/AbstractFolderActionWorkflowMenuItemPlugin.html -text svneol=unset#text/plain
 frontend/src/main/resources/org/onehippo/forge/folderctxmenus/cms/plugin/AbstractFolderActionWorkflowMenuItemPlugin.properties -text svneol=unset#text/plain
 frontend/src/main/resources/org/onehippo/forge/folderctxmenus/cms/plugin/CopyOrMoveFolderDialog.css -text svneol=unset#text/plain

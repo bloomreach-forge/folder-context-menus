@@ -15,6 +15,10 @@
  */
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -122,6 +126,57 @@ public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
     protected void afterCopyFolder(final Node sourceFolderNode, final Node destFolderNode) {
         resetHippoDocBaseLinks(sourceFolderNode, destFolderNode);
         takeOfflineHippoDocs(sourceFolderNode, destFolderNode);
+        resetHippoDocumentTranslationIds(sourceFolderNode, destFolderNode);
+    }
+
+    /**
+     * Search all the hippotranslation:translated nodes under {@code destFolderNode} including {@code destFolderNode}
+     * and reset the hippotranslation:id property to a newly generate UUID.
+     * @param sourceFolderNode
+     * @param destFolderNode
+     */
+    protected void resetHippoDocumentTranslationIds(final Node sourceFolderNode, final Node destFolderNode) {
+        try {
+            Map<String, String> uuidMappings = new HashMap<String, String>();
+
+            resetHippoTranslatedNodeWithNewUuid(destFolderNode, uuidMappings);
+
+            Session jcrSession = UserSession.get().getJcrSession();
+            String destFolderNodePath = destFolderNode.getPath();
+            String statement =
+                "/jcr:root" + destFolderNodePath + "//element(*,hippotranslation:translated)";
+            Query query =
+                jcrSession.getWorkspace().getQueryManager().createQuery(RepoUtils.encodeXpath(statement), Query.XPATH);
+            QueryResult result = query.execute();
+
+            Node translatedNode;
+
+            for (NodeIterator nodeIt = result.getNodes(); nodeIt.hasNext(); ) {
+                translatedNode = nodeIt.nextNode();
+                resetHippoTranslatedNodeWithNewUuid(translatedNode, uuidMappings);
+            }
+        } catch (RepositoryException e) {
+            log.error("Failed to take offline link hippostd:publishableSummary nodes,", e);
+        }
+    }
+
+    private void resetHippoTranslatedNodeWithNewUuid(final Node translatedNode, final Map<String, String> uuidMappings) throws RepositoryException {
+        if (translatedNode != null && translatedNode.isNodeType("hippotranslation:translated")) {
+            String translationUuid = JcrUtils.getStringProperty(translatedNode, "hippotranslation:id", null);
+
+            if (UUIDUtils.isValidPattern(translationUuid)) {
+                String newTranslationUuid;
+
+                if (uuidMappings.containsKey(translationUuid)) {
+                    newTranslationUuid = uuidMappings.get(translationUuid);
+                } else {
+                    newTranslationUuid = UUID.randomUUID().toString();
+                    uuidMappings.put(translationUuid, newTranslationUuid);
+                }
+
+                translatedNode.setProperty("hippotranslation:id", newTranslationUuid);
+            }
+        }
     }
 
     /**
