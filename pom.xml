@@ -46,10 +46,14 @@
     <plugin.project-info-reports.version>2.7</plugin.project-info-reports.version>
     <plugin.release.version>2.5</plugin.release.version>
     <plugin.resources.version>2.6</plugin.resources.version>
-    <plugin.site.version>3.2</plugin.site.version>
+    <plugin.site.version>3.4</plugin.site.version>
     <plugin.source.version>2.2.1</plugin.source.version>
     <plugin.surefire.version>2.17</plugin.surefire.version>
     <plugin.surefire-report.version>2.17</plugin.surefire-report.version>
+
+    <plugin.checkstyle.version>2.6</plugin.checkstyle.version>
+    <plugin.cobertura.version>2.4</plugin.cobertura.version>
+    <plugin.findbugs.version>2.3.2</plugin.findbugs.version>
 
     <extension.wagon-svn.version>1.9</extension.wagon-svn.version>
 
