@@ -37,6 +37,8 @@ import org.hippoecm.frontend.plugins.standards.tree.icon.ITreeNodeIconProvider;
 
 public class FolderSelectionCmsJcrTree extends CmsJcrTree {
 
+    private static final long serialVersionUID = 1L;
+
     private List<ITreeNodeEventListener> treeNodeEventListeners = new ArrayList<ITreeNodeEventListener>();
 
     public FolderSelectionCmsJcrTree(String id, JcrTreeModel treeModel, final IPluginContext context, final IPluginConfig config) {

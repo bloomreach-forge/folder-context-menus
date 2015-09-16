@@ -26,6 +26,8 @@ import org.hippoecm.frontend.plugins.standards.DocumentListFilter;
 
 public class FolderOnlyDocumentListFilter extends DocumentListFilter {
 
+    private static final long serialVersionUID = 1L;
+
     public FolderOnlyDocumentListFilter(IPluginConfig pluginConfig) {
         super(pluginConfig);
     }

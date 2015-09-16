@@ -255,6 +255,7 @@
   </reporting>
 
   <modules>
+    <module>common</module>
     <module>repository</module>
     <module>frontend</module>
   </modules>

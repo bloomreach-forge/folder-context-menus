@@ -16,11 +16,9 @@
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
 import javax.jcr.Node;
-import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
@@ -30,6 +28,7 @@ import org.hippoecm.frontend.dialog.AbstractDialog;
 import org.hippoecm.frontend.plugin.IPluginContext;
 import org.hippoecm.frontend.plugin.config.IPluginConfig;
 import org.hippoecm.frontend.session.UserSession;
+import org.onehippo.forge.folderctxmenus.common.FolderMoveTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,59 +60,40 @@ public class MoveFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
     @Override
     protected AbstractDialog<FolderActionDocumentArguments> createDialogInstance(final FolderActionDocumentArguments folderActionDocumentModel) {
         return new CopyOrMoveFolderDialog(getPluginContext(), getPluginConfig(), getDialogTitleModel(), new Model<FolderActionDocumentArguments>(folderActionDocumentModel)) {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             protected void onOk() {
+                if (StringUtils.isBlank(getDestinationFolderIdentifier())) {
+                    error("Please select the target folder.");
+                    super.onOk();
+                    return;
+                }
+
+                if (StringUtils.isBlank(getNewFolderUrlName()) || StringUtils.isBlank(getNewFolderName())) {
+                    error("Please enter the destination folder name.");
+                    super.onOk();
+                    return;
+                }
+
                 try {
-                    moveFolder(getSourceFolderIdentifier(), getSourceFolderPathDisplay(),
-                               getDestinationFolderIdentifier(), getDestinationFolderPathDisplay(),
-                               getNewFolderName(), getNewFolderUrlName());
+                    Session jcrSession = UserSession.get().getJcrSession();
+                    Node sourceFolderNode = jcrSession.getNodeByIdentifier(getSourceFolderIdentifier());
+                    Node destParentFolderNode = jcrSession.getNodeByIdentifier(getDestinationFolderIdentifier());
+
+                    FolderMoveTask task =
+                            new FolderMoveTask(jcrSession, UserSession.get().getLocale(), sourceFolderNode,
+                                    destParentFolderNode, getNewFolderUrlName(), getNewFolderName());
+                    task.execute();
+
                     super.onOk();
                 } catch (Exception e) {
+                    log.error("Failed to move folder.", e);
                     error(e.getLocalizedMessage());
                 }
             }
         };
-    }
-
-    protected void moveFolder(final String sourceFolderIdentifier, final String sourceFolderPathDisplay,
-                              final String destinationFolderIdentifier, final String destinationFolderPathDisplay,
-                              final String newFolderName, final String newFolderUrlName) throws RepositoryException {
-        log.debug("Moving folder: from '{}' to '{}/{}'.", sourceFolderPathDisplay, destinationFolderPathDisplay, newFolderUrlName);
-
-        Session jcrSession = UserSession.get().getJcrSession();
-        Node sourceFolderNode = jcrSession.getNodeByIdentifier(sourceFolderIdentifier);
-        Node destParentFolderNode = jcrSession.getNodeByIdentifier(destinationFolderIdentifier);
-
-        if (sourceFolderNode.getParent().isSame(destParentFolderNode)) {
-            if (StringUtils.equals(sourceFolderNode.getName(), newFolderUrlName)) {
-                throw new RuntimeException("Cannot move to the same folder: " + destinationFolderPathDisplay + " / " + newFolderName);
-            }
-        }
-
-        if (sourceFolderNode.isSame(destParentFolderNode)) {
-            throw new RuntimeException("Cannot move to the folder itself: " + destinationFolderPathDisplay);
-        }
-
-        String destFolderPath = destParentFolderNode.getPath() + "/" + newFolderUrlName;
-
-        if (jcrSession.nodeExists(destFolderPath)) {
-            throw new RuntimeException("Destination folder already exists: " + destinationFolderPathDisplay + " / " + newFolderName);
-        }
-
-        jcrSession.move(sourceFolderNode.getPath(), destFolderPath);
-
-        Node destFolderNode = JcrUtils.getNodeIfExists(destParentFolderNode, newFolderUrlName);
-
-        updateFolderTranslations(destFolderNode, newFolderName, UserSession.get().getLocale().getLanguage());
-
-        jcrSession.save();
-
-        afterMoveFolder(sourceFolderNode, destFolderNode);
-
-        jcrSession.save();
-    }
-
-    protected void afterMoveFolder(final Node sourceFolderNode, final Node destFolderNode) {
     }
 
 }

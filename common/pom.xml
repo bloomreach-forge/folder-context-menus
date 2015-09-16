@@ -19,10 +19,10 @@
     <version>0.2.5-SNAPSHOT</version>
   </parent>
 
-  <name>Hippo CMS Extra Folder Context Menus Frontend</name>
-  <description>Hippo CMS Extra Folder Context Menus Frontend</description>
+  <name>Hippo CMS Extra Folder Context Menus Common</name>
+  <description>Hippo CMS Extra Folder Context Menus Common</description>
   <groupId>org.onehippo.forge.folderctxmenus</groupId>
-  <artifactId>folderctxmenus-frontend</artifactId>
+  <artifactId>folderctxmenus-common</artifactId>
 
   <dependencies>
 
@@ -47,24 +47,6 @@
     <dependency>
       <groupId>org.onehippo.cms7</groupId>
       <artifactId>hippo-repository-workflow</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.onehippo.forge.folderctxmenus</groupId>
-      <artifactId>folderctxmenus-common</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.onehippo.cms7</groupId>
-      <artifactId>hippo-cms-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.onehippo.cms7</groupId>
-      <artifactId>hippo-cms-builtin</artifactId>
       <scope>provided</scope>
     </dependency>
 

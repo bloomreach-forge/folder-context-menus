@@ -75,6 +75,9 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
         super(pluginContext, pluginConfig, titleModel, model);
 
         codecModel = new LoadableDetachableModel<StringCodec>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             protected StringCodec load() {
                 //language value can change between load() calls
@@ -138,6 +141,8 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
             new TextField<String>("newFolderUrlName", new PropertyModel<String>(this, "newFolderUrlName"));
         newFolderUrlNameField.setOutputMarkupId(true);
         newFolderUrlNameField.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+            private static final long serialVersionUID = 1L;
+
             @Override
             protected void onUpdate(final AjaxRequestTarget target) {
             }
@@ -148,6 +153,8 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
             new TextField<String>("newFolderName", new PropertyModel<String>(this, "newFolderName"));
         newFolderNameField.setOutputMarkupId(true);
         newFolderNameField.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+            private static final long serialVersionUID = 1L;
+
             @Override
             protected void onUpdate(final AjaxRequestTarget target) {
                 newFolderUrlName = codecModel.getObject().encode(getNewFolderName());

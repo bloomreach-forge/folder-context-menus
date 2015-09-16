@@ -23,6 +23,8 @@ import org.hippoecm.repository.api.Localized;
 
 public class FolderActionDocumentArguments implements IClusterable {
 
+    private static final long serialVersionUID = 1L;
+
     private String sourceFolderIdentifier;
     private String sourceFolderName;
     private String sourceFolderUriName;
