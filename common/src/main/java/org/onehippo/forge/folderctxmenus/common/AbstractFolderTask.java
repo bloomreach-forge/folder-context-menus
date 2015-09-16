@@ -25,8 +25,14 @@ import javax.jcr.Session;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.commons.JcrUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractFolderTask {
+
+    private static Logger defaultLogger = LoggerFactory.getLogger(AbstractFolderTask.class);
+
+    private Logger logger;
 
     private final Session session;
     private final Node sourceFolderNode;
@@ -42,6 +48,18 @@ public abstract class AbstractFolderTask {
         }
 
         this.sourceFolderNode = sourceFolderNode;
+    }
+
+    public Logger getDefaultLogger() {
+        return defaultLogger;
+    }
+
+    public Logger getLogger() {
+        return logger != null ? logger : getDefaultLogger();
+    }
+
+    public void setLogger(final Logger logger) {
+        this.logger = logger;
     }
 
     public Session getSession() {
@@ -82,7 +100,11 @@ public abstract class AbstractFolderTask {
     }
 
     protected void updateFolderTranslations(final Node folderNode, final String translatedName, String ... langsToFind) {
+        String folderPath = null;
+
         try {
+            folderPath = folderNode.getPath();
+
             if (StringUtils.isNotBlank(translatedName) && folderNode.isNodeType("hippo:translated")) {
                 Node translationNode;
                 String language;
@@ -97,7 +119,8 @@ public abstract class AbstractFolderTask {
                 }
             }
         } catch (RepositoryException e) {
-            
+            getLogger().error("Failed to set hippo:translation node of folder at {} with value='{}'.",
+                    folderPath, translatedName, e);
         }
     }
 

@@ -32,12 +32,8 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hippoecm.repository.util.JcrUtils;
 import org.hippoecm.repository.util.RepoUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
-
-    private static Logger log = LoggerFactory.getLogger(FolderCopyTask.class);
 
     public FolderCopyTask(final Session session, final Locale locale, final Node sourceFolderNode,
             final Node destParentFolderNode, final String destFolderNodeName, final String destFolderDisplayName) {
@@ -61,6 +57,7 @@ public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
             throw new RuntimeException("Destination folder already exists: " + getDestFolderPath());
         }
 
+        getLogger().info("Copying nodes: from {} to {}.", getSourceFolderNode().getPath(), getDestFolderPath());
         JcrUtils.copy(getSourceFolderNode(), getDestFolderNodeName(), getDestParentFolderNode());
 
         setDestFolderNode(JcrUtils.getNodeIfExists(getDestParentFolderNode(), getDestFolderNodeName()));
@@ -83,12 +80,15 @@ public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
      * and reset the hippotranslation:id property to a newly generate UUID.
      */
     protected void resetHippoDocumentTranslationIds() {
+        String destFolderNodePath = null;
+
         try {
+            destFolderNodePath = getDestFolderNode().getPath();
+
             Map<String, String> uuidMappings = new HashMap<String, String>();
 
             resetHippoTranslatedNodeWithNewUuid(getDestFolderNode(), uuidMappings);
 
-            String destFolderNodePath = getDestFolderNode().getPath();
             String statement = "/jcr:root" + destFolderNodePath + "//element(*,hippotranslation:translated)";
             Query query = getSession().getWorkspace().getQueryManager().createQuery(RepoUtils.encodeXpath(statement),
                     Query.XPATH);
@@ -101,7 +101,7 @@ public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
                 resetHippoTranslatedNodeWithNewUuid(translatedNode, uuidMappings);
             }
         } catch (RepositoryException e) {
-            log.error("Failed to take offline link hippostd:publishableSummary nodes,", e);
+            getLogger().error("Failed to reset hippotranslation:id properties under {}.", destFolderNodePath, e);
         }
     }
 
@@ -131,8 +131,10 @@ public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
      * by comparing the relative paths with the corresponding nodes under the sourceFolderNode.
      */
     protected void resetHippoDocBaseLinks() {
+        String destFolderNodePath = null;
+
         try {
-            String destFolderNodePath = getDestFolderNode().getPath();
+            destFolderNodePath = getDestFolderNode().getPath();
             String statement = "/jcr:root" + destFolderNodePath + "//element(*)[@hippo:docbase]";
             Query query = getSession().getWorkspace().getQueryManager().createQuery(RepoUtils.encodeXpath(statement),
                     Query.XPATH);
@@ -161,7 +163,7 @@ public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
                                 destLinkedNode = JcrUtils.getNodeIfExists(getDestFolderNode(), sourceLinkedNodeRelPath);
 
                                 if (destLinkedNode != null) {
-                                    log.debug("Updating the linked node at '{}'.", destLinkHolderNode.getPath());
+                                    getLogger().info("Updating the linked node at '{}'.", destLinkHolderNode.getPath());
                                     destLinkHolderNode.setProperty("hippo:docbase", destLinkedNode.getIdentifier());
                                 }
                             }
@@ -171,7 +173,7 @@ public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
                 }
             }
         } catch (RepositoryException e) {
-            log.error("Failed to reset link Nodes,", e);
+            getLogger().error("Failed to reset link Nodes under destination folder: {}.", destFolderNodePath, e);
         }
     }
 
@@ -179,8 +181,10 @@ public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
      * Takes offline all the hippo documents under the {@code destFolderNode}.
      */
     protected void takeOfflineHippoDocs() {
+        String destFolderNodePath = null;
+
         try {
-            String destFolderNodePath = getDestFolderNode().getPath();
+            destFolderNodePath = getDestFolderNode().getPath();
             String statement = "/jcr:root" + destFolderNodePath
                     + "//element(*,hippostdpubwf:document)[@hippo:availability='live' and @hippostd:state='published']";
             Query query = getSession().getWorkspace().getQueryManager().createQuery(RepoUtils.encodeXpath(statement),
@@ -195,7 +199,7 @@ public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
                 liveVariant.setProperty("hippostd:stateSummary", "new");
             }
         } catch (RepositoryException e) {
-            log.error("Failed to take offline link hippostd:publishableSummary nodes,", e);
+            getLogger().error("Failed to take offline link hippostd:publishableSummary nodes under {}.", destFolderNodePath, e);
         }
     }
 

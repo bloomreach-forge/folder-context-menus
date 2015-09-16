@@ -23,12 +23,8 @@ import javax.jcr.Session;
 
 import org.apache.commons.lang.StringUtils;
 import org.hippoecm.repository.util.JcrUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class FolderMoveTask extends AbstractFolderCopyOrMoveTask {
-
-    private static Logger log = LoggerFactory.getLogger(FolderMoveTask.class);
 
     public FolderMoveTask(final Session session, final Locale locale, final Node sourceFolderNode,
             final Node destParentFolderNode, final String destFolderNodeName, final String destFolderDisplayName) {
@@ -51,6 +47,7 @@ public class FolderMoveTask extends AbstractFolderCopyOrMoveTask {
             throw new RuntimeException("Destination folder already exists: " + getDestFolderPath());
         }
 
+        getLogger().info("Moving nodes: from {} to {}.", getSourceFolderNode().getPath(), getDestFolderPath());
         getSession().move(getSourceFolderNode().getPath(), getDestFolderPath());
 
         setDestFolderNode(JcrUtils.getNodeIfExists(getDestParentFolderNode(), getDestFolderNodeName()));
