@@ -21,12 +21,16 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.hippoecm.repository.util.CopyHandler;
+
 public abstract class AbstractFolderCopyOrMoveTask extends AbstractFolderTask {
 
     private final Node destParentFolderNode;
     private final String destFolderNodeName;
     private final String destFolderDisplayName;
     private Node destFolderNode;
+
+    private CopyHandler copyHandler;
 
     public AbstractFolderCopyOrMoveTask(final Session session, final Locale locale, final Node sourceFolderNode,
             final Node destParentFolderNode, final String destFolderNodeName, final String destFolderDisplayName) {
@@ -36,7 +40,6 @@ public abstract class AbstractFolderCopyOrMoveTask extends AbstractFolderTask {
         this.destFolderNodeName = destFolderNodeName;
         this.destFolderDisplayName = destFolderDisplayName;
     }
-
 
     public Node getDestParentFolderNode() {
         return destParentFolderNode;
@@ -60,6 +63,14 @@ public abstract class AbstractFolderCopyOrMoveTask extends AbstractFolderTask {
 
     public String getDestFolderPath() throws RepositoryException {
         return getDestParentFolderNode().getPath() + "/" + getDestFolderNodeName();
+    }
+
+    public CopyHandler getCopyHandler() {
+        return copyHandler;
+    }
+
+    public void setCopyHandler(CopyHandler copyHandler) {
+        this.copyHandler = copyHandler;
     }
 
 }

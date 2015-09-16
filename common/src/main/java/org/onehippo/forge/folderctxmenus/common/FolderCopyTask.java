@@ -58,7 +58,13 @@ public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
         }
 
         getLogger().info("Copying nodes: from {} to {}.", getSourceFolderNode().getPath(), getDestFolderPath());
-        JcrUtils.copy(getSourceFolderNode(), getDestFolderNodeName(), getDestParentFolderNode());
+
+        if (getCopyHandler() != null) {
+            JcrCopyUtils.copy(getSourceFolderNode(), getDestFolderNodeName(), getDestParentFolderNode(),
+                    getCopyHandler());
+        } else {
+            JcrCopyUtils.copy(getSourceFolderNode(), getDestFolderNodeName(), getDestParentFolderNode());
+        }
 
         setDestFolderNode(JcrUtils.getNodeIfExists(getDestParentFolderNode(), getDestFolderNodeName()));
 
