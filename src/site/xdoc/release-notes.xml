@@ -36,6 +36,9 @@
       </table>
     </section>
     <section name="Release Notes">
+      <subsection name="0.2.5">
+        <p>Moving folder copy/move code into separate task classes in order to enable programmatic usages (e.g, in groovy scripts).</p>
+      </subsection>
       <subsection name="0.2.4">
         <p>Resetting hippotranslation:id properties in folder and documents after copying a folder.</p>
       </subsection>

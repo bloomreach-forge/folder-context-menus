@@ -62,6 +62,63 @@
       </p>
 
     </section>
+
+    <section name="Programmatic Folder Copy and Move">
+      <p>
+        It is also possible to use the library in programmatic way (e.g, in groovy script) to copy or move a folder.
+      </p>
+
+      <p>For folder copy, see the following Java code example:</p>
+      <div class="brush: java">
+        <source><![CDATA[
+          import org.onehippo.forge.folderctxmenus.common.FolderCopyTask;
+
+
+          String sourceFolderPath = "/content/documents/myhippoproject/news";
+          String targetFolderPath = "/content/documents/myhippoproject";
+          String destFolderNodeName = "news2";
+          String destFolderDisplayName = "News 2";
+
+          Node sourceFolderNode = jcrSession.getNode(sourceFolderPath);
+          Node targetFolderNode = jcrSession.getNode(targetFolderPath);
+
+          FolderCopyTask task =
+                  new FolderCopyTask(jcrSession, Locale.ENGLISH,
+                                     sourceFolderNode, targetFolderNode,
+                                     destFolderNodeName, destFolderDisplayName);
+
+          // copy /content/documents/myhippoproject/news to
+          //      /content/documents/myhippoproject/news2
+          task.execute();
+        ]]></source>
+      </div>
+
+      <p>For folder move, see the following Java code example:</p>
+      <div class="brush: java">
+        <source><![CDATA[
+          import org.onehippo.forge.folderctxmenus.common.FolderMoveTask;
+
+
+          String sourceFolderPath = "/content/documents/myhippoproject/news/2011";
+          String targetFolderPath = "/content/documents/myhippoproject/common";
+          String destFolderNodeName = "2011";
+          String destFolderDisplayName = "2011";
+
+          Node sourceFolderNode = jcrSession.getNode(sourceFolderPath);
+          Node targetFolderNode = jcrSession.getNode(targetFolderPath);
+
+          FolderMoveTask task =
+                  new FolderMoveTask(jcrSession, Locale.ENGLISH,
+                                     sourceFolderNode, targetFolderNode,
+                                     destFolderNodeName, destFolderDisplayName);
+
+          // move /content/documents/myhippoproject/news/2011 to
+          //      /content/documents/myhippoproject/common/2011
+          task.execute();
+        ]]></source>
+      </div>
+    </section>
+
     <section name="Demo Application">
       <subsection name="Demo Application with Hippo CMS 7.9.x">
         <p>You can check out, build and run demo application, which contains all the examples explained in this site documentation.</p>
