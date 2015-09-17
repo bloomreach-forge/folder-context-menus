@@ -15,6 +15,7 @@
  */
 package org.onehippo.forge.folderctxmenus.common;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -22,16 +23,13 @@ import java.util.UUID;
 
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
-import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryResult;
+import javax.jcr.Value;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hippoecm.repository.util.JcrUtils;
-import org.hippoecm.repository.util.RepoUtils;
 
 public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
 
@@ -69,8 +67,6 @@ public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
         setDestFolderNode(JcrUtils.getNodeIfExists(getDestParentFolderNode(), getDestFolderNodeName()));
 
         updateFolderTranslations(getDestFolderNode(), getDestFolderDisplayName(), getLocale().getLanguage());
-
-        getSession().save();
     }
 
     @Override
@@ -78,7 +74,6 @@ public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
         resetHippoDocBaseLinks();
         takeOfflineHippoDocs();
         resetHippoDocumentTranslationIds();
-        getSession().save();
     }
 
     /**
@@ -95,15 +90,21 @@ public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
 
             resetHippoTranslatedNodeWithNewUuid(getDestFolderNode(), uuidMappings);
 
-            String statement = "/jcr:root" + destFolderNodePath + "//element(*,hippotranslation:translated)";
-            Query query = getSession().getWorkspace().getQueryManager().createQuery(RepoUtils.encodeXpath(statement),
-                    Query.XPATH);
-            QueryResult result = query.execute();
+            Collection<Node> hippoTranslationTranslatedNodes =
+                    JcrNodeUtils.findNodes(getDestFolderNode(),
+                            new JcrNodeUtils.NodeFilter() {
+                                @Override
+                                public boolean accept(Node node) throws RepositoryException {
+                                    return node.isNodeType("hippotranslation:translated");
+                                }
 
-            Node translatedNode;
+                                @Override
+                                public boolean searchDeeper(Node node) throws RepositoryException {
+                                    return !node.isNodeType("hippostdpubwf:document");
+                                }
+                            });
 
-            for (NodeIterator nodeIt = result.getNodes(); nodeIt.hasNext();) {
-                translatedNode = nodeIt.nextNode();
+            for (Node translatedNode : hippoTranslationTranslatedNodes) {
                 resetHippoTranslatedNodeWithNewUuid(translatedNode, uuidMappings);
             }
         } catch (RepositoryException e) {
@@ -141,40 +142,44 @@ public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
 
         try {
             destFolderNodePath = getDestFolderNode().getPath();
-            String statement = "/jcr:root" + destFolderNodePath + "//element(*)[@hippo:docbase]";
-            Query query = getSession().getWorkspace().getQueryManager().createQuery(RepoUtils.encodeXpath(statement),
-                    Query.XPATH);
-            QueryResult result = query.execute();
+
+            Collection<Node> hippoMirrorNodes =
+                    JcrNodeUtils.findNodes(getDestFolderNode(),
+                            new JcrNodeUtils.NodeFilter() {
+                                @Override
+                                public boolean accept(Node node) throws RepositoryException {
+                                    return node.isNodeType("hippo:mirror") && node.hasProperty("hippo:docbase");
+                                }
+                                @Override
+                                public boolean searchDeeper(Node node) throws RepositoryException {
+                                    return !node.isNodeType("hippo:mirror");
+                                }
+                            });
 
             String sourceFolderBase = getSourceFolderNode().getPath() + "/";
-            Node destLinkHolderNode;
             String destLinkDocBase;
             Node sourceLinkedNode;
             String sourceLinkedNodeRelPath;
             Node destLinkedNode;
 
-            for (NodeIterator nodeIt = result.getNodes(); nodeIt.hasNext();) {
-                destLinkHolderNode = nodeIt.nextNode();
+            for (Node destLinkHolderNode : hippoMirrorNodes) {
+                destLinkDocBase = JcrUtils.getStringProperty(destLinkHolderNode, "hippo:docbase", null);
 
-                if (destLinkHolderNode.hasProperty("hippo:docbase")) {
-                    destLinkDocBase = JcrUtils.getStringProperty(destLinkHolderNode, "hippo:docbase", null);
+                if (StringUtils.isNotBlank(destLinkDocBase)) {
+                    try {
+                        sourceLinkedNode = getSession().getNodeByIdentifier(destLinkDocBase);
 
-                    if (StringUtils.isNotBlank(destLinkDocBase)) {
-                        try {
-                            sourceLinkedNode = getSession().getNodeByIdentifier(destLinkDocBase);
+                        if (StringUtils.startsWith(sourceLinkedNode.getPath(), sourceFolderBase)) {
+                            sourceLinkedNodeRelPath = StringUtils.removeStart(sourceLinkedNode.getPath(),
+                                    sourceFolderBase);
+                            destLinkedNode = JcrUtils.getNodeIfExists(getDestFolderNode(), sourceLinkedNodeRelPath);
 
-                            if (StringUtils.startsWith(sourceLinkedNode.getPath(), sourceFolderBase)) {
-                                sourceLinkedNodeRelPath = StringUtils.removeStart(sourceLinkedNode.getPath(),
-                                        sourceFolderBase);
-                                destLinkedNode = JcrUtils.getNodeIfExists(getDestFolderNode(), sourceLinkedNodeRelPath);
-
-                                if (destLinkedNode != null) {
-                                    getLogger().info("Updating the linked node at '{}'.", destLinkHolderNode.getPath());
-                                    destLinkHolderNode.setProperty("hippo:docbase", destLinkedNode.getIdentifier());
-                                }
+                            if (destLinkedNode != null) {
+                                getLogger().info("Updating the linked node at '{}'.", destLinkHolderNode.getPath());
+                                destLinkHolderNode.setProperty("hippo:docbase", destLinkedNode.getIdentifier());
                             }
-                        } catch (ItemNotFoundException ignore) {
                         }
+                    } catch (ItemNotFoundException ignore) {
                     }
                 }
             }
@@ -191,16 +196,40 @@ public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
 
         try {
             destFolderNodePath = getDestFolderNode().getPath();
-            String statement = "/jcr:root" + destFolderNodePath
-                    + "//element(*,hippostdpubwf:document)[@hippo:availability='live' and @hippostd:state='published']";
-            Query query = getSession().getWorkspace().getQueryManager().createQuery(RepoUtils.encodeXpath(statement),
-                    Query.XPATH);
-            QueryResult result = query.execute();
 
-            Node liveVariant;
+            Collection<Node> liveVariantNodes =
+                    JcrNodeUtils.findNodes(getDestFolderNode(),
+                            new JcrNodeUtils.NodeFilter() {
+                                @Override
+                                public boolean accept(Node node) throws RepositoryException {
+                                    if (!node.isNodeType("hippostdpubwf:document")) {
+                                        return false;
+                                    }
 
-            for (NodeIterator nodeIt = result.getNodes(); nodeIt.hasNext();) {
-                liveVariant = nodeIt.nextNode();
+                                    return isLiveVariantNode(node) &&
+                                            StringUtils.equals("published", JcrUtils.getStringProperty(node, "hippostd:state", null));
+                                }
+
+                                @Override
+                                public boolean searchDeeper(Node node) throws RepositoryException {
+                                    return !node.isNodeType("hippostdpubwf:document");
+                                }
+
+                                private boolean isLiveVariantNode(final Node variantNode) throws RepositoryException {
+                                    if (variantNode.hasProperty("hippo:availability")) {
+                                        for (Value value : variantNode.getProperty("hippo:availability").getValues()) {
+                                            if (StringUtils.equals("live", value.getString())) {
+                                                return true;
+                                            }
+                                        }
+                                    }
+
+                                    return false;
+                                }
+
+                            });
+
+            for (Node liveVariant : liveVariantNodes) {
                 liveVariant.setProperty("hippo:availability", ArrayUtils.EMPTY_STRING_ARRAY);
                 liveVariant.setProperty("hippostd:stateSummary", "new");
             }

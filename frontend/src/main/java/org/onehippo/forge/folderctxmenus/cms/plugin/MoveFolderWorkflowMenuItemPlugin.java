@@ -16,6 +16,7 @@
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
 import javax.jcr.Node;
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.apache.commons.lang.StringUtils;
@@ -77,8 +78,9 @@ public class MoveFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
                     return;
                 }
 
+                Session jcrSession = UserSession.get().getJcrSession();
+
                 try {
-                    Session jcrSession = UserSession.get().getJcrSession();
                     Node sourceFolderNode = jcrSession.getNodeByIdentifier(getSourceFolderIdentifier());
                     Node destParentFolderNode = jcrSession.getNodeByIdentifier(getDestinationFolderIdentifier());
 
@@ -86,11 +88,18 @@ public class MoveFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
                             new FolderMoveTask(jcrSession, UserSession.get().getLocale(), sourceFolderNode,
                                     destParentFolderNode, getNewFolderUrlName(), getNewFolderName());
                     task.execute();
+                    jcrSession.save();
 
                     super.onOk();
                 } catch (Exception e) {
                     log.error("Failed to move folder.", e);
                     error(e.getLocalizedMessage());
+                } finally {
+                    try {
+                        jcrSession.refresh(false);
+                    } catch (RepositoryException e) {
+                        log.error("Failed to refresh session.", e);
+                    }
                 }
             }
         };

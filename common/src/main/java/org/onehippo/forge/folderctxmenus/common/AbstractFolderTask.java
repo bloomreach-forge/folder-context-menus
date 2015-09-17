@@ -75,20 +75,9 @@ public abstract class AbstractFolderTask {
     }
 
     public final void execute() throws RepositoryException {
-        boolean succeeded = false;
-
-        try {
-            doBeforeExecute();
-            doExecute();
-            doAfterExecute();
-            succeeded = true;
-        } finally {
-            if (succeeded) {
-                getSession().save();
-            } else {
-                getSession().refresh(false);
-            }
-        }
+        doBeforeExecute();
+        doExecute();
+        doAfterExecute();
     }
 
     protected void doBeforeExecute() throws RepositoryException {
