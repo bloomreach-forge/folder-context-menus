@@ -231,7 +231,6 @@
           <encoding>${project.build.sourceEncoding}</encoding>
           <skip>false</skip>
           <aggregate>true</aggregate>
-          <sourcepath>${basedir}/frontend/src/main/java</sourcepath>
         </configuration>
         <reportSets>
           <reportSet>
