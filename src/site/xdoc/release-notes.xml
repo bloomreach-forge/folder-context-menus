@@ -37,6 +37,7 @@
     </section>
     <section name="Release Notes">
       <subsection name="0.2.5">
+        <p>Session cleanup by invoking on Session.refresh(false) when exception occurs.</p>
         <p>Moving folder copy/move code into separate task classes in order to enable programmatic usages (e.g, in groovy scripts).</p>
         <p>CopyHandler to be injectable in FolderCopyTask for more advanced control.</p>
       </subsection>
