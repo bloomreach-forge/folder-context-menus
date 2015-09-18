@@ -71,50 +71,64 @@
       <p>For folder copy, see the following Java code example:</p>
       <div class="brush: java">
         <source><![CDATA[
-          import org.onehippo.forge.folderctxmenus.common.FolderCopyTask;
+import org.onehippo.forge.folderctxmenus.common.FolderCopyTask;
 
+        Session jcrSession = ...; // you get session somehow, depending on context.
 
-          String sourceFolderPath = "/content/documents/myhippoproject/news";
-          String targetFolderPath = "/content/documents/myhippoproject";
-          String destFolderNodeName = "news2";
-          String destFolderDisplayName = "News 2";
+        try {
+            String sourceFolderPath = "/content/documents/myhippoproject/news";
+            String targetFolderPath = "/content/documents/myhippoproject";
+            String destFolderNodeName = "news2";
+            String destFolderDisplayName = "News 2";
 
-          Node sourceFolderNode = jcrSession.getNode(sourceFolderPath);
-          Node targetFolderNode = jcrSession.getNode(targetFolderPath);
+            Node sourceFolderNode = jcrSession.getNode(sourceFolderPath);
+            Node targetFolderNode = jcrSession.getNode(targetFolderPath);
 
-          FolderCopyTask task =
-                  new FolderCopyTask(jcrSession, Locale.ENGLISH,
-                                     sourceFolderNode, targetFolderNode,
-                                     destFolderNodeName, destFolderDisplayName);
+            FolderCopyTask task =
+                    new FolderCopyTask(jcrSession, Locale.ENGLISH,
+                                       sourceFolderNode, targetFolderNode,
+                                       destFolderNodeName, destFolderDisplayName);
 
-          // copy /content/documents/myhippoproject/news to
-          //      /content/documents/myhippoproject/news2
-          task.execute();
+            // copy /content/documents/myhippoproject/news to
+            //      /content/documents/myhippoproject/news2
+            task.execute();
+
+            jcrSession.save();
+        } finally {
+            jcrSession.refresh(false);
+        }
         ]]></source>
       </div>
 
       <p>For folder move, see the following Java code example:</p>
       <div class="brush: java">
         <source><![CDATA[
-          import org.onehippo.forge.folderctxmenus.common.FolderMoveTask;
+import org.onehippo.forge.folderctxmenus.common.FolderMoveTask;
 
+        Session jcrSession = ...; // you get session somehow, depending on context.
 
-          String sourceFolderPath = "/content/documents/myhippoproject/news/2011";
-          String targetFolderPath = "/content/documents/myhippoproject/common";
-          String destFolderNodeName = "2011";
-          String destFolderDisplayName = "2011";
+        try {
+            String sourceFolderPath = "/content/documents/myhippoproject/news/2011";
+            String targetFolderPath = "/content/documents/myhippoproject/common";
+            String destFolderNodeName = "2011";
+            String destFolderDisplayName = "2011";
 
-          Node sourceFolderNode = jcrSession.getNode(sourceFolderPath);
-          Node targetFolderNode = jcrSession.getNode(targetFolderPath);
+            Node sourceFolderNode = jcrSession.getNode(sourceFolderPath);
+            Node targetFolderNode = jcrSession.getNode(targetFolderPath);
 
-          FolderMoveTask task =
-                  new FolderMoveTask(jcrSession, Locale.ENGLISH,
-                                     sourceFolderNode, targetFolderNode,
-                                     destFolderNodeName, destFolderDisplayName);
+            FolderMoveTask task =
+                    new FolderMoveTask(jcrSession, Locale.ENGLISH,
+                                       sourceFolderNode, targetFolderNode,
+                                       destFolderNodeName, destFolderDisplayName);
 
-          // move /content/documents/myhippoproject/news/2011 to
-          //      /content/documents/myhippoproject/common/2011
-          task.execute();
+            // move /content/documents/myhippoproject/news/2011 to
+            //      /content/documents/myhippoproject/common/2011
+            task.execute();
+
+            jcrSession.save();
+        } finally {
+            jcrSession.refresh(false);
+        }
         ]]></source>
       </div>
     </section>
