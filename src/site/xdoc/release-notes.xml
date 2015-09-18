@@ -36,6 +36,11 @@
       </table>
     </section>
     <section name="Release Notes">
+      <subsection name="0.2.7">
+        <p>
+          Optimize FolderCopyTask by improving node traversing utility.
+        </p>
+      </subsection>
       <subsection name="0.2.6">
         <p>
           Removing javax.jcr.Session#save() or #refresh(boolean) call in the task classes.

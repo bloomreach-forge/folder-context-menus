@@ -5,7 +5,8 @@ common/src/main/java/org/onehippo/forge/folderctxmenus/common/AbstractFolderTask
 common/src/main/java/org/onehippo/forge/folderctxmenus/common/FolderCopyTask.java -text svneol=unset#text/plain
 common/src/main/java/org/onehippo/forge/folderctxmenus/common/FolderMoveTask.java -text svneol=unset#text/plain
 common/src/main/java/org/onehippo/forge/folderctxmenus/common/JcrCopyUtils.java -text
-common/src/main/java/org/onehippo/forge/folderctxmenus/common/JcrNodeUtils.java -text svneol=unset#text/plain
+common/src/main/java/org/onehippo/forge/folderctxmenus/common/JcrTraverseUtils.java -text svneol=unset#text/plain
+common/src/main/java/org/onehippo/forge/folderctxmenus/common/NodeTraverser.java -text svneol=unset#text/plain
 common/src/main/java/org/onehippo/forge/folderctxmenus/common/UUIDUtils.java -text svneol=unset#text/plain
 frontend/pom.xml -text svneol=unset#text/plain
 frontend/src/main/java/org/onehippo/forge/folderctxmenus/cms/plugin/AbstractFolderActionWorkflowMenuItemPlugin.java -text svneol=unset#text/plain
