@@ -27,7 +27,6 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.hippoecm.frontend.model.JcrNodeModel;
@@ -38,8 +37,7 @@ import org.hippoecm.frontend.plugin.IPluginContext;
 import org.hippoecm.frontend.plugin.config.IPluginConfig;
 import org.hippoecm.frontend.plugins.standards.tree.FolderTreeNode;
 import org.hippoecm.frontend.session.UserSession;
-import org.hippoecm.frontend.util.CodecUtils;
-import org.hippoecm.repository.api.StringCodec;
+import org.hippoecm.repository.api.StringCodecFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +50,6 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
     private static final String DEFAULT_START_PATH = "/content/documents";
 
     private final FolderActionDocumentArguments folderActionDocumentModel;
-    private Node sourceFolderNode;
 
     private final FolderSelectionCmsJcrTree folderTree;
     private JcrTreeModel treeModel;
@@ -66,30 +63,16 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
     private String newFolderName = "";
     private String newFolderUrlName = "";
 
-    private String language = null;
-    private IModel<StringCodec> codecModel;
-
     public CopyOrMoveFolderDialog(final IPluginContext pluginContext, final IPluginConfig pluginConfig,
                                   IModel<String> titleModel, IModel<FolderActionDocumentArguments> model) {
 
         super(pluginContext, pluginConfig, titleModel, model);
 
-        codecModel = new LoadableDetachableModel<StringCodec>() {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            protected StringCodec load() {
-                //language value can change between load() calls
-                return CodecUtils.getNodeNameCodec(getPluginContext(), language);
-            }
-        };
-
         folderActionDocumentModel = model.getObject();
 
         if (StringUtils.isNotEmpty(folderActionDocumentModel.getSourceFolderIdentifier())) {
             try {
-                sourceFolderNode = UserSession.get().getJcrSession().getNodeByIdentifier(folderActionDocumentModel.getSourceFolderIdentifier());
+                Node sourceFolderNode = UserSession.get().getJcrSession().getNodeByIdentifier(folderActionDocumentModel.getSourceFolderIdentifier());
                 sourceFolderIdentifier = sourceFolderNode.getIdentifier();
                 sourceFolderPathDisplay = getDisplayPathOfNode(sourceFolderNode);
                 newFolderName = getDisplayNameOfNode(sourceFolderNode);
@@ -119,6 +102,8 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
         folderTree = new FolderSelectionCmsJcrTree("folderTree", treeModel, pluginContext, pluginConfig);
         folderTree.setRootLess(true);
         folderTree.addTreeNodeEventListener(new ITreeNodeEventListener() {
+            private static final long serialVersionUID = 1L;
+
             @Override
             public void nodeLinkClicked(AjaxRequestTarget target, TreeNode clickedNode) {
                 if (clickedNode instanceof IJcrTreeNode) {
@@ -157,7 +142,7 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
 
             @Override
             protected void onUpdate(final AjaxRequestTarget target) {
-                newFolderUrlName = codecModel.getObject().encode(getNewFolderName());
+                newFolderUrlName = new StringCodecFactory.UriEncoding().encode(getNewFolderName());
                 target.add(newFolderUrlNameField);
             }
         });

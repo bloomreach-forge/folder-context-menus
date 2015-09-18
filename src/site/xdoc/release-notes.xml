@@ -36,6 +36,11 @@
       </table>
     </section>
     <section name="Release Notes">
+      <subsection name="0.2.8">
+        <p>
+          Fixing wicket page serialization error due to some non-serializable objects in this plugin.
+        </p>
+      </subsection>
       <subsection name="0.2.7">
         <p>
           Optimize FolderCopyTask by improving node traversing utility.

@@ -18,8 +18,9 @@ package org.onehippo.forge.folderctxmenus.cms.plugin;
 import javax.swing.tree.TreeNode;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.util.io.IClusterable;
 
-public interface ITreeNodeEventListener {
+public interface ITreeNodeEventListener extends IClusterable {
 
     public void nodeLinkClicked(AjaxRequestTarget target, TreeNode clickedNode);
 
