@@ -21,6 +21,8 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.hippoecm.repository.api.HippoNode;
+import org.hippoecm.repository.api.HippoNodeType;
 import org.hippoecm.repository.util.CopyHandler;
 
 public abstract class AbstractFolderCopyOrMoveTask extends AbstractFolderTask {
@@ -71,6 +73,30 @@ public abstract class AbstractFolderCopyOrMoveTask extends AbstractFolderTask {
 
     public void setCopyHandler(CopyHandler copyHandler) {
         this.copyHandler = copyHandler;
+    }
+
+    protected void recomputeHippoPaths(final Node folderNode) {
+        try {
+            JcrTraverseUtils.traverseNodes(getDestFolderNode(),
+                    new NodeTraverser() {
+                        @Override
+                        public boolean isAcceptable(Node node) throws RepositoryException {
+                            return node instanceof HippoNode && node.isNodeType(HippoNodeType.NT_DERIVED);
+                        }
+
+                        @Override
+                        public boolean isTraversable(Node node) throws RepositoryException {
+                            return !node.isNodeType("hippostdpubwf:document");
+                        }
+
+                        @Override
+                        public void accept(Node node) throws RepositoryException {
+                            ((HippoNode) node).recomputeDerivedData();
+                        }
+                    });
+        } catch (RepositoryException e) {
+            getLogger().error("Failed to touch hippo:paths properties.", e);
+        }
     }
 
 }

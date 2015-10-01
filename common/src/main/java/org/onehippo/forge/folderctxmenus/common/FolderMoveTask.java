@@ -52,6 +52,8 @@ public class FolderMoveTask extends AbstractFolderCopyOrMoveTask {
 
         setDestFolderNode(JcrUtils.getNodeIfExists(getDestParentFolderNode(), getDestFolderNodeName()));
 
+        recomputeHippoPaths(getDestFolderNode());
+
         updateFolderTranslations(getDestFolderNode(), getDestFolderNodeName(), getLocale().getLanguage());
     }
 
