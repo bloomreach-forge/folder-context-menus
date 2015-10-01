@@ -17,7 +17,7 @@
   <description>Hippo CMS Extra Folder Context Menus</description>
   <groupId>org.onehippo.forge.folderctxmenus</groupId>
   <artifactId>folderctxmenus</artifactId>
-  <version>0.2.9-SNAPSHOT</version>
+  <version>0.2.9</version>
   <packaging>pom</packaging>
   <url>http://folderctxmenus.forge.onehippo.org/</url>
 
