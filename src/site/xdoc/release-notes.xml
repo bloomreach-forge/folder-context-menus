@@ -36,6 +36,11 @@
       </table>
     </section>
     <section name="Release Notes">
+      <subsection name="0.2.9">
+        <p>
+          Fixing the problem that hippo:paths property is not recomputed after moving a folder.
+        </p>
+      </subsection>
       <subsection name="0.2.8">
         <p>
           Fixing wicket page serialization error due to some non-serializable objects in this plugin.
