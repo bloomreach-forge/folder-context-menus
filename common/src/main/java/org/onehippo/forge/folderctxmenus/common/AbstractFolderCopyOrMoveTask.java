@@ -81,7 +81,19 @@ public abstract class AbstractFolderCopyOrMoveTask extends AbstractFolderTask {
                     new NodeTraverser() {
                         @Override
                         public boolean isAcceptable(Node node) throws RepositoryException {
-                            return node instanceof HippoNode && node.isNodeType(HippoNodeType.NT_DERIVED);
+                            if (!(node instanceof HippoNode)) {
+                                return false;
+                            }
+
+                            if (node.isNodeType(HippoNodeType.NT_DERIVED)) {
+                                return true;
+                            }
+
+                            if (node.isNodeType(HippoNodeType.NT_DOCUMENT) && node.hasProperty(HippoNodeType.HIPPO_PATHS)) {
+                                return true;
+                            }
+
+                            return false;
                         }
 
                         @Override
