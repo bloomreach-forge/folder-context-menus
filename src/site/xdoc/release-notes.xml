@@ -38,6 +38,11 @@
     <section name="Release Notes">
       <subsection name="0.2.9">
         <p>
+          Fixing the problem: "When a folder is moved, the hippo:paths property of a folder node still hasg old ancestors folder UUID."
+        </p>
+      </subsection>
+      <subsection name="0.2.9">
+        <p>
           Fixing the problem that hippo:paths property is not recomputed after moving a folder.
         </p>
       </subsection>
