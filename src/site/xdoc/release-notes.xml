@@ -36,7 +36,7 @@
       </table>
     </section>
     <section name="Release Notes">
-      <subsection name="0.2.9">
+      <subsection name="0.2.10">
         <p>
           Fixing the problem: "When a folder is moved, the hippo:paths property of a folder node still hasg old ancestors folder UUID."
         </p>
