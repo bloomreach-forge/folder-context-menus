@@ -82,9 +82,9 @@
   </developers>
 
   <scm>
-    <connection>scm:svn:https://forge.onehippo.org/svn/folderctxmenus/folderctxmenus/trunk</connection>
-    <developerConnection>scm:svn:https://forge.onehippo.org/svn/folderctxmenus/folderctxmenus/trunk</developerConnection>
-    <url>https://forge.onehippo.org/svn/folderctxmenus/folderctxmenus/trunk</url>
+    <connection>scm:svn:https://forge.onehippo.org/svn/folderctxmenus/folderctxmenus/branches/folderctxmenus-0.2.x</connection>
+    <developerConnection>scm:svn:https://forge.onehippo.org/svn/folderctxmenus/folderctxmenus/branches/folderctxmenus-0.2.x</developerConnection>
+    <url>https://forge.onehippo.org/svn/folderctxmenus/folderctxmenus/branches/folderctxmenus-0.2.x</url>
   </scm>
 
   <issueManagement>
