@@ -58,10 +58,6 @@
       <img alt="After moving a folder"
            src="images/movefolder2.png" />
       <p>
-        The local links (link nodes under the copied root folder) are not affected by moving
-        because all the internal links are based on UUIDs.
-      </p>
-      <p>
         Please try to click on the "See Also" links field to open the linked documents.
         In this case, the document links are not affected by moving the folder
         because all the internal document lnks are based on node identifiers (UUIDs).
