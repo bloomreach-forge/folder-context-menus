@@ -29,3 +29,7 @@
   overflow: auto;
   width: 486px;
 }
+
+.folderctxmenus-dialog .hippo-tree .wicket-tree .row-selected {
+  background-color: #0086f8;
+}
