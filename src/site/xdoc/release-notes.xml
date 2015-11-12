@@ -30,12 +30,21 @@
           <th>Hippo CMS Release version</th>
         </tr>
         <tr>
+          <td>1.1.x</td>
+          <td>10.0, 10.1</td>
+        </tr>
+        <tr>
           <td>0.2.x</td>
           <td>7.9.x</td>
         </tr>
       </table>
     </section>
     <section name="Release Notes">
+      <subsection name="1.1.0">
+        <p>
+          Coming soon... Compatible with Hippo CMS 10.
+        </p>
+      </subsection>
       <subsection name="0.2.10">
         <p>
           Fixing the problem: "When a folder is moved, the hippo:paths property of a folder node still hasg old ancestors folder UUID."
