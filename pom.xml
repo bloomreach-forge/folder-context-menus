@@ -27,8 +27,8 @@
     <project.build.javaVersion>1.7</project.build.javaVersion>
 
     <jcr.version>2.0</jcr.version>
-    <hippo.repository.version>2.26.11</hippo.repository.version>
-    <hippo.cms.version>2.26.14</hippo.cms.version>
+    <hippo.repository.version>3.1.0</hippo.repository.version>
+    <hippo.cms.version>3.1.1</hippo.cms.version>
 
     <lib.junit.version>4.8.2</lib.junit.version>
     <lib.easymock.version>3.0</lib.easymock.version>

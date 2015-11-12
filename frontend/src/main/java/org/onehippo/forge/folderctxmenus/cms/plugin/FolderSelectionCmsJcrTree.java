@@ -22,11 +22,11 @@ import java.util.List;
 
 import javax.swing.tree.TreeNode;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.tree.ITreeState;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
-import org.apache.wicket.request.resource.ResourceReference;
 import org.hippoecm.frontend.model.tree.IJcrTreeNode;
 import org.hippoecm.frontend.model.tree.JcrTreeModel;
 import org.hippoecm.frontend.plugin.IPluginContext;
@@ -95,13 +95,16 @@ public class FolderSelectionCmsJcrTree extends CmsJcrTree {
         return new ITreeNodeIconProvider() {
             private static final long serialVersionUID = 1L;
 
-            public ResourceReference getNodeIcon(TreeNode treeNode, ITreeState state) {
+            @Override
+            public Component getNodeIcon(String id, TreeNode treeNode, ITreeState state) {
                 for (ITreeNodeIconProvider provider : providers) {
-                    ResourceReference icon = provider.getNodeIcon(treeNode, state);
+                    Component icon = provider.getNodeIcon(id, treeNode, state);
+
                     if (icon != null) {
                         return icon;
                     }
                 }
+
                 throw new RuntimeException("No icon could be found for tree node");
             }
         };
