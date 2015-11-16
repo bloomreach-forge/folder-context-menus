@@ -25,7 +25,7 @@
     <section name="Hippo CMS Extra Folder Context Menus">
       <p>
         This project provides extra Folder Context Menu items such as 'Copy folder...' and 'Move folder...'
-        for Hippo CMS 7 with extendable base implementations for developers.
+        for Hippo CMS with extendable base implementations for developers.
       </p>
       <p>
         The best way to explain this feature is probably to show screenshots.
