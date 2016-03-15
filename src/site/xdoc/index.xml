@@ -68,6 +68,8 @@
     <section name="Programmatic Folder Copy and Move">
       <p>
         It is also possible to use the library in programmatic way (e.g, in groovy script) to copy or move a folder.
+        In that case, refer to the
+        <a href="install.html#Installing_Only_the_Common_module_of_Hippo_CMS_Extra_Folder_Context_Menus_Plugin">Installing Only the Common module of Hippo CMS Extra Folder Context Menus Plugin</a> section.
       </p>
 
       <p>For folder copy, see the following Java code example:</p>

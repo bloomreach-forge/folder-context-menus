@@ -22,7 +22,8 @@
     <title>Installing Hippo CMS Extra Folder Context Menus</title>
   </properties>
   <body>
-    <section name="Installing Hippo CMS Extra Folder Context Menus">
+
+    <section name="Installing Hippo CMS Extra Folder Context Menus Plugin">
       <subsection name="Add Dependencies">
         <p>
           Make sure you have the forge Maven2 repository reference and dependency definition in the root pom.xml of your project.
@@ -105,5 +106,80 @@
         </p>
       </subsection>
     </section>
+
+    <section name="Installing Only the Common module of Hippo CMS Extra Folder Context Menus Plugin">
+      <subsection name="Add Dependencies">
+        <p>
+          If you want to use only <a href="index.html#Programmatic_Folder_Copy_and_Move">Programmatic Folder Copy and Move</a>,
+          then you may add the following dependency only.
+        </p>
+        <div class="brush: xml">
+          <source><![CDATA[
+    <repositories>
+
+      <!-- SNIP -->
+
+      <repository>
+        <id>folderctxmenus-maven-repo</id>
+        <name>Hippo CMS Extra Folder Context Menus Maven 2 Repository</name>
+        <url>http://forge.onehippo.org/svn/folderctxmenus/maven2/</url>
+      </repository>
+
+      <!-- SNIP -->
+
+    </repositories>
+
+    <!-- SNIP -->
+
+    <dependencyManagement>
+
+      <!-- SNIP -->
+
+      <dependencies>
+
+        <!-- SNIP -->
+
+        <!-- NOTE: You should set a property named 'forge.folderctxmenus.version' to a version of this plugin! -->
+
+        <dependency>
+          <groupId>org.onehippo.forge.folderctxmenus</groupId>
+          <artifactId>folderctxmenus-common</artifactId>
+          <version>${forge.folderctxmenus.version}</version>
+        </dependency>
+
+        <!-- SNIP -->
+
+      </dependencies>
+
+      <!-- SNIP -->
+
+    </dependencyManagement>
+    ]]></source>
+        </div>
+        <p>
+          And add the following dependency reference into your Web Application module subproject(s).
+        </p>
+        <div class="brush: xml">
+          <source><![CDATA[
+    <dependencies>
+
+      <!-- SNIP -->
+
+      <dependency>
+        <groupId>org.onehippo.forge.folderctxmenus</groupId>
+        <artifactId>folderctxmenus-common</artifactId>
+      </dependency>
+
+      <!-- SNIP -->
+
+    </dependencies>
+    ]]></source>
+        </div>
+        <p>
+          Now, you're ready to use the common module of the plugin!
+        </p>
+      </subsection>
+    </section>
+
   </body>
 </document>
