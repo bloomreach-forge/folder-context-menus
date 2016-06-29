@@ -54,7 +54,7 @@ public class FolderMoveTask extends AbstractFolderCopyOrMoveTask {
 
         recomputeHippoPaths(getDestFolderNode());
 
-        updateFolderTranslations(getDestFolderNode(), getDestFolderNodeName(), getLocale().getLanguage());
+        updateFolderTranslations(getDestFolderNode(), getDestFolderDisplayName(), getLocale().getLanguage());
     }
 
 }
