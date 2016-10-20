@@ -35,7 +35,7 @@ src/site/resources/images/copyfolder2.png -text
 src/site/resources/images/foldercpmvmenus.png -text
 src/site/resources/images/movefolder1.png -text
 src/site/resources/images/movefolder2.png -text
-src/site/site.xml -text svneol=unset#application/xml
-src/site/xdoc/index.xml -text svneol=unset#application/xml
-src/site/xdoc/install.xml -text svneol=unset#application/xml
-src/site/xdoc/release-notes.xml -text svneol=unset#application/xml
+src/site/site.xml -text svneol=unset#text/xml
+src/site/xdoc/index.xml -text svneol=unset#text/xml
+src/site/xdoc/install.xml -text svneol=unset#text/xml
+src/site/xdoc/release-notes.xml -text svneol=unset#text/xml
