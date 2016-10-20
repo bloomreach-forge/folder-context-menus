@@ -25,7 +25,7 @@ frontend/src/main/resources/org/onehippo/forge/folderctxmenus/cms/plugin/CopyOrM
 frontend/src/main/resources/org/onehippo/forge/folderctxmenus/cms/plugin/CopyOrMoveFolderDialog.properties -text svneol=unset#text/plain
 frontend/src/main/resources/org/onehippo/forge/folderctxmenus/cms/plugin/copy-folder-16.png -text
 frontend/src/main/resources/org/onehippo/forge/folderctxmenus/cms/plugin/move-folder-16.png -text
-/pom.xml -text svneol=unset#application/xml
+/pom.xml -text svneol=unset#text/xml
 repository/pom.xml -text svneol=unset#text/plain
 repository/src/main/resources/folderctxmenus/folder-copy-menuitem.xml -text svneol=unset#text/plain
 repository/src/main/resources/folderctxmenus/folder-move-menuitem.xml -text svneol=unset#text/plain
