@@ -30,6 +30,10 @@
           <th>Hippo CMS Release version</th>
         </tr>
         <tr>
+          <td>2.0.x</td>
+          <td>11.x</td>
+        </tr>
+        <tr>
           <td>1.1.x</td>
           <td>10.x</td>
         </tr>
@@ -40,6 +44,11 @@
       </table>
     </section>
     <section name="Release Notes">
+      <subsection name="2.0.0">
+        <p>
+          Coming soon: Compliant with Hippo CMS v11.
+        </p>
+      </subsection>
       <subsection name="1.1.1">
         <p>
           Fixing a bug : when moving a folder, the folder translation name is set to the folder node name.

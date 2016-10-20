@@ -15,11 +15,7 @@
  */
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
-import java.util.Collections;
-import java.util.Map;
-
 import org.apache.wicket.util.io.IClusterable;
-import org.hippoecm.repository.api.Localized;
 
 public class FolderActionDocumentArguments implements IClusterable {
 
@@ -29,7 +25,6 @@ public class FolderActionDocumentArguments implements IClusterable {
     private String sourceFolderName;
     private String sourceFolderUriName;
     private String sourceFolderNodeType;
-    private Map<Localized, String> sourceFolderLocalizedNames;
 
     public FolderActionDocumentArguments() {
     }
@@ -64,18 +59,6 @@ public class FolderActionDocumentArguments implements IClusterable {
 
     public void setSourceFolderNodeType(String sourceFolderNodeType) {
         this.sourceFolderNodeType = sourceFolderNodeType;
-    }
-
-    public Map<Localized, String> getSourceFolderLocalizedNames() {
-        if (sourceFolderLocalizedNames == null) {
-            return Collections.emptyMap();
-        }
-
-        return sourceFolderLocalizedNames;
-    }
-
-    public void setSourceFolderLocalizedNames(Map<Localized, String> sourceFolderLocalizedNames) {
-        this.sourceFolderLocalizedNames = sourceFolderLocalizedNames;
     }
 
 }

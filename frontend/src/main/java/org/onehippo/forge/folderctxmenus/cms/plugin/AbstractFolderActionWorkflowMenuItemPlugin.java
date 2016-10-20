@@ -15,8 +15,6 @@
  */
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
-import java.util.Locale;
-
 import javax.jcr.RepositoryException;
 
 import org.apache.wicket.model.IModel;
@@ -30,9 +28,7 @@ import org.hippoecm.frontend.dialog.IDialogService;
 import org.hippoecm.frontend.plugin.IPluginContext;
 import org.hippoecm.frontend.plugin.config.IPluginConfig;
 import org.hippoecm.frontend.service.render.RenderPlugin;
-import org.hippoecm.frontend.session.UserSession;
 import org.hippoecm.repository.api.HippoNode;
-import org.hippoecm.repository.api.Localized;
 import org.hippoecm.repository.api.WorkflowDescriptor;
 import org.hippoecm.repository.standardworkflow.FolderWorkflow;
 import org.slf4j.Logger;
@@ -83,12 +79,6 @@ public abstract class AbstractFolderActionWorkflowMenuItemPlugin extends RenderP
                 return null;
             }
 
-            private String getLocalizedNameForSession(final HippoNode node) throws RepositoryException {
-                final Locale cmsLocale = UserSession.get().getLocale();
-                final Localized cmsLocalized = Localized.getInstance(cmsLocale);
-                return node.getLocalizedName(cmsLocalized);
-            }
-
             private FolderActionDocumentArguments createFolderActionDocumentModel() {
                 FolderActionDocumentArguments model = new FolderActionDocumentArguments();
 
@@ -96,17 +86,15 @@ public abstract class AbstractFolderActionWorkflowMenuItemPlugin extends RenderP
                     HippoNode node = (HippoNode) ((WorkflowDescriptorModel) getDefaultModel()).getNode();
 
                     model.setSourceFolderIdentifier(node.getIdentifier());
-                    model.setSourceFolderName(getLocalizedNameForSession(node));
+                    model.setSourceFolderName(node.getDisplayName());
                     model.setSourceFolderUriName(node.getName());
                     model.setSourceFolderNodeType(node.getPrimaryNodeType().getName());
-                    model.setSourceFolderLocalizedNames(node.getLocalizedNames());
                 } catch (RepositoryException e) {
                     log.error("Could not retrieve folder action workflow document", e);
 
                     model.setSourceFolderName("");
                     model.setSourceFolderUriName("");
                     model.setSourceFolderNodeType(null);
-                    model.setSourceFolderLocalizedNames(null);
                 }
 
                 return model;
