@@ -1,0 +1,126 @@
+{
+  "hippo:templates":   {
+    "en":     {
+      "new-news-document": "new news item",
+      "new-resource-bundle": "new resource bundle",
+      "new-news-folder": "new news item folder",
+      "new-untranslated-folder": "new untranslated folder",
+      "new-events-folder": "new events folder",
+      "new-events-document": "new event"
+    },
+    "nl":     {
+      "new-news-document": "nieuw nieuwsbericht",
+      "new-resource-bundle": "nieuwe resource bundle",
+      "new-news-folder": "nieuwe nieuwsmap",
+      "new-untranslated-folder": "nieuwe onvertaalde map",
+      "new-events-folder": "nieuwe evenementenmap",
+      "new-events-document": "nieuw evenement"
+    },
+    "de":     {
+      "new-news-document": "Neue News",
+      "new-resource-bundle": "Neues Resource-Bundle",
+      "new-news-folder": "Neuer News-Ordner",
+      "new-untranslated-folder": "Neuer nicht übersetzter Ordner",
+      "new-events-folder": "Neuer Events-Ordner",
+      "new-events-document": "Neues Event"
+    },
+    "fr":     {
+      "new-news-document": "nouveau message d'info",
+      "new-resource-bundle": "nouveau resource bundle",
+      "new-news-folder": "nouveau dossier messages d'info",
+      "new-untranslated-folder": "nouveau dossier non traduit",
+      "new-events-folder": "nouveau dossier événements",
+      "new-events-document": "nouvel événement"
+    }
+  },
+  "hippo:types":   {
+    "folderctxmenusdemo:newsdocument":     {
+      "en":       {
+        "folderctxmenusdemo:title": "Title",
+        "folderctxmenusdemo:location": "Location",
+        "folderctxmenusdemo:content": "Content",
+        "folderctxmenusdemo:introduction": "Introduction",
+        "folderctxmenusdemo:image": "Image",
+        "jcr:name": "News Item",
+        "folderctxmenusdemo:author": "Author",
+        "folderctxmenusdemo:date": "Date",
+        "folderctxmenusdemo:source": "Source"
+      },
+      "nl":       {
+        "folderctxmenusdemo:title": "Titel",
+        "folderctxmenusdemo:location": "Locatie",
+        "folderctxmenusdemo:content": "Inhoud",
+        "folderctxmenusdemo:introduction": "Introductie",
+        "folderctxmenusdemo:image": "Afbeelding",
+        "jcr:name": "Nieuwsbericht",
+        "folderctxmenusdemo:author": "Auteur",
+        "folderctxmenusdemo:date": "Datum",
+        "folderctxmenusdemo:source": "Bron"
+      },
+      "de":       {
+        "folderctxmenusdemo:title": "Titel",
+        "folderctxmenusdemo:location": "Standort",
+        "folderctxmenusdemo:content": "Inhalt",
+        "folderctxmenusdemo:introduction": "Einführung",
+        "folderctxmenusdemo:image": "Abbildung",
+        "jcr:name": "News",
+        "folderctxmenusdemo:author": "Verfasser",
+        "folderctxmenusdemo:date": "Datum",
+        "folderctxmenusdemo:source": "Quelle"
+      },
+      "fr":       {
+        "folderctxmenusdemo:title": "Titre",
+        "folderctxmenusdemo:location": "Lieu",
+        "folderctxmenusdemo:content": "Contenu",
+        "folderctxmenusdemo:introduction": "Introduction",
+        "folderctxmenusdemo:image": "Image",
+        "jcr:name": "Message d'info",
+        "folderctxmenusdemo:author": "Auteur",
+        "folderctxmenusdemo:date": "Date",
+        "folderctxmenusdemo:source": "Source"
+      }
+    },
+    "folderctxmenusdemo:eventsdocument":     {
+      "en":       {
+        "folderctxmenusdemo:title": "Title",
+        "folderctxmenusdemo:location": "Location",
+        "folderctxmenusdemo:content": "Content",
+        "folderctxmenusdemo:introduction": "Introduction",
+        "folderctxmenusdemo:image": "Image",
+        "jcr:name": "Event",
+        "folderctxmenusdemo:enddate": "End date",
+        "folderctxmenusdemo:date": "Start date"
+      },
+      "nl":       {
+        "folderctxmenusdemo:title": "Titel",
+        "folderctxmenusdemo:location": "Locatie",
+        "folderctxmenusdemo:content": "Inhoud",
+        "folderctxmenusdemo:introduction": "Introductie",
+        "folderctxmenusdemo:image": "Afbeelding",
+        "jcr:name": "Evenement",
+        "folderctxmenusdemo:enddate": "Einddatum",
+        "folderctxmenusdemo:date": "Startdatum"
+      },
+      "fr":       {
+        "folderctxmenusdemo:title": "Titre",
+        "folderctxmenusdemo:location": "Lieu",
+        "folderctxmenusdemo:content": "Contenu",
+        "folderctxmenusdemo:introduction": "Introduction",
+        "folderctxmenusdemo:image": "Image",
+        "jcr:name": "Événement",
+        "folderctxmenusdemo:enddate": "Date de fin",
+        "folderctxmenusdemo:date": "Date de début"
+      },
+      "de":       {
+        "folderctxmenusdemo:title": "Titel",
+        "folderctxmenusdemo:location": "Standort",
+        "folderctxmenusdemo:content": "Inhalt",
+        "folderctxmenusdemo:introduction": "Einführung",
+        "folderctxmenusdemo:image": "Abbildung",
+        "jcr:name": "Event",
+        "folderctxmenusdemo:enddate": "Enddatum",
+        "folderctxmenusdemo:date": "Startdatum"
+      }
+    }
+  }
+}
