@@ -139,54 +139,28 @@ import org.onehippo.forge.folderctxmenus.common.FolderMoveTask;
 
     <section name="Demo Application">
 
-      <subsection name="Demo Application with Hippo CMS 11">
-        <p>You can check out, build and run demo application, which contains all the examples explained in this site documentation.</p>
-        <p>Here are example commands to check out, build and run demo application:</p>
-        <div class="brush: bash">
-          <source><![CDATA[
-  $ svn checkout https://forge.onehippo.org/svn/folderctxmenus/folderctxmenus-demo/trunk folderctxmenus-demo-TRUNK
-  $ cd folderctxmenus-demo-TRUNK
-  $ mvn clean verify
-  $ mvn -P cargo.run
-          ]]></source>
-        </div>
-        <p>
-          Visit http://localhost:8080/cms/.
-        </p>
-      </subsection>
-
-      <subsection name="Demo Application with Hippo CMS 10">
-        <p>You can check out, build and run demo application, which contains all the examples explained in this site documentation.</p>
-        <p>Here are example commands to check out, build and run demo application:</p>
-        <div class="brush: bash">
-          <source><![CDATA[
-  $ svn checkout https://forge.onehippo.org/svn/folderctxmenus/folderctxmenus-demo/branches/folderctxmenus-demo-1.1.x
-  $ cd folderctxmenus-demo-1.1.x
-  $ mvn clean verify
-  $ mvn -P cargo.run
-          ]]></source>
-        </div>
-        <p>
-          Visit http://localhost:8080/cms/.
-        </p>
-      </subsection>
-
-      <subsection name="Demo Application with Hippo CMS 7.9.x">
-        <p>You can check out, build and run demo application, which contains all the examples explained in this site documentation.</p>
-        <p>Here are example commands to check out, build and run demo application:</p>
-        <div class="brush: bash">
-          <source><![CDATA[
-  $ svn checkout https://forge.onehippo.org/svn/folderctxmenus/folderctxmenus-demo/branches/folderctxmenus-demo-0.2.x
-  $ cd folderctxmenus-demo-0.2.x
-  $ mvn clean verify
-  $ mvn -P cargo.run
-          ]]></source>
-        </div>
-        <p>
-          Visit http://localhost:8080/cms/.
-        </p>
-      </subsection>
+      <p>
+        Fork me on GitHub: <a href="https://github.com/onehippo-forge/folder-context-menus" target="_blank">https://github.com/onehippo-forge/folder-context-menus</a>.
+      </p>
+      <p>
+        Build the project using Maven:
+      </p>
+      <div class="brush: bash">
+      <source>$ mvn install</source>
+      </div>
+      <p>And, build and run the demo in the <code>demo</code> subfolder.</p>
+      <div class="brush: bash">
+      <source><![CDATA[
+$ cd demo
+$ mvn clean package
+$ mvn -P cargo.run
+        ]]></source>
+      </div>
+      <p>
+        Visit http://localhost:8080/cms/.
+      </p>
 
     </section>
+
   </body>
 </document>
