@@ -15,6 +15,3 @@ $ mvn clean site
 ```
 
 The output is in the docs directory; push it and GitHub Pages will serve the site automatically. 
-
-## DEMO TODO
-- if existing, move demo project in SVN as submodule in Git
