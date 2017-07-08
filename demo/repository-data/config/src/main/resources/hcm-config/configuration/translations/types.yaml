@@ -1,0 +1,90 @@
+definitions:
+  config:
+    /hippo:configuration/hippo:translations/hippo:types/folderctxmenusdemo:eventsdocument:
+      jcr:primaryType: hipposys:resourcebundles
+      /en:
+        jcr:primaryType: hipposys:resourcebundle
+        folderctxmenusdemo:content: Content
+        folderctxmenusdemo:date: Start date
+        folderctxmenusdemo:enddate: End date
+        folderctxmenusdemo:image: Image
+        folderctxmenusdemo:introduction: Introduction
+        folderctxmenusdemo:location: Location
+        folderctxmenusdemo:title: Title
+        jcr:name: Event
+      /nl:
+        jcr:primaryType: hipposys:resourcebundle
+        folderctxmenusdemo:content: Inhoud
+        folderctxmenusdemo:date: Startdatum
+        folderctxmenusdemo:enddate: Einddatum
+        folderctxmenusdemo:image: Afbeelding
+        folderctxmenusdemo:introduction: Introductie
+        folderctxmenusdemo:location: Locatie
+        folderctxmenusdemo:title: Titel
+        jcr:name: Evenement
+      /fr:
+        jcr:primaryType: hipposys:resourcebundle
+        folderctxmenusdemo:content: Contenu
+        folderctxmenusdemo:date: Date de début
+        folderctxmenusdemo:enddate: Date de fin
+        folderctxmenusdemo:image: Image
+        folderctxmenusdemo:introduction: Introduction
+        folderctxmenusdemo:location: Lieu
+        folderctxmenusdemo:title: Titre
+        jcr:name: Événement
+      /de:
+        jcr:primaryType: hipposys:resourcebundle
+        folderctxmenusdemo:content: Inhalt
+        folderctxmenusdemo:date: Startdatum
+        folderctxmenusdemo:enddate: Enddatum
+        folderctxmenusdemo:image: Abbildung
+        folderctxmenusdemo:introduction: Einführung
+        folderctxmenusdemo:location: Standort
+        folderctxmenusdemo:title: Titel
+        jcr:name: Event
+    /hippo:configuration/hippo:translations/hippo:types/folderctxmenusdemo:newsdocument:
+      jcr:primaryType: hipposys:resourcebundles
+      /en:
+        jcr:primaryType: hipposys:resourcebundle
+        folderctxmenusdemo:author: Author
+        folderctxmenusdemo:content: Content
+        folderctxmenusdemo:date: Date
+        folderctxmenusdemo:image: Image
+        folderctxmenusdemo:introduction: Introduction
+        folderctxmenusdemo:location: Location
+        folderctxmenusdemo:source: Source
+        folderctxmenusdemo:title: Title
+        jcr:name: News Item
+      /nl:
+        jcr:primaryType: hipposys:resourcebundle
+        folderctxmenusdemo:author: Auteur
+        folderctxmenusdemo:content: Inhoud
+        folderctxmenusdemo:date: Datum
+        folderctxmenusdemo:image: Afbeelding
+        folderctxmenusdemo:introduction: Introductie
+        folderctxmenusdemo:location: Locatie
+        folderctxmenusdemo:source: Bron
+        folderctxmenusdemo:title: Titel
+        jcr:name: Nieuwsbericht
+      /de:
+        jcr:primaryType: hipposys:resourcebundle
+        folderctxmenusdemo:author: Verfasser
+        folderctxmenusdemo:content: Inhalt
+        folderctxmenusdemo:date: Datum
+        folderctxmenusdemo:image: Abbildung
+        folderctxmenusdemo:introduction: Einführung
+        folderctxmenusdemo:location: Standort
+        folderctxmenusdemo:source: Quelle
+        folderctxmenusdemo:title: Titel
+        jcr:name: News
+      /fr:
+        jcr:primaryType: hipposys:resourcebundle
+        folderctxmenusdemo:author: Auteur
+        folderctxmenusdemo:content: Contenu
+        folderctxmenusdemo:date: Date
+        folderctxmenusdemo:image: Image
+        folderctxmenusdemo:introduction: Introduction
+        folderctxmenusdemo:location: Lieu
+        folderctxmenusdemo:source: Source
+        folderctxmenusdemo:title: Titre
+        jcr:name: Message d'info
