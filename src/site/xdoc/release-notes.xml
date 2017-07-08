@@ -30,20 +30,29 @@
           <th>Hippo CMS Release version</th>
         </tr>
         <tr>
-          <td>2.0.x</td>
+          <td>3.x</td>
+          <td>12.x</td>
+        </tr>
+        <tr>
+          <td>2.x</td>
           <td>11.x</td>
         </tr>
         <tr>
-          <td>1.1.x</td>
+          <td>1.x</td>
           <td>10.x</td>
         </tr>
         <tr>
-          <td>0.2.x</td>
+          <td>0.x</td>
           <td>7.9.x</td>
         </tr>
       </table>
     </section>
     <section name="Release Notes">
+      <subsection name="3.0.0">
+        <p>
+          Compliant with Hippo CMS v12.
+        </p>
+      </subsection>
       <subsection name="2.0.0">
         <p>
           Compliant with Hippo CMS v11.
