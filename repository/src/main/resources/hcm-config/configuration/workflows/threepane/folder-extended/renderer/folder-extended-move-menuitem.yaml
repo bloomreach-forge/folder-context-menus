@@ -1,0 +1,6 @@
+definitions:
+  config:
+    /hippo:configuration/hippo:workflows/threepane/folder-extended/frontend:renderer/moveFolder:
+      jcr:primaryType: frontend:plugin
+      plugin.class: org.onehippo.forge.folderctxmenus.cms.plugin.MoveFolderWorkflowMenuItemPlugin
+      wicket.id: ${item}

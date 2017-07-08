@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright 2015 Hippo
+  Copyright 2015-2017 Hippo
 
   Licensed under the Apache License, Version 2.0
   (the "License"); you may not use this file except in compliance with the
@@ -17,7 +17,7 @@
   <description>Hippo CMS Extra Folder Context Menus</description>
   <groupId>org.onehippo.forge.folderctxmenus</groupId>
   <artifactId>folderctxmenus</artifactId>
-  <version>2.0.1-SNAPSHOT</version>
+  <version>3.0.0</version>
   <packaging>pom</packaging>
   <url>https://onehippo-forge.github.io/folder-context-menus</url>
 
@@ -27,13 +27,13 @@
     <project.build.javaVersion>1.7</project.build.javaVersion>
 
     <jcr.version>2.0</jcr.version>
-    <hippo.repository.version>4.0.3</hippo.repository.version>
-    <hippo.cms.version>4.0.3</hippo.cms.version>
+    <hippo.repository.version>5.0.0</hippo.repository.version>
+    <hippo.cms.version>5.0.0</hippo.cms.version>
 
-    <lib.junit.version>4.8.2</lib.junit.version>
-    <lib.easymock.version>3.0</lib.easymock.version>
-    <lib.slf4j.version>1.7.6</lib.slf4j.version>
-    <lib.log4j.version>1.2.17</lib.log4j.version>
+    <lib.junit.version>4.12</lib.junit.version>
+    <lib.easymock.version>3.4</lib.easymock.version>
+    <lib.slf4j.version>1.7.25</lib.slf4j.version>
+    <lib.log4j2.version>2.8.2</lib.log4j2.version>
 
     <plugin.compiler.version>3.1</plugin.compiler.version>
     <plugin.clean.version>2.5</plugin.clean.version>
@@ -170,20 +170,34 @@
 
       <dependency>
         <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-log4j12</artifactId>
-        <version>${lib.slf4j.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.slf4j</groupId>
         <artifactId>jcl-over-slf4j</artifactId>
         <version>${lib.slf4j.version}</version>
+        <scope>test</scope>
       </dependency>
-
       <dependency>
-        <groupId>log4j</groupId>
-        <artifactId>log4j</artifactId>
-        <version>${lib.log4j.version}</version>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-slf4j-impl</artifactId>
+        <version>${lib.log4j2.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-api</artifactId>
+        <version>${lib.log4j2.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>${lib.log4j2.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <!-- only (should) be needed to (test)compile log4j1.x (backward compatible) usages -->
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-1.2-api</artifactId>
+        <version>${lib.log4j2.version}</version>
+        <scope>test</scope>
       </dependency>
 
       <dependency>
@@ -279,6 +293,16 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-clean-plugin</artifactId>
         <version>${plugin.clean.version}</version>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>docs</directory>
+              <includes>
+                <include>**/*.html</include>
+              </includes>
+            </fileset>
+          </filesets>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

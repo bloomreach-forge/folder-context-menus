@@ -16,12 +16,11 @@
   <parent>
     <groupId>org.onehippo.forge.folderctxmenus</groupId>
     <artifactId>folderctxmenus</artifactId>
-    <version>2.0.1-SNAPSHOT</version>
+    <version>3.0.0</version>
   </parent>
 
   <name>Hippo CMS Extra Folder Context Menus Frontend</name>
   <description>Hippo CMS Extra Folder Context Menus Frontend</description>
-  <groupId>org.onehippo.forge.folderctxmenus</groupId>
   <artifactId>folderctxmenus-frontend</artifactId>
 
   <dependencies>
@@ -84,19 +83,28 @@
 
     <dependency>
       <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!-- only (should) be needed to (test)compile log4j1.x (backward compatible) usages -->
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-1.2-api</artifactId>
       <scope>test</scope>
     </dependency>
 

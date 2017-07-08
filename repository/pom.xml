@@ -16,12 +16,11 @@
   <parent>
     <groupId>org.onehippo.forge.folderctxmenus</groupId>
     <artifactId>folderctxmenus</artifactId>
-    <version>2.0.1-SNAPSHOT</version>
+    <version>3.0.0</version>
   </parent>
 
   <name>Hippo CMS Extra Folder Context Menus Repository</name>
   <description>Hippo CMS Extra Folder Context Menus Repository</description>
-  <groupId>org.onehippo.forge.folderctxmenus</groupId>
   <artifactId>folderctxmenus-repository</artifactId>
 
 </project>

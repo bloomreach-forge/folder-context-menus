@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/onehippo-forge/folder-context-menus.svg?branch=develop)](https://travis-ci.org/onehippo-forge/folder-context-menus)
 
 # Hippo Folder Context Menus
 
