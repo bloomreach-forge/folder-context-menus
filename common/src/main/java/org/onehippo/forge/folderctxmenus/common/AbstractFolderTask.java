@@ -18,13 +18,11 @@ package org.onehippo.forge.folderctxmenus.common;
 import java.util.Locale;
 
 import javax.jcr.Node;
-import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.jackrabbit.commons.JcrUtils;
+import org.hippoecm.repository.api.HippoNodeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,28 +86,21 @@ public abstract class AbstractFolderTask {
     protected void doAfterExecute() throws RepositoryException {
     }
 
-    protected void updateFolderTranslations(final Node folderNode, final String translatedName, String ... langsToFind) {
+    protected void updateFolderTranslations(final Node folderNode, final String displayName, String ... langsToFind) {
         String folderPath = null;
 
         try {
             folderPath = folderNode.getPath();
 
-            if (StringUtils.isNotBlank(translatedName) && folderNode.isNodeType("hippo:translated")) {
-                Node translationNode;
-                String language;
-
-                for (NodeIterator nodeIt = folderNode.getNodes("hippo:translation"); nodeIt.hasNext(); ) {
-                    translationNode = nodeIt.nextNode();
-                    language = JcrUtils.getStringProperty(translationNode, "hippo:language", null);
-
-                    if (StringUtils.isBlank(language) || ArrayUtils.contains(langsToFind, language)) {
-                        translationNode.setProperty("hippo:message", translatedName);
-                    }
+            if (StringUtils.isNotBlank(displayName)) {
+                if (!folderNode.isNodeType(HippoNodeType.NT_NAMED)) {
+                    folderNode.addMixin(HippoNodeType.NT_NAMED);
                 }
+                folderNode.setProperty(HippoNodeType.HIPPO_NAME, displayName);
             }
         } catch (RepositoryException e) {
             getLogger().error("Failed to set hippo:translation node of folder at {} with value='{}'.",
-                    folderPath, translatedName, e);
+                    folderPath, displayName, e);
         }
     }
 
