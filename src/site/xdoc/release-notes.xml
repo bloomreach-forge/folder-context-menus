@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-    Copyright 2015 Hippo
+    Copyright 2015-2017 Hippo
 
     Licensed to the Apache Software Foundation (ASF) under one or more
     contributor license agreements.  See the NOTICE file distributed with
@@ -47,17 +47,37 @@
         </tr>
       </table>
     </section>
-    <section name="Release Notes">
+    <section name="Release Notes (3.x)">
+      <subsection name="3.0.1">
+        <h3>        Bug
+        </h3>
+        <ul>
+        <li>[<a href='https://issues.onehippo.com/browse/HIPFORGE-118'>HIPFORGE-118</a>] -         FolderContextMenus - updateFolderTranslations not working since 11.x
+        </li>
+        </ul>
+      </subsection>
       <subsection name="3.0.0">
         <p>
           Compliant with Hippo CMS v12.
         </p>
+      </subsection>
+    </section>
+    <section name="Release Notes (2.x)">
+      <subsection name="2.0.1">
+        <h3>        Bug
+        </h3>
+        <ul>
+        <li>[<a href='https://issues.onehippo.com/browse/HIPFORGE-119'>HIPFORGE-119</a>] -         [Backport for v11] FolderContextMenus - updateFolderTranslations not working since 11.x
+        </li>
+        </ul>
       </subsection>
       <subsection name="2.0.0">
         <p>
           Compliant with Hippo CMS v11.
         </p>
       </subsection>
+    </section>
+    <section name="Release Notes (1.x)">
       <subsection name="1.1.1">
         <p>
           Fixing a bug : when moving a folder, the folder translation name is set to the folder node name.
@@ -68,6 +88,8 @@
           Compatible with Hippo CMS 10.
         </p>
       </subsection>
+    </section>
+    <section name="Release Notes (0.x)">
       <subsection name="0.2.10">
         <p>
           Fixing the problem: "When a folder is moved, the hippo:paths property of a folder node still hasg old ancestors folder UUID."
