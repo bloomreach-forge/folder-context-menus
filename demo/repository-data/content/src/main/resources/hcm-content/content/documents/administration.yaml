@@ -13,17 +13,31 @@
       jcr:mixinTypes: ['hippo:named', 'mix:referenceable']
       jcr:uuid: 8528551a-33c1-4dc3-8edf-99d9a467c5f6
       hippo:name: Global
-      /global:
+      /global[1]:
         jcr:primaryType: resourcebundle:resourcebundle
         jcr:mixinTypes: ['mix:referenceable']
         jcr:uuid: 575988e5-4e08-48b8-ab0f-86c821723c91
-        hippo:availability: [live, preview]
+        hippo:availability: [live]
         hippostd:state: published
         hippostdpubwf:createdBy: admin
         hippostdpubwf:creationDate: 2014-08-21T22:10:13.443+02:00
         hippostdpubwf:lastModificationDate: 2014-08-21T22:10:52.812+02:00
         hippostdpubwf:lastModifiedBy: admin
-        hippostdpubwf:publicationDate: 2014-08-21T22:10:54.657+02:00
+        hippostdpubwf:publicationDate: 2017-12-11T10:50:02.411-05:00
+        resourcebundle:descriptions: [Text shown in the global page footer.]
+        resourcebundle:id: essentials.global
+        resourcebundle:keys: [footer.text]
+        resourcebundle:messages: [©2017]
+      /global[2]:
+        jcr:primaryType: resourcebundle:resourcebundle
+        jcr:mixinTypes: ['mix:referenceable', 'mix:versionable']
+        jcr:uuid: c9243fe1-5680-42aa-aba8-de1ce4929173
+        hippo:availability: [preview]
+        hippostd:state: unpublished
+        hippostdpubwf:createdBy: admin
+        hippostdpubwf:creationDate: 2014-08-21T22:10:13.443+02:00
+        hippostdpubwf:lastModificationDate: 2014-08-21T22:10:52.812+02:00
+        hippostdpubwf:lastModifiedBy: admin
         resourcebundle:descriptions: [Text shown in the global page footer.]
         resourcebundle:id: essentials.global
         resourcebundle:keys: [footer.text]
@@ -33,17 +47,36 @@
       jcr:mixinTypes: ['hippo:named', 'mix:referenceable']
       jcr:uuid: 093f3139-1a44-4185-bcfc-08bc1a301eec
       hippo:name: Homepage
-      /homepage:
+      /homepage[1]:
         jcr:primaryType: resourcebundle:resourcebundle
         jcr:mixinTypes: ['mix:referenceable']
         jcr:uuid: 6193e949-42a3-407a-9959-d5784e71188d
-        hippo:availability: [live, preview]
+        hippo:availability: [live]
         hippostd:state: published
         hippostdpubwf:createdBy: admin
         hippostdpubwf:creationDate: 2014-08-21T17:08:08.703+02:00
         hippostdpubwf:lastModificationDate: 2014-08-21T17:11:53.242+02:00
         hippostdpubwf:lastModifiedBy: admin
-        hippostdpubwf:publicationDate: 2014-08-21T17:11:55.239+02:00
+        hippostdpubwf:publicationDate: 2017-12-11T10:50:10.205-05:00
+        resourcebundle:descriptions: [Title displayed on homepage., Text displayed
+            on homepage.]
+        resourcebundle:id: essentials.homepage
+        resourcebundle:keys: [homepage.title, homepage.text]
+        resourcebundle:messages: [Home Page, 'Every website comes with its own styling
+            requirements. Hippo''s setup application can therefore not address site
+            styling. Instead, the generated pages use minimal styling to render the
+            content. It is the task of the Hippo developer to adjust the front-end
+            to the site''s needs.']
+      /homepage[2]:
+        jcr:primaryType: resourcebundle:resourcebundle
+        jcr:mixinTypes: ['mix:referenceable', 'mix:versionable']
+        jcr:uuid: a3c9829d-bb43-49f6-b9c8-f41d8558c8b2
+        hippo:availability: [preview]
+        hippostd:state: unpublished
+        hippostdpubwf:createdBy: admin
+        hippostdpubwf:creationDate: 2014-08-21T17:08:08.703+02:00
+        hippostdpubwf:lastModificationDate: 2014-08-21T17:11:53.242+02:00
+        hippostdpubwf:lastModifiedBy: admin
         resourcebundle:descriptions: [Title displayed on homepage., Text displayed
             on homepage.]
         resourcebundle:id: essentials.homepage
@@ -58,17 +91,34 @@
       jcr:mixinTypes: ['hippo:named', 'mix:referenceable']
       jcr:uuid: 6863a6b0-dafa-4092-93b8-8837353a67fb
       hippo:name: Page not found
-      /pagenotfound:
+      /pagenotfound[1]:
         jcr:primaryType: resourcebundle:resourcebundle
         jcr:mixinTypes: ['mix:referenceable']
         jcr:uuid: 7a44dd90-bd1a-4489-bac6-39fab11c0b93
-        hippo:availability: [live, preview]
+        hippo:availability: [live]
         hippostd:state: published
         hippostdpubwf:createdBy: admin
         hippostdpubwf:creationDate: 2014-08-21T17:08:08.703+02:00
         hippostdpubwf:lastModificationDate: 2014-08-21T17:11:53.242+02:00
         hippostdpubwf:lastModifiedBy: admin
-        hippostdpubwf:publicationDate: 2014-08-21T17:11:55.239+02:00
+        hippostdpubwf:publicationDate: 2017-12-11T10:50:17.471-05:00
+        resourcebundle:descriptions: [Title displayed when page is not found., Text
+            displayed when page is not found.]
+        resourcebundle:id: essentials.pagenotfound
+        resourcebundle:keys: [pagenotfound.title, pagenotfound.text]
+        resourcebundle:messages: [Page not found (404), 'The page you requested was
+            not found. - [This text can be edited <a href="http://localhost:8080/cms/?1&path=/content/documents/administration/labels/pagenotfound"
+            target="_blank">here</a>.]']
+      /pagenotfound[2]:
+        jcr:primaryType: resourcebundle:resourcebundle
+        jcr:mixinTypes: ['mix:referenceable', 'mix:versionable']
+        jcr:uuid: bc27ddeb-d49f-4816-ac97-5c246c154f61
+        hippo:availability: [preview]
+        hippostd:state: unpublished
+        hippostdpubwf:createdBy: admin
+        hippostdpubwf:creationDate: 2014-08-21T17:08:08.703+02:00
+        hippostdpubwf:lastModificationDate: 2014-08-21T17:11:53.242+02:00
+        hippostdpubwf:lastModifiedBy: admin
         resourcebundle:descriptions: [Title displayed when page is not found., Text
             displayed when page is not found.]
         resourcebundle:id: essentials.pagenotfound
@@ -81,17 +131,33 @@
       jcr:mixinTypes: ['hippo:named', 'mix:referenceable']
       jcr:uuid: a0cb4b7e-f557-457d-9e91-912156075c47
       hippo:name: Pagination
-      /pagination:
+      /pagination[1]:
         jcr:primaryType: resourcebundle:resourcebundle
         jcr:mixinTypes: ['mix:referenceable']
         jcr:uuid: 7ff0c8bf-460b-4764-aded-72cea69e9ab7
-        hippo:availability: [live, preview]
+        hippo:availability: [live]
         hippostd:state: published
         hippostdpubwf:createdBy: admin
         hippostdpubwf:creationDate: 2014-08-21T14:30:14.382+02:00
         hippostdpubwf:lastModificationDate: 2014-08-21T17:03:32.811+02:00
         hippostdpubwf:lastModifiedBy: admin
-        hippostdpubwf:publicationDate: 2014-08-21T17:06:47.420+02:00
+        hippostdpubwf:publicationDate: 2017-12-11T10:50:24.700-05:00
+        resourcebundle:descriptions: ['Used in the indication, how many results were
+            found. The label is appended to the number of results.', Label used for
+            the link to the previous page., Label used for the link to the next page.]
+        resourcebundle:id: essentials.pagination
+        resourcebundle:keys: [results.indication, page.previous, page.next]
+        resourcebundle:messages: [document(s), previous, next]
+      /pagination[2]:
+        jcr:primaryType: resourcebundle:resourcebundle
+        jcr:mixinTypes: ['mix:referenceable', 'mix:versionable']
+        jcr:uuid: e0612a03-d661-405b-beb9-d833254ecde6
+        hippo:availability: [preview]
+        hippostd:state: unpublished
+        hippostdpubwf:createdBy: admin
+        hippostdpubwf:creationDate: 2014-08-21T14:30:14.382+02:00
+        hippostdpubwf:lastModificationDate: 2014-08-21T17:03:32.811+02:00
+        hippostdpubwf:lastModifiedBy: admin
         resourcebundle:descriptions: ['Used in the indication, how many results were
             found. The label is appended to the number of results.', Label used for
             the link to the previous page., Label used for the link to the next page.]
