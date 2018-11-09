@@ -19,7 +19,7 @@
   <artifactId>folderctxmenus</artifactId>
   <version>3.0.2-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <url>https://onehippo-forge.github.io/folder-context-menus</url>
+  <url>https://bloomreach-forge.github.io/folder-context-menus</url>
 
   <properties>
 
@@ -76,9 +76,9 @@
   </developers>
 
   <scm>
-    <connection>scm:git:git@github.com:onehippo-forge/folder-context-menus.git</connection>
-    <developerConnection>scm:git:git@github.com:onehippo-forge/folder-context-menus.git</developerConnection>
-    <url>https://github.com/onehippo-forge/folder-context-menus.git</url>
+    <connection>scm:git:git@github.com:bloomreach-forge/folder-context-menus.git</connection>
+    <developerConnection>scm:git:git@github.com:bloomreach-forge/folder-context-menus.git</developerConnection>
+    <url>https://github.com/bloomreach-forge/folder-context-menus.git</url>
   </scm>
 
   <issueManagement>
@@ -88,7 +88,7 @@
 
   <ciManagement>
     <system>Travis CI</system>
-    <url>https://travis-ci.org/onehippo-forge/folder-context-menus</url>
+    <url>https://travis-ci.org/bloomreach-forge/folder-context-menus</url>
   </ciManagement>
 
   <distributionManagement>
