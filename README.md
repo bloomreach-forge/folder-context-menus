@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/onehippo-forge/folder-context-menus.svg?branch=develop)](https://travis-ci.org/onehippo-forge/folder-context-menus)
+[![Build Status](https://travis-ci.org/bloomreach-forge/folder-context-menus.svg?branch=develop)](https://travis-ci.org/bloomreach-forge/folder-context-menus)
 
 # Hippo Folder Context Menus
 
@@ -15,7 +15,7 @@ The output is in the ```target/site/``` directory by default. You can open ```ta
 
 # Documentation (GitHub Pages)
 
-Documentation is available at [onehippo-forge.github.io/folder-context-menus](https://onehippo-forge.github.io/folder-context-menus).
+Documentation is available at [bloomreach-forge.github.io/folder-context-menus](https://bloomreach-forge.github.io/folder-context-menus).
 
 You can generate the GitHub pages only from ```master``` branch by this command:
 

@@ -140,7 +140,7 @@ import org.onehippo.forge.folderctxmenus.common.FolderMoveTask;
     <section name="Demo Application">
 
       <p>
-        Fork me on GitHub: <a href="https://github.com/onehippo-forge/folder-context-menus" target="_blank">https://github.com/onehippo-forge/folder-context-menus</a>.
+        Fork me on GitHub: <a href="https://github.com/bloomreach-forge/folder-context-menus" target="_blank">https://github.com/bloomreach-forge/folder-context-menus</a>.
       </p>
       <p>
         Build the project using Maven:
