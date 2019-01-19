@@ -11,7 +11,18 @@
   <packaging>pom</packaging>
   <name>Hippo CMS Extra Folder Context Menus Demo CMS Dependencies</name>
   <description>Hippo CMS Extra Folder Context Menus Demo CMS Dependencies</description>
+
   <dependencies>
+
+    <dependency>
+      <groupId>org.onehippo.forge.folderctxmenus</groupId>
+      <artifactId>folderctxmenus-repository</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.onehippo.forge.folderctxmenus</groupId>
+      <artifactId>folderctxmenus-frontend</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.onehippo.forge.folderctxmenus</groupId>

@@ -11,7 +11,7 @@ definitions:
         /hipposysedit:nodetype:
           jcr:primaryType: hipposysedit:nodetype
           jcr:mixinTypes: ['hipposysedit:remodel', 'mix:referenceable']
-          jcr:uuid: 52b2434e-cad8-45e9-8bbd-baf9d8a1f2c3
+          jcr:uuid: e5a121a2-07b2-43e3-83ee-a803ee604507
           hipposysedit:node: true
           hipposysedit:supertype: ['folderctxmenusdemo:basedocument', 'hippostd:relaxed',
             'hippotranslation:translated']
@@ -81,12 +81,20 @@ definitions:
             hipposysedit:path: folderctxmenusdemo:location
             hipposysedit:primary: false
             hipposysedit:type: String
+          /relateddocs:
+            jcr:primaryType: hipposysedit:field
+            hipposysedit:mandatory: false
+            hipposysedit:multiple: true
+            hipposysedit:ordered: true
+            hipposysedit:path: folderctxmenusdemo:relateddocs
+            hipposysedit:primary: false
+            hipposysedit:type: hippo:mirror
       /hipposysedit:prototypes:
         jcr:primaryType: hipposysedit:prototypeset
         /hipposysedit:prototype:
           jcr:primaryType: folderctxmenusdemo:newsdocument
           jcr:mixinTypes: ['mix:referenceable']
-          jcr:uuid: 835305e5-f199-4208-b598-8be2f86b181b
+          jcr:uuid: b13d8804-8681-4279-90d2-c744b7d3821a
           folderctxmenusdemo:date: 0001-01-01T13:00:00+01:00
           folderctxmenusdemo:documenttype: news
           folderctxmenusdemo:introduction: ''
@@ -100,15 +108,21 @@ definitions:
           hippostdpubwf:lastModifiedBy: ''
           hippotranslation:id: document-type-locale-id
           hippotranslation:locale: document-type-locale
+          folderctxmenusdemo:source: ''
+          folderctxmenusdemo:author: ''
+          folderctxmenusdemo:location: ''
           /folderctxmenusdemo:content:
             jcr:primaryType: hippostd:html
-            hippostd:content: <html><body></body></html>
+            hippostd:content: ''
           /folderctxmenusdemo:image:
             jcr:primaryType: hippogallerypicker:imagelink
             hippo:docbase: cafebabe-cafe-babe-cafe-babecafebabe
             hippo:facets: []
             hippo:modes: []
             hippo:values: []
+          /folderctxmenusdemo:relateddocs:
+            jcr:primaryType: hippo:mirror
+            hippo:docbase: cafebabe-cafe-babe-cafe-babecafebabe
       /editor:templates:
         jcr:primaryType: editor:templateset
         /_default_:
@@ -187,5 +201,14 @@ definitions:
             field: image
             plugin.class: org.hippoecm.frontend.editor.plugins.field.NodeFieldPlugin
             wicket.id: ${cluster.id}.right.item
+            /cluster.options:
+              jcr:primaryType: frontend:pluginconfig
+          /relateddocs:
+            jcr:primaryType: frontend:plugin
+            caption: Related Documents
+            field: relateddocs
+            hint: ''
+            plugin.class: org.hippoecm.frontend.editor.plugins.field.NodeFieldPlugin
+            wicket.id: ${cluster.id}.left.item
             /cluster.options:
               jcr:primaryType: frontend:pluginconfig
