@@ -1,8 +1,0 @@
-definitions:
-  config:
-    /hst:hst/hst:configurations/folderctxmenusdemo/hst:workspace/hst:channel:
-      jcr:primaryType: hst:channel
-      hst:name: Hippo CMS Extra Folder Context Menus Demo
-      hst:type: website
-      /hst:channelinfo:
-        jcr:primaryType: hst:channelinfo

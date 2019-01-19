@@ -1,6 +1,0 @@
-definitions:
-  config:
-    /hst:hst/hst:configurations/folderctxmenusdemo/hst:catalog:
-      jcr:primaryType: hst:catalog
-      /folderctxmenusdemo-catalog:
-        jcr:primaryType: hst:containeritempackage
