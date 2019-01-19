@@ -1,5 +1,5 @@
-group: 
-  name: hippo-forge
-  after: hippo-cms
-project: folderctxmenus
+group: hippo-cms
+project:
+    name: folderctxmenus
+    after: [hippo-repository, hippo-cms]
 module: folderctxmenus-repository

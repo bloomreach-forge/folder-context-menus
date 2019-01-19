@@ -1,0 +1,4 @@
+definitions:
+  config:
+    /hst:hst/hst:configurations/folderctxmenusdemo/hst:sitemenus:
+      jcr:primaryType: hst:sitemenus

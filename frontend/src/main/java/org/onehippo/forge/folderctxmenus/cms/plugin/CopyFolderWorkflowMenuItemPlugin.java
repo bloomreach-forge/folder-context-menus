@@ -45,7 +45,7 @@ public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
 
     @Override
     protected IModel<String> getMenuItemLabelModel() {
-        return new StringResourceModel("folder.action.copy.menuitem.label", this, null, "Copy folder...");
+        return new StringResourceModel("folder.action.copy.menuitem.label", this, null).setDefaultValue("Copy folder...");
     }
 
     @Override
@@ -55,7 +55,7 @@ public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
 
     @Override
     protected IModel<String> getDialogTitleModel() {
-        return new StringResourceModel("folder.action.copy.dialog.label", this, null, "Copy folder...");
+        return new StringResourceModel("folder.action.copy.dialog.label", this, null).setDefaultValue("Copy folder...");
     }
 
     @Override

@@ -1,0 +1,5 @@
+group: 
+  name: folderctxmenus-demo
+project: folderctxmenus-demo
+module:
+  name: folderctxmenus-demo-repository-data-webfiles

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright 2015-2017 Hippo
+  Copyright 2015-2019 Hippo
 
   Licensed under the Apache License, Version 2.0
   (the "License"); you may not use this file except in compliance with the
@@ -27,8 +27,8 @@
     <project.build.javaVersion>1.7</project.build.javaVersion>
 
     <jcr.version>2.0</jcr.version>
-    <hippo.repository.version>5.0.0</hippo.repository.version>
-    <hippo.cms.version>5.0.0</hippo.cms.version>
+    <hippo.repository.version>13.0.0</hippo.repository.version>
+    <hippo.cms.version>13.0.0</hippo.cms.version>
 
     <lib.junit.version>4.12</lib.junit.version>
     <lib.easymock.version>3.4</lib.easymock.version>

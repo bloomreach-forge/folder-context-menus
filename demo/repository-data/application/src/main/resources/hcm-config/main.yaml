@@ -1,0 +1,5 @@
+definitions:
+  namespace:
+    folderctxmenusdemo:
+      uri: http://www.folderctxmenusdemo.com/folderctxmenusdemo/nt/1.0
+      cnd: namespaces/folderctxmenus-demo.cnd

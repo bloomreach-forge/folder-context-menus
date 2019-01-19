@@ -1,0 +1,15 @@
+definitions:
+  config:
+    /hippo:namespaces/folderctxmenusdemo/basedocument:
+      jcr:primaryType: hipposysedit:templatetype
+      jcr:mixinTypes: ['mix:referenceable']
+      jcr:uuid: 06444734-a3f8-475d-b999-8ff797264d79
+      /hipposysedit:nodetype:
+        jcr:primaryType: hippo:handle
+        jcr:mixinTypes: ['mix:referenceable']
+        jcr:uuid: 69ee1795-8a16-48c8-a383-aed2172c4937
+        /hipposysedit:nodetype:
+          jcr:primaryType: hipposysedit:nodetype
+          jcr:mixinTypes: ['hipposysedit:remodel']
+          hipposysedit:supertype: ['hippo:document', 'hippostdpubwf:document', 'hippostd:publishableSummary']
+          hipposysedit:uri: http://www.folderctxmenusdemo.com/folderctxmenusdemo/nt/1.0
