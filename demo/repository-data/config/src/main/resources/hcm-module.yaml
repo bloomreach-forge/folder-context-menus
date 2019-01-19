@@ -1,5 +1,0 @@
-group: 
-  name: folderctxmenus-demo
-  after: hippo-cms
-project: folderctxmenus-demo
-module: folderctxmenus-demo-repository-data-config

@@ -1,0 +1,6 @@
+definitions:
+  config:
+    /hippo:namespaces/folderctxmenusdemo:
+      jcr:primaryType: hipposysedit:namespace
+      jcr:mixinTypes: ['mix:referenceable']
+      jcr:uuid: d9cbccc2-46b3-4f19-8ef1-a420ea32ffc6

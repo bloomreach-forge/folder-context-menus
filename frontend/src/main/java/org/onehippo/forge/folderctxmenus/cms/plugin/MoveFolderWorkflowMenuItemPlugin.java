@@ -45,7 +45,7 @@ public class MoveFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
 
     @Override
     protected IModel<String> getMenuItemLabelModel() {
-        return new StringResourceModel("folder.action.move.menuitem.label", this, null, "Move Folder...");
+        return new StringResourceModel("folder.action.move.menuitem.label", this, null).setDefaultValue("Move Folder...");
     }
 
     @Override
@@ -55,7 +55,7 @@ public class MoveFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
 
     @Override
     protected IModel<String> getDialogTitleModel() {
-        return new StringResourceModel("folder.action.move.dialog.label", this, null, "Move Folder...");
+        return new StringResourceModel("folder.action.move.dialog.label", this, null).setDefaultValue("Move Folder...");
     }
 
     @Override

@@ -109,7 +109,7 @@ public abstract class AbstractFolderActionWorkflowMenuItemPlugin extends RenderP
     }
 
     protected IModel<String> getDialogTitleModel() {
-        return new StringResourceModel("folder.action.dialog.title", this, null, "Folder Action");
+        return new StringResourceModel("folder.action.dialog.title", this, null).setDefaultValue("Folder Action");
     }
 
     protected IDialogFactory createDialogFactory(final FolderActionDocumentArguments folderActionDocumentModel) {
