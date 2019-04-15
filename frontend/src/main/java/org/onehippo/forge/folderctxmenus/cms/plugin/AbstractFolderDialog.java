@@ -28,6 +28,7 @@ import org.apache.wicket.util.value.ValueMap;
 import org.hippoecm.frontend.dialog.AbstractDialog;
 import org.hippoecm.frontend.plugin.IPluginContext;
 import org.hippoecm.frontend.plugin.config.IPluginConfig;
+import org.hippoecm.repository.api.HippoNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,8 +78,8 @@ public abstract class AbstractFolderDialog extends AbstractDialog<FolderActionDo
 
         if (node != null) {
             try {
-                if (node.hasNode("hippo:translation")) {
-                    displayName = node.getNode("hippo:translation").getProperty("hippo:message").getString();
+                if (node instanceof HippoNode) {
+                    displayName = ((HippoNode) node).getDisplayName();
                 }
 
                 if (StringUtils.isBlank(displayName)) {
