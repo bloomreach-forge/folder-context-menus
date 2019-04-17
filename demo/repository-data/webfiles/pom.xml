@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.onehippo.forge.folderctxmenus</groupId>
     <artifactId>folderctxmenus-demo-repository-data</artifactId>
-    <version>4.0.1</version>
+    <version>4.0.2-SNAPSHOT</version>
   </parent>
 
   <name>BloomReach XM Extra Folder Context Menus Demo Repository Data Web Files</name>
