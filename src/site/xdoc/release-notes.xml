@@ -27,7 +27,7 @@
       <table>
         <tr>
           <th>Plugin version</th>
-          <th>Hippo CMS Release version</th>
+          <th>BloomReach Experience Manager version</th>
         </tr>
         <tr>
           <td>4.x</td>
@@ -51,22 +51,37 @@
         </tr>
       </table>
     </section>
-    <section name="Release Notes (4.x)">
-      <subsection name="4.0.0">
-        <h3>        New Features
-        </h3>
+    <section name="Release Notes for BloomReach XM 13">
+      <subsection name="4.0.1">
+        <p class="smallinfo">Release Date: 17 April 2019</p>
         <ul>
-        <li>[<a href='https://issues.onehippo.com/browse/HIPFORGE-252'>HIPFORGE-252</a>] -         [Folder Context Menus] Upgrade for v13 compatibility
-        </li>
+          <li><a href='https://issues.onehippo.com/browse/HIPFORGE-283'>HIPFORGE-283</a><br/>
+            Bugfix to preserve folder names on copy/move.
+          </li>
+        </ul>
+      </subsection>
+      <subsection name="4.0.0">
+        <p class="smallinfo">Release Date: 19 January 2019</p>
+        <ul>
+          <li><a href='https://issues.onehippo.com/browse/HIPFORGE-252'>HIPFORGE-252</a><br/>
+            Upgrade for v13 compatibility.
+          </li>
         </ul>
       </subsection>
     </section>
-    <section name="Release Notes (3.x)">
-      <subsection name="3.0.1">
-        <h3>        Bug
-        </h3>
+    <section name="Release Notes for BloomReach XM 12">
+      <subsection name="3.0.2">
+        <p class="smallinfo">Release Date: 17 April 2019</p>
         <ul>
-        <li>[<a href='https://issues.onehippo.com/browse/HIPFORGE-118'>HIPFORGE-118</a>] -         FolderContextMenus - updateFolderTranslations not working since 11.x
+          <li><a href='https://issues.onehippo.com/browse/HIPFORGE-283'>HIPFORGE-283</a><br/>
+            Bugfix to preserve folder names on copy/move.
+          </li>
+        </ul>
+      </subsection>
+      <subsection name="3.0.1">
+        <ul>
+        <li><a href='https://issues.onehippo.com/browse/HIPFORGE-118'>HIPFORGE-118</a><br/>
+          Bugfix - updateFolderTranslations not working since 11.x
         </li>
         </ul>
       </subsection>
@@ -76,12 +91,11 @@
         </p>
       </subsection>
     </section>
-    <section name="Release Notes (2.x)">
+    <section name="Release Notes for Hippo CMS 11">
       <subsection name="2.0.1">
-        <h3>        Bug
-        </h3>
         <ul>
-        <li>[<a href='https://issues.onehippo.com/browse/HIPFORGE-119'>HIPFORGE-119</a>] -         [Backport for v11] FolderContextMenus - updateFolderTranslations not working since 11.x
+        <li><a href='https://issues.onehippo.com/browse/HIPFORGE-119'>HIPFORGE-119</a><br/>
+          Bugfix - updateFolderTranslations not working since 11.x
         </li>
         </ul>
       </subsection>
@@ -91,10 +105,10 @@
         </p>
       </subsection>
     </section>
-    <section name="Release Notes (1.x)">
+    <section name="Release Notes for Hippo CMS 10">
       <subsection name="1.1.1">
         <p>
-          Fixing a bug : when moving a folder, the folder translation name is set to the folder node name.
+          Fixing a bug: when moving a folder, the folder translation name is set to the folder node name.
         </p>
       </subsection>
       <subsection name="1.1.0">
@@ -103,7 +117,7 @@
         </p>
       </subsection>
     </section>
-    <section name="Release Notes (0.x)">
+    <section name="Release Notes for Hippo CMS 7.9">
       <subsection name="0.2.10">
         <p>
           Fixing the problem: "When a folder is moved, the hippo:paths property of a folder node still hasg old ancestors folder UUID."
