@@ -14,11 +14,12 @@
     hippotranslation:locale: en
     /01:
       jcr:primaryType: hippostd:folder
-      jcr:mixinTypes: ['hippotranslation:translated', 'mix:referenceable']
+      jcr:mixinTypes: ['hippo:named', 'hippotranslation:translated', 'mix:referenceable']
       jcr:uuid: d852a868-71cf-4565-a491-ee989c49db5c
       hippostd:foldertype: [new-events-document, new-events-folder]
       hippotranslation:id: b3941a1c-b752-4cab-9815-c69e1f4e830f
       hippotranslation:locale: en
+      hippo:name: January
       /breakfast:
         jcr:primaryType: hippo:handle
         jcr:mixinTypes: ['hippo:named', 'mix:referenceable']

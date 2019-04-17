@@ -5,11 +5,11 @@
   <parent>
     <groupId>org.onehippo.forge.folderctxmenus</groupId>
     <artifactId>folderctxmenus-demo-repository-data</artifactId>
-    <version>4.0.0</version>
+    <version>4.0.1</version>
   </parent>
 
-  <name>Hippo CMS Extra Folder Context Menus Demo Repository Data For Development</name>
-  <description>Hippo CMS Extra Folder Context Menus Demo Repository Data For Development</description>
+  <name>BloomReach XM Extra Folder Context Menus Demo Repository Data For Development</name>
+  <description>BloomReach XM Extra Folder Context Menus Demo Repository Data For Development</description>
   <artifactId>folderctxmenus-demo-repository-data-development</artifactId>
 
   <build>

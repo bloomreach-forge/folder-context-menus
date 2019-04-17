@@ -3,7 +3,7 @@
 # Hippo Folder Context Menus
 
 This project provides extra Folder Context Menu items such as 'Copy folder...' and 'Move folder...'
-for Hippo CMS with extensible base implementations for developers.
+for BloomReach XM with extensible base implementations for developers.
 
 # Documentation (Local)
 

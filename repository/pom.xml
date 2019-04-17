@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright 2015 Hippo
+  Copyright 2015-2019 Hippo
 
   Licensed under the Apache License, Version 2.0
   (the "License"); you may not use this file except in compliance with the
@@ -16,11 +16,11 @@
   <parent>
     <groupId>org.onehippo.forge.folderctxmenus</groupId>
     <artifactId>folderctxmenus</artifactId>
-    <version>4.0.0</version>
+    <version>4.0.1</version>
   </parent>
 
-  <name>Hippo CMS Extra Folder Context Menus Repository</name>
-  <description>Hippo CMS Extra Folder Context Menus Repository</description>
+  <name>BloomReach XM Extra Folder Context Menus Repository</name>
+  <description>BloomReach XM Extra Folder Context Menus Repository</description>
   <artifactId>folderctxmenus-repository</artifactId>
 
 </project>

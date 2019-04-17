@@ -6,8 +6,8 @@
          id="site">
 
 
-  <display-name>Hippo CMS Extra Folder Context Menus Demo site</display-name>
-  <description>Hippo CMS Extra Folder Context Menus Demo site</description>
+  <display-name>BloomReach XM Extra Folder Context Menus Demo site</display-name>
+  <description>BloomReach XM Extra Folder Context Menus Demo site</description>
 
   <jsp-config>
     <jsp-property-group>

@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.onehippo.forge.folderctxmenus</groupId>
     <artifactId>folderctxmenus-demo</artifactId>
-    <version>4.0.0</version>
+    <version>4.0.1</version>
   </parent>
   <artifactId>folderctxmenus-demo-essentials</artifactId>
   <packaging>war</packaging>
-  <name>Hippo CMS Extra Folder Context Menus Demo Essentials</name>
-  <description>Hippo CMS Extra Folder Context Menus Demo Essentials</description>
+  <name>BloomReach XM Extra Folder Context Menus Demo Essentials</name>
+  <description>BloomReach XM Extra Folder Context Menus Demo Essentials</description>
   <dependencies>
     <dependency>
       <groupId>org.onehippo.cms7</groupId>
