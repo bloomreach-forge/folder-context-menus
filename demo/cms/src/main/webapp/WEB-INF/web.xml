@@ -6,8 +6,8 @@
          id="cms">
 
   <!-- General configuration -->
-  <display-name>Hippo CMS Extra Folder Context Menus Demo CMS</display-name>
-  <description>Hippo CMS Extra Folder Context Menus Demo CMS</description>
+  <display-name>BloomReach XM Extra Folder Context Menus Demo CMS</display-name>
+  <description>BloomReach XM Extra Folder Context Menus Demo CMS</description>
 
   <listener>
     <listener-class>org.hippoecm.hst.platform.container.HstCmsContextLoaderListener</listener-class>

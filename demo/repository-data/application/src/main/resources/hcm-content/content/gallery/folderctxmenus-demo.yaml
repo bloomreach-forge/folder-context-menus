@@ -2,6 +2,6 @@
   jcr:primaryType: hippogallery:stdImageGallery
   jcr:mixinTypes: ['hippo:named', 'mix:referenceable']
   jcr:uuid: 0ffbe218-0c94-45f0-a01f-cf1a20d5433f
-  hippo:name: Hippo CMS Extra Folder Context Menus Demo
+  hippo:name: BloomReach XM Extra Folder Context Menus Demo
   hippostd:foldertype: [new-image-folder]
   hippostd:gallerytype: ['hippogallery:imageset']

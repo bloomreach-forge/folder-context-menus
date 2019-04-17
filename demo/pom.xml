@@ -8,8 +8,8 @@
     <version>13.0.0</version>
   </parent>
 
-  <name>Hippo CMS Extra Folder Context Menus Demo</name>
-  <description>Hippo CMS Extra Folder Context Menus Demo</description>
+  <name>BloomReach XM Extra Folder Context Menus Demo</name>
+  <description>BloomReach XM Extra Folder Context Menus Demo</description>
   <groupId>org.onehippo.forge.folderctxmenus</groupId>
   <artifactId>folderctxmenus-demo</artifactId>
   <version>4.0.1-SNAPSHOT</version>

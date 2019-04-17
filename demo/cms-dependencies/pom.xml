@@ -9,8 +9,8 @@
   </parent>
   <artifactId>folderctxmenus-demo-cms-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>Hippo CMS Extra Folder Context Menus Demo CMS Dependencies</name>
-  <description>Hippo CMS Extra Folder Context Menus Demo CMS Dependencies</description>
+  <name>BloomReach XM Extra Folder Context Menus Demo CMS Dependencies</name>
+  <description>BloomReach XM Extra Folder Context Menus Demo CMS Dependencies</description>
 
   <dependencies>
 

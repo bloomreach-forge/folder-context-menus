@@ -9,8 +9,8 @@
   </parent>
   <artifactId>folderctxmenus-demo-components</artifactId>
   <packaging>jar</packaging>
-  <name>Hippo CMS Extra Folder Context Menus Demo Site Components</name>
-  <description>Hippo CMS Extra Folder Context Menus Demo Site Components</description>
+  <name>BloomReach XM Extra Folder Context Menus Demo Site Components</name>
+  <description>BloomReach XM Extra Folder Context Menus Demo Site Components</description>
 
   <dependencies>
     <dependency>

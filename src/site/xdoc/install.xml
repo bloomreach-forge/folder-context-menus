@@ -19,11 +19,11 @@
 -->
 <document>
   <properties>
-    <title>Installing Hippo CMS Extra Folder Context Menus</title>
+    <title>Installing BloomReach XM Extra Folder Context Menus</title>
   </properties>
   <body>
 
-    <section name="Installing Hippo CMS Extra Folder Context Menus Plugin">
+    <section name="Installing BloomReach XM Extra Folder Context Menus Plugin">
       <subsection name="Add Dependencies">
         <p>
           Make sure you have the forge Maven2 repository reference and dependency definition in the root pom.xml of your project.
@@ -79,7 +79,7 @@
     ]]></source>
         </div>
         <p>
-          Add the following dependencies to either <code>cms-dependencies/pom.xml</code> in Hippo CMS v13
+          Add the following dependencies to either <code>cms-dependencies/pom.xml</code> in BloomReach XM v13
           or <code>cms/pom.xml</code> in the earlier versions.
         </p>
         <div class="brush: xml">
@@ -109,7 +109,7 @@
       </subsection>
     </section>
 
-    <section name="Installing Only the Common module of Hippo CMS Extra Folder Context Menus Plugin">
+    <section name="Installing Only the Common module of BloomReach XM Extra Folder Context Menus Plugin">
       <subsection name="Add Dependencies">
         <p>
           If you want to use only <a href="index.html#Programmatic_Folder_Copy_and_Move">Programmatic Folder Copy and Move</a>,

@@ -8,8 +8,8 @@
     <version>4.0.1-SNAPSHOT</version>
   </parent>
 
-  <name>Hippo CMS Extra Folder Context Menus Demo Repository Data For Site</name>
-  <description>Hippo CMS Extra Folder Context Menus Demo Repository Data For Site</description>
+  <name>BloomReach XM Extra Folder Context Menus Demo Repository Data For Site</name>
+  <description>BloomReach XM Extra Folder Context Menus Demo Repository Data For Site</description>
   <artifactId>folderctxmenus-demo-repository-data-site</artifactId>
 
   <build>

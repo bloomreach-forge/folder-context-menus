@@ -9,8 +9,8 @@
   </parent>
   <artifactId>folderctxmenus-demo-webapp</artifactId>
   <packaging>war</packaging>
-  <name>Hippo CMS Extra Folder Context Menus Demo Site Webapp</name>
-  <description>Hippo CMS Extra Folder Context Menus Demo Site Webapp</description>
+  <name>BloomReach XM Extra Folder Context Menus Demo Site Webapp</name>
+  <description>BloomReach XM Extra Folder Context Menus Demo Site Webapp</description>
 
   <dependencies>
     <dependency>
