@@ -17,7 +17,7 @@
   <description>BloomReach XM Extra Folder Context Menus</description>
   <groupId>org.onehippo.forge.folderctxmenus</groupId>
   <artifactId>folderctxmenus</artifactId>
-  <version>4.0.2-SNAPSHOT</version>
+  <version>5.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <url>https://bloomreach-forge.github.io/folder-context-menus</url>
 
