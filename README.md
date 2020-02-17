@@ -34,6 +34,10 @@ Authors and editors do not have access to the extra folder options by default. T
 extra actions, the users should be granted a newly introduced privilege on the folders they should have 
 the additional folder options.
 
+The new version makes use of an override of the folder workflow. This means that when the project uses custom classes 
+for the threepane workflow, specifically the folder-extended and folder-permissions categories, those classes need to 
+be aligned with the new ExtendedFolderWorkflow implementation. 
+
 
 # Permissions / privilege for extra folder options
 
