@@ -1,6 +1,6 @@
 definitions:
   config:
-    /hippo:configuration/hippo:domains/content/advanced-folderoptions:
+    /hippo:configuration/hippo:domains/content/extra-folder-options:
       jcr:primaryType: hipposys:authrole
       hipposys:role: folderctxmenus-extra
       hipposys:groups:
