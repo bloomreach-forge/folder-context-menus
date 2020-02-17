@@ -1,0 +1,15 @@
+definitions:
+  config:
+    /hippo:configuration/hippo:domains/content/advanced-folderoptions:
+      jcr:primaryType: hipposys:authrole
+      hipposys:role: folderctxmenus-extra
+      hipposys:groups:
+        .meta:category: system
+        .meta:add-new-system-values: true
+        type: string
+        value: [admin]
+      hipposys:users:
+        .meta:category: system
+        .meta:add-new-system-values: true
+        type: string
+        value: [admin]
