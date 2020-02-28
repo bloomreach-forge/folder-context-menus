@@ -68,11 +68,13 @@
           The security model has changed in the BrXM V14. Therefore the authorization model has slightly changed.
           Authors and editors do not have access to the extra folder options by default. To grant users access to those
           extra actions, the users should be granted a newly introduced privilege on the folders they should have
-          the additional folder options.
+          the additional folder options. For more info see: <a href="install.html#Permissions_for_Extra_Folder_Context_Menus_Plugin">Permissions for Extra Folder Context Menus Plugin</a>.
 
-          The new version makes use of an override of the folder workflow. This means that when the project uses custom classes
-          for the threepane workflow, specifically the folder-extended and folder-permissions categories, those classes need to
-          be aligned with the new ExtendedFolderWorkflow implementation.
+        </p>
+        <p>
+          The new version makes use of an override of the folder workflow. This means that when the project uses custom
+          classes for the threepane workflow, specifically the folder-extended and folder-permissions categories,
+          those classes need to be aligned with the new ExtendedFolderWorkflow implementation.
         </p>
       </subsection>
     </section>
