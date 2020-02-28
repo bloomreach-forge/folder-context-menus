@@ -185,8 +185,8 @@
     </section>
 
 
-    <section name="Installing BloomReach XM Extra Folder Context Menus Plugin">
-      <subsection name="Permissions / privilege for extra folder options">
+    <section name="Permissions for Extra Folder Context Menus Plugin">
+      <subsection name="Granting permissions / privileges for extra folder options">
         <p>
           For users to have access to the extra folder options, it is required that they are granted an additional
           role folderctxmenus-extra (privilege 'folderctxmenus:extra') on the folders they should have those extra actions on.
@@ -197,18 +197,19 @@
           security domain 'extra-folder-options'. By default, all users that have the xm.content.admin user role will
           have the extra options on all content folders.
         </p>
-
+      </subsection>
+      <subsection name="Extending privileges to allow extra folder options on folders for certain users">
         <p>
-          To allow editors to have the copy and move options on folders, a domain rules needs to be added which
-          provides the 'folderctxmenus-extra' privilege to the required set of folders . The following example will
+          To, for example, allow editors to have the copy and move options on folders, a domain rules needs to be added which
+          provides the 'folderctxmenus-extra' privilege to a specified set of folders . The following example will
           provide those options on everything below the folderctxmenusdemo folders (within the content folders for
           documents, gallery and assets).
         </p>
-        <div class="brush: yaml">
+        <div>
           <source><![CDATA[
 definitions:
   config:
-    /hippo:configuration/hippo:domains/extra-folder-options:
+    /hippo:configuration/hippo:domains/folder-context-menus-demo-content:
       jcr:primaryType: hipposys:domain
       /content-document-domain:
         jcr:primaryType: hipposys:domainrule
@@ -250,6 +251,7 @@ definitions:
           value: []
         ]]></source>
         </div>
+        <p>For more information about Bloomreach Authorization model concepts, check out the  <a href="https://documentation.bloomreach.com" target="_blank">Bloomreach documentation website</a>.</p>
       </subsection>
     </section>
 
