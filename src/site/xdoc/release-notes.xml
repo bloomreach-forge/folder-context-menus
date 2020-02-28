@@ -30,6 +30,10 @@
           <th>BloomReach Experience Manager version</th>
         </tr>
         <tr>
+          <td>5.x</td>
+          <td>14.x</td>
+        </tr>
+        <tr>
           <td>4.x</td>
           <td>13.x</td>
         </tr>
@@ -50,6 +54,27 @@
           <td>7.9.x</td>
         </tr>
       </table>
+    </section>
+    <section name="Release Notes for BloomReach XM 14">
+      <subsection name="5.0.0">
+        <p class="smallinfo">Release Date: 02 March 2020</p>
+        <ul>
+          <li><a href='https://issues.onehippo.com/browse/HIPFORGE-336'>HIPFORGE-336</a><br/>
+            Upgrade for v14 compatibility.
+          </li>
+        </ul>
+        <h3>Upgrade actions required due to new security model</h3>
+        <p>
+          The security model has changed in the BrXM V14. Therefore the authorization model has slightly changed.
+          Authors and editors do not have access to the extra folder options by default. To grant users access to those
+          extra actions, the users should be granted a newly introduced privilege on the folders they should have
+          the additional folder options.
+
+          The new version makes use of an override of the folder workflow. This means that when the project uses custom classes
+          for the threepane workflow, specifically the folder-extended and folder-permissions categories, those classes need to
+          be aligned with the new ExtendedFolderWorkflow implementation.
+        </p>
+      </subsection>
     </section>
     <section name="Release Notes for BloomReach XM 13">
       <subsection name="4.0.1">
