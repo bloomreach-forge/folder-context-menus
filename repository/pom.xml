@@ -19,8 +19,8 @@
     <version>5.0.0-SNAPSHOT</version>
   </parent>
 
-  <name>BloomReach XM Extra Folder Context Menus Repository</name>
-  <description>BloomReach XM Extra Folder Context Menus Repository</description>
+  <name>Bloomreach XM Extra Folder Context Menus Repository</name>
+  <description>Bloomreach XM Extra Folder Context Menus Repository</description>
   <artifactId>folderctxmenus-repository</artifactId>
 
 </project>

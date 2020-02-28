@@ -9,8 +9,8 @@
   </parent>
   <artifactId>folderctxmenus-demo-cms</artifactId>
   <packaging>war</packaging>
-  <name>BloomReach XM Extra Folder Context Menus Demo CMS</name>
-  <description>BloomReach XM Extra Folder Context Menus Demo CMS</description>
+  <name>Bloomreach XM Extra Folder Context Menus Demo CMS</name>
+  <description>Bloomreach XM Extra Folder Context Menus Demo CMS</description>
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>

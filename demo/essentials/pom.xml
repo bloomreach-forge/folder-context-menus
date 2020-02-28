@@ -9,8 +9,8 @@
   </parent>
   <artifactId>folderctxmenus-demo-essentials</artifactId>
   <packaging>war</packaging>
-  <name>BloomReach XM Extra Folder Context Menus Demo Essentials</name>
-  <description>BloomReach XM Extra Folder Context Menus Demo Essentials</description>
+  <name>Bloomreach XM Extra Folder Context Menus Demo Essentials</name>
+  <description>Bloomreach XM Extra Folder Context Menus Demo Essentials</description>
   <dependencies>
     <dependency>
       <groupId>org.onehippo.cms7</groupId>

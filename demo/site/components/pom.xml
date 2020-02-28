@@ -9,8 +9,8 @@
   </parent>
   <artifactId>folderctxmenus-demo-components</artifactId>
   <packaging>jar</packaging>
-  <name>BloomReach XM Extra Folder Context Menus Demo Site Components</name>
-  <description>BloomReach XM Extra Folder Context Menus Demo Site Components</description>
+  <name>Bloomreach XM Extra Folder Context Menus Demo Site Components</name>
+  <description>Bloomreach XM Extra Folder Context Menus Demo Site Components</description>
 
   <dependencies>
     <dependency>
