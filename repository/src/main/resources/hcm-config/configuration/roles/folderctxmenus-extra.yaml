@@ -1,5 +1,5 @@
 definitions:
   config:
-    /hippo:configuration/hippo:roles/folderctxmenus-extra:
+    /hippo:configuration/hippo:roles/folderctxmenus-editor:
       jcr:primaryType: hipposys:role
-      hipposys:privileges: ['folderctxmenus:extra']
+      hipposys:privileges: ['folderctxmenus:editor']

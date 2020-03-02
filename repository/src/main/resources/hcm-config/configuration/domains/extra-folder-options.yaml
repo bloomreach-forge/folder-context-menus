@@ -17,7 +17,7 @@ definitions:
           .meta:add-new-system-values: true
           type: string
           value: []
-        hipposys:role: folderctxmenus-extra
+        hipposys:role: folderctxmenus-editor
         hipposys:userrole: xm.content.admin
         hipposys:users:
           .meta:category: system

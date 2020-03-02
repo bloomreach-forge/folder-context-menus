@@ -189,7 +189,7 @@
       <subsection name="Granting permissions / privileges for extra folder options">
         <p>
           For users to have access to the extra folder options, it is required that they are granted an additional
-          role folderctxmenus-extra (privilege 'folderctxmenus:extra'). This privilege should be granted on the folders
+          role folderctxmenus-editor (privilege 'folderctxmenus:editor'). This privilege should be granted on the folders
           for which those extra actions should become available.
         </p>
 
@@ -242,7 +242,7 @@ definitions:
           .meta:add-new-system-values: true
           type: string
           value: []
-        hipposys:role: folderctxmenus-extra
+        hipposys:role: folderctxmenus-editor
         hipposys:userrole: xm.content.editor
         hipposys:users:
           .meta:category: system

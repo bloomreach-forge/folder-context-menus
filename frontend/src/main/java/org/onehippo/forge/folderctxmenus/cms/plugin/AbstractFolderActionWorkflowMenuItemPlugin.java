@@ -45,9 +45,9 @@ import java.util.Optional;
 
 public abstract class AbstractFolderActionWorkflowMenuItemPlugin extends RenderPlugin<WorkflowDescriptor> {
 
-    private static final long serialVersionUID = 1L;
     private static final String THREEPANE = "threepane";
-    private static final String FOLDERCTXMENUS_EXTRA = "folderctxmenus:extra";
+
+    private static final String PRIVILEGE_FOLDERCTXMENUS_EDITOR = "folderctxmenus:editor";
 
     private static Logger log = LoggerFactory.getLogger(AbstractFolderActionWorkflowMenuItemPlugin.class);
 
@@ -68,8 +68,6 @@ public abstract class AbstractFolderActionWorkflowMenuItemPlugin extends RenderP
             add(new StdWorkflow<FolderWorkflow>("menuItem",
                     getMenuItemLabelModel(),
                     (WorkflowDescriptorModel) getModel()) {
-
-                private static final long serialVersionUID = 1L;
 
                 private FolderActionDocumentArguments folderActionDocumentModel;
 
@@ -128,8 +126,6 @@ public abstract class AbstractFolderActionWorkflowMenuItemPlugin extends RenderP
 
     protected IDialogFactory createDialogFactory(final FolderActionDocumentArguments folderActionDocumentModel) {
         return new IDialogFactory() {
-            private static final long serialVersionUID = 1L;
-
             public AbstractDialog<FolderActionDocumentArguments> createDialog() {
                 return createDialogInstance(folderActionDocumentModel);
             }
@@ -147,7 +143,7 @@ public abstract class AbstractFolderActionWorkflowMenuItemPlugin extends RenderP
             final String path = getNode().getPath();
             final HippoSession hippoSession = UserSession.get().getJcrSession();
             final AccessControlManager accessControlManager = hippoSession.getAccessControlManager();
-            return accessControlManager.hasPrivileges(path, new Privilege[]{accessControlManager.privilegeFromName(FOLDERCTXMENUS_EXTRA)});
+            return accessControlManager.hasPrivileges(path, new Privilege[]{accessControlManager.privilegeFromName(PRIVILEGE_FOLDERCTXMENUS_EDITOR)});
         } catch (final RepositoryException e) {
             log.error("Error checking privileges", e);
             return false;
