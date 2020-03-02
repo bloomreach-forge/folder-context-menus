@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright 2015-2019 Hippo
+  Copyright 2015-2020 Hippo
 
   Licensed under the Apache License, Version 2.0
   (the "License"); you may not use this file except in compliance with the
@@ -30,10 +30,7 @@
     <hippo.repository.version>14.0.0-2</hippo.repository.version>
     <hippo.cms.version>14.0.0</hippo.cms.version>
 
-    <lib.junit.version>4.12</lib.junit.version>
-    <lib.easymock.version>3.4</lib.easymock.version>
     <lib.slf4j.version>1.7.25</lib.slf4j.version>
-    <lib.log4j2.version>2.11.1</lib.log4j2.version>
 
     <plugin.compiler.version>3.8.1</plugin.compiler.version>
     <plugin.clean.version>3.1.0</plugin.clean.version>
@@ -164,52 +161,6 @@
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
         <version>${lib.slf4j.version}</version>
-      </dependency>
-
-      <!-- TEST DEPENDENCIES -->
-
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>jcl-over-slf4j</artifactId>
-        <version>${lib.slf4j.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-slf4j-impl</artifactId>
-        <version>${lib.log4j2.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-api</artifactId>
-        <version>${lib.log4j2.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-core</artifactId>
-        <version>${lib.log4j2.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <!-- only (should) be needed to (test)compile log4j1.x (backward compatible) usages -->
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-1.2-api</artifactId>
-        <version>${lib.log4j2.version}</version>
-        <scope>test</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>${lib.junit.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.easymock</groupId>
-        <artifactId>easymock</artifactId>
-        <version>${lib.easymock.version}</version>
       </dependency>
 
     </dependencies>
