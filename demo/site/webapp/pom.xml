@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.onehippo.forge.folderctxmenus</groupId>
     <artifactId>folderctxmenus-demo-site</artifactId>
-    <version>4.0.1</version>
+    <version>5.0.0</version>
   </parent>
   <artifactId>folderctxmenus-demo-webapp</artifactId>
   <packaging>war</packaging>
-  <name>BloomReach XM Extra Folder Context Menus Demo Site Webapp</name>
-  <description>BloomReach XM Extra Folder Context Menus Demo Site Webapp</description>
+  <name>Bloomreach XM Extra Folder Context Menus Demo Site Webapp</name>
+  <description>Bloomreach XM Extra Folder Context Menus Demo Site Webapp</description>
 
   <dependencies>
     <dependency>
@@ -26,7 +26,7 @@
     <dependency>
       <groupId>org.onehippo.forge.folderctxmenus</groupId>
       <artifactId>folderctxmenus-demo-components</artifactId>
-      <version>4.0.1</version>
+      <version>5.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.onehippo.cms7.hst.toolkit-resources.addon</groupId>

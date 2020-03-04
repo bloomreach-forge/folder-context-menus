@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-    Copyright 2015-2019 Hippo
+    Copyright 2015-2020 Hippo
 
     Licensed to the Apache Software Foundation (ASF) under one or more
     contributor license agreements.  See the NOTICE file distributed with
@@ -27,7 +27,11 @@
       <table>
         <tr>
           <th>Plugin version</th>
-          <th>BloomReach Experience Manager version</th>
+          <th>Bloomreach Experience Manager version</th>
+        </tr>
+        <tr>
+          <td>5.x</td>
+          <td>14.x</td>
         </tr>
         <tr>
           <td>4.x</td>
@@ -51,7 +55,29 @@
         </tr>
       </table>
     </section>
-    <section name="Release Notes for BloomReach XM 13">
+    <section name="Release Notes for Bloomreach XM 14">
+      <subsection name="5.0.0">
+        <p class="smallinfo">Release Date: 04 March 2020</p>
+        <ul>
+          <li><a href='https://issues.onehippo.com/browse/HIPFORGE-336'>HIPFORGE-336</a><br/>
+            Upgrade for Experience Manager 14 compatibility.
+            <h4>Upgrade actions required due to new security model</h4>
+            <p>
+              The security model has changed in the BrXM V14. Therefore the authorization model has slightly changed.
+              Authors and editors do not have access to the extra folder options by default. To grant users access to those
+              extra actions, the users should be granted a newly introduced privilege on the folders they should have
+              the additional folder options. For more info see: <a href="install.html#Permissions_for_Extra_Folder_Context_Menus_Plugin">Permissions for Extra Folder Context Menus Plugin</a>.
+            </p>
+            <p>
+              The new version makes use of an override of the folder workflow. This means that when the project uses custom
+              classes for the threepane workflow, specifically the folder-extended and folder-permissions categories,
+              those classes need to be aligned with the new ExtendedFolderWorkflow implementation.
+            </p>
+          </li>
+        </ul>
+      </subsection>
+    </section>
+    <section name="Release Notes for Bloomreach XM 13">
       <subsection name="4.0.1">
         <p class="smallinfo">Release Date: 17 April 2019</p>
         <ul>
@@ -69,7 +95,7 @@
         </ul>
       </subsection>
     </section>
-    <section name="Release Notes for BloomReach XM 12">
+    <section name="Release Notes for Bloomreach XM 12">
       <subsection name="3.0.2">
         <p class="smallinfo">Release Date: 17 April 2019</p>
         <ul>

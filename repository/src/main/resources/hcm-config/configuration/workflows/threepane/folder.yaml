@@ -1,0 +1,8 @@
+definitions:
+  config:
+    /hippo:configuration/hippo:workflows/threepane/folder:
+      hipposys:classname:
+        .meta:category: config
+        operation: override
+        type: string
+        value: org.onehippo.forge.folderctxmenus.common.ExtendedFolderWorkflowImpl

@@ -3,7 +3,7 @@
   "-//Apache Software Foundation//DTD XDOC 1.0//EN"
   "http://maven.apache.org/dtd/xdoc_1_0.dtd">
 <!--
-    Copyright 2015-2019 Hippo
+    Copyright 2015-2020 Hippo
 
     Licensed under the Apache License, Version 2.0 (the  "License");
     you may not use this file except in compliance with the License.
@@ -19,13 +19,13 @@
 -->
 <document>
   <properties>
-    <title>BloomReach XM Extra Folder Context Menus</title>
+    <title>Bloomreach XM Extra Folder Context Menus</title>
   </properties>
   <body>
-    <section name="BloomReach XM Extra Folder Context Menus">
+    <section name="Bloomreach XM Extra Folder Context Menus">
       <p>
         This project provides extra Folder Context Menu items such as 'Copy folder...' and 'Move folder...'
-        for BloomReach XM with extensible base implementations for developers.
+        for Bloomreach XM with extensible base implementations for developers.
       </p>
       <p>
         The best way to explain this feature is probably to show screenshots.
@@ -69,7 +69,7 @@
       <p>
         It is also possible to use the library in programmatic way (e.g, in Java code or Groovy script) to copy or move a folder.
         In that case, refer to the
-        <a href="install.html#Installing_Only_the_Common_module_of_Hippo_CMS_Extra_Folder_Context_Menus_Plugin">Installing Only the Common module of BloomReach XM Extra Folder Context Menus Plugin</a> section.
+        <a href="install.html#Installing_Only_the_Common_module_of_Hippo_CMS_Extra_Folder_Context_Menus_Plugin">Installing Only the Common module of Bloomreach XM Extra Folder Context Menus Plugin</a> section.
       </p>
 
       <p>For folder copy, see the following Java code example:</p>

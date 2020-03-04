@@ -3,7 +3,7 @@
   "-//Apache Software Foundation//DTD XDOC 1.0//EN"
   "http://maven.apache.org/dtd/xdoc_1_0.dtd">
 <!--
-    Copyright 2015-2019 Hippo
+    Copyright 2015-2020 Hippo
 
     Licensed under the Apache License, Version 2.0 (the  "License");
     you may not use this file except in compliance with the License.
@@ -19,11 +19,11 @@
 -->
 <document>
   <properties>
-    <title>Installing BloomReach XM Extra Folder Context Menus</title>
+    <title>Installing Bloomreach XM Extra Folder Context Menus</title>
   </properties>
   <body>
 
-    <section name="Installing BloomReach XM Extra Folder Context Menus Plugin">
+    <section name="Installing Bloomreach XM Extra Folder Context Menus Plugin">
       <subsection name="Add Dependencies">
         <p>
           Make sure you have the forge Maven2 repository reference and dependency definition in the root pom.xml of your project.
@@ -79,7 +79,7 @@
     ]]></source>
         </div>
         <p>
-          Add the following dependencies to either <code>cms-dependencies/pom.xml</code> in BloomReach XM v13
+          Add the following dependencies to either <code>cms-dependencies/pom.xml</code> in Bloomreach XM v13
           or <code>cms/pom.xml</code> in the earlier versions.
         </p>
         <div class="brush: xml">
@@ -109,7 +109,7 @@
       </subsection>
     </section>
 
-    <section name="Installing Only the Common module of BloomReach XM Extra Folder Context Menus Plugin">
+    <section name="Installing Only the Common module of Bloomreach XM Extra Folder Context Menus Plugin">
       <subsection name="Add Dependencies">
         <p>
           If you want to use only <a href="index.html#Programmatic_Folder_Copy_and_Move">Programmatic Folder Copy and Move</a>,
@@ -183,6 +183,78 @@
         </p>
       </subsection>
     </section>
+
+
+    <section name="Permissions for Extra Folder Context Menus Plugin">
+      <subsection name="Granting permissions / privileges for extra folder options">
+        <p>
+          For users to have access to the extra folder options, it is required that they are granted an additional
+          role folderctxmenus-editor (privilege 'folderctxmenus:editor'). This privilege should be granted on the folders
+          for which those extra actions should become available.
+        </p>
+
+        <p>
+          By default only the admin has privileges to use the extra folder options. This is specified in the security
+          domain 'extra-folder-options'. By default all users that have the xm.content.admin user role, will have
+          the extra folder options on all content.
+        </p>
+      </subsection>
+      <subsection name="Extending privileges to allow extra folder options on folders for certain users">
+        <p>
+          To allow editors to access the copy and move options on folders, a domain rule needs to be added which
+          provides the 'folderctxmenus-editor' privilege to a specified set of folders. The following example will
+          provide those options on the folderctxmenusdemo specific (documents, gallery and assets) folders.
+        </p>
+        <div>
+          <source><![CDATA[
+definitions:
+  config:
+    /hippo:configuration/hippo:domains/folder-context-menus-demo-content:
+      jcr:primaryType: hipposys:domain
+      /content-document-domain:
+        jcr:primaryType: hipposys:domainrule
+        /content-and-descendants:
+          jcr:primaryType: hipposys:facetrule
+          hipposys:equals: true
+          hipposys:facet: jcr:path
+          hipposys:type: Reference
+          hipposys:value: /content/documents/folderctxmenusdemo
+      /content-gallery-domain:
+        jcr:primaryType: hipposys:domainrule
+        /content-and-descendants:
+          jcr:primaryType: hipposys:facetrule
+          hipposys:equals: true
+          hipposys:facet: jcr:path
+          hipposys:type: Reference
+          hipposys:value: /content/gallery/folderctxmenusdemo
+      /content-assets-domain:
+        jcr:primaryType: hipposys:domainrule
+        /content-and-descendants:
+          jcr:primaryType: hipposys:facetrule
+          hipposys:equals: true
+          hipposys:facet: jcr:path
+          hipposys:type: Reference
+          hipposys:value: /content/assets/folderctxmenusdemo
+      /editor:
+        jcr:primaryType: hipposys:authrole
+        hipposys:groups:
+          .meta:category: system
+          .meta:add-new-system-values: true
+          type: string
+          value: []
+        hipposys:role: folderctxmenus-editor
+        hipposys:userrole: xm.content.editor
+        hipposys:users:
+          .meta:category: system
+          .meta:add-new-system-values: true
+          type: string
+          value: []
+        ]]></source>
+        </div>
+        <p>For more information about Bloomreach Authorization model concepts, check out the  <a href="https://documentation.bloomreach.com" target="_blank">Bloomreach documentation website</a>.</p>
+      </subsection>
+    </section>
+
 
   </body>
 </document>
