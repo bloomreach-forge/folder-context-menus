@@ -46,7 +46,7 @@ public class EventsDocument extends HippoDocument {
      */
     @HippoEssentialsGenerated(internalName = "folderctxmenusdemo:title")
     public String getTitle() {
-        return getProperty(TITLE);
+        return getSingleProperty(TITLE);
     }
 
     /**
@@ -56,7 +56,7 @@ public class EventsDocument extends HippoDocument {
      */
     @HippoEssentialsGenerated(internalName = "folderctxmenusdemo:date")
     public Calendar getDate() {
-        return getProperty(DATE);
+        return getSingleProperty(DATE);
     }
 
     /**
@@ -66,7 +66,7 @@ public class EventsDocument extends HippoDocument {
      */
     @HippoEssentialsGenerated(internalName = "folderctxmenusdemo:introduction")
     public String getIntroduction() {
-        return getProperty(INTRODUCTION);
+        return getSingleProperty(INTRODUCTION);
     }
 
     /**
@@ -96,7 +96,7 @@ public class EventsDocument extends HippoDocument {
      */
     @HippoEssentialsGenerated(internalName = "folderctxmenusdemo:location")
     public String getLocation() {
-        return getProperty(LOCATION);
+        return getSingleProperty(LOCATION);
     }
 
     /**
@@ -106,7 +106,7 @@ public class EventsDocument extends HippoDocument {
      */
     @HippoEssentialsGenerated(internalName = "folderctxmenusdemo:enddate")
     public Calendar getEndDate() {
-        return getProperty(END_DATE);
+        return getSingleProperty(END_DATE);
     }
 
 }

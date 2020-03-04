@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Hippo B.V. (http://www.onehippo.com)
+ * Copyright 2015-2020 Hippo B.V. (http://www.onehippo.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,6 @@
  */
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -29,9 +25,12 @@ import org.hippoecm.frontend.dialog.AbstractDialog;
 import org.hippoecm.frontend.plugin.IPluginContext;
 import org.hippoecm.frontend.plugin.config.IPluginConfig;
 import org.hippoecm.frontend.session.UserSession;
-import org.onehippo.forge.folderctxmenus.common.FolderCopyTask;
+import org.hippoecm.repository.api.HippoSession;
+import org.onehippo.forge.folderctxmenus.common.ExtendedFolderWorkflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Optional;
 
 public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkflowMenuItemPlugin {
 
@@ -78,30 +77,23 @@ public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
                     return;
                 }
 
-                Session jcrSession = UserSession.get().getJcrSession();
-
                 try {
-                    Node sourceFolderNode = jcrSession.getNodeByIdentifier(getSourceFolderIdentifier());
-                    Node destParentFolderNode = jcrSession.getNodeByIdentifier(getDestinationFolderIdentifier());
-
-                    FolderCopyTask task =
-                            new FolderCopyTask(jcrSession, UserSession.get().getLocale(), sourceFolderNode,
-                                    destParentFolderNode, getNewFolderUrlName(), getNewFolderName());
-                    task.execute();
-                    jcrSession.save();
-
+                    final HippoSession hippoSession = UserSession.get().getJcrSession();
+                    final Optional<ExtendedFolderWorkflow> advancedFolderWorkflow = getExtendedFolderWorkflow(hippoSession.getNodeByIdentifier(getSourceFolderIdentifier()));
+                    if(advancedFolderWorkflow.isPresent()) {
+                        advancedFolderWorkflow.get().copyFolder(UserSession.get().getLocale(), getSourceFolderIdentifier(),
+                                getDestinationFolderIdentifier(), getNewFolderUrlName(), getNewFolderName());
+                    } else {
+                        log.error("Extended folder workflow is not available");
+                        error("Unable to copy folder.");
+                    }
                     super.onOk();
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     log.error("Failed to copy folder.", e);
                     error(e.getLocalizedMessage());
-                } finally {
-                    try {
-                        jcrSession.refresh(false);
-                    } catch (RepositoryException e) {
-                        log.error("Failed to refresh session.", e);
-                    }
                 }
             }
         };
     }
+
 }
