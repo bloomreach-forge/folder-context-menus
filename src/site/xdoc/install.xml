@@ -3,7 +3,7 @@
   "-//Apache Software Foundation//DTD XDOC 1.0//EN"
   "http://maven.apache.org/dtd/xdoc_1_0.dtd">
 <!--
-    Copyright 2015-2019 Hippo
+    Copyright 2015-2020 Hippo
 
     Licensed under the Apache License, Version 2.0 (the  "License");
     you may not use this file except in compliance with the License.
@@ -19,11 +19,11 @@
 -->
 <document>
   <properties>
-    <title>Installing BloomReach XM Extra Folder Context Menus</title>
+    <title>Installing Bloomreach XM Extra Folder Context Menus</title>
   </properties>
   <body>
 
-    <section name="Installing BloomReach XM Extra Folder Context Menus Plugin">
+    <section name="Installing Bloomreach XM Extra Folder Context Menus Plugin">
       <subsection name="Add Dependencies">
         <p>
           Make sure you have the forge Maven2 repository reference and dependency definition in the root pom.xml of your project.
@@ -79,7 +79,7 @@
     ]]></source>
         </div>
         <p>
-          Add the following dependencies to either <code>cms-dependencies/pom.xml</code> in BloomReach XM v13
+          Add the following dependencies to either <code>cms-dependencies/pom.xml</code> in Bloomreach XM v13
           or <code>cms/pom.xml</code> in the earlier versions.
         </p>
         <div class="brush: xml">
@@ -109,7 +109,7 @@
       </subsection>
     </section>
 
-    <section name="Installing Only the Common module of BloomReach XM Extra Folder Context Menus Plugin">
+    <section name="Installing Only the Common module of Bloomreach XM Extra Folder Context Menus Plugin">
       <subsection name="Add Dependencies">
         <p>
           If you want to use only <a href="index.html#Programmatic_Folder_Copy_and_Move">Programmatic Folder Copy and Move</a>,
@@ -201,8 +201,8 @@
       </subsection>
       <subsection name="Extending privileges to allow extra folder options on folders for certain users">
         <p>
-          To allow editors to access the copy and move options on folders, a domain rules needs to be added which
-          provides the 'folderctxmenus-extra' privilege to a specified set of folders . The following example will
+          To allow editors to access the copy and move options on folders, a domain rule needs to be added which
+          provides the 'folderctxmenus-editor' privilege to a specified set of folders. The following example will
           provide those options on the folderctxmenusdemo specific (documents, gallery and assets) folders.
         </p>
         <div>
