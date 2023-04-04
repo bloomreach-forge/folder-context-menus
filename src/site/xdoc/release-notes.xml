@@ -30,6 +30,10 @@
           <th>Bloomreach Experience Manager version</th>
         </tr>
         <tr>
+          <td>6.x</td>
+          <td>15.x</td>
+        </tr>
+        <tr>
           <td>5.x</td>
           <td>14.x</td>
         </tr>
@@ -54,6 +58,16 @@
           <td>7.9.x</td>
         </tr>
       </table>
+    </section>
+    <section name="Release Notes for Bloomreach XM 15">
+      <subsection name="6.0.0">
+        <p class="smallinfo">Release Date: 04 April 2023</p>
+        <ul>
+          <li><a href='https://issues.onehippo.com/browse/FORGE-437'>FORGE-437</a><br/>
+            Upgrade for Experience Manager 15 compatibility.
+          </li>
+        </ul>
+      </subsection>
     </section>
     <section name="Release Notes for Bloomreach XM 14">
       <subsection name="5.0.0">
