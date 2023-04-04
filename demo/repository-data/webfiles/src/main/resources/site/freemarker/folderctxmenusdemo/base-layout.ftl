@@ -1,10 +1,13 @@
 <!doctype html>
 <#include "../include/imports.ftl">
+<#assign isPreview=hstRequest.requestContext.preview/>
+<#assign isChannelManagerPreviewRequest=hstRequest.requestContext.channelManagerPreviewRequest/>
+
 <html lang="en">
   <head>
     <meta charset="utf-8"/>
     <link rel="stylesheet" href="<@hst.webfile  path="/css/bootstrap.css"/>" type="text/css"/>
-    <#if hstRequest.requestContext.cmsRequest>
+    <#if isChannelManagerPreviewRequest>
       <link rel="stylesheet" href="<@hst.webfile  path="/css/cms-request.css"/>" type="text/css"/>
     </#if>
     <@hst.headContributions categoryExcludes="htmlBodyEnd, scripts" xhtml=true/>
