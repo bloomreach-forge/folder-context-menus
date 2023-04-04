@@ -79,11 +79,6 @@
     <url>https://issues.onehippo.com/browse/HIPFORGE</url>
   </issueManagement>
 
-  <ciManagement>
-    <system>Travis CI</system>
-    <url>https://travis-ci.org/bloomreach-forge/folder-context-menus</url>
-  </ciManagement>
-
   <distributionManagement>
     <repository>
       <name>Hippo Maven 2 Forge Repository</name>
