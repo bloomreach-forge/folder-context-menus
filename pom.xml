@@ -83,7 +83,7 @@
     <repository>
       <name>Hippo Maven 2 Forge Repository</name>
       <id>hippo-maven2-forge</id>
-      <url>https://maven.bloomreach.com/content/repositories/forge-releases/</url>
+      <url>https://maven.onehippo.com/content/repositories/forge-releases/</url>
       <uniqueVersion>false</uniqueVersion>
     </repository>
   </distributionManagement>
@@ -92,12 +92,12 @@
     <repository>
       <id>hippo</id>
       <name>Hippo maven 2 repository.</name>
-      <url>https://maven.bloomreach.com/maven2/</url>
+      <url>https://maven.onehippo.com/maven2/</url>
     </repository>
     <repository>
       <id>hippo-maven2-forge</id>
       <name>Hippo Maven 2 Forge repository</name>
-      <url>https://maven.bloomreach.com/maven2-forge/</url>
+      <url>https://maven.onehippo.com/maven2-forge/</url>
       <snapshots/>
     </repository>
   </repositories>
