@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Hippo B.V. (http://www.onehippo.com)
+ * Copyright 2024 Bloomreach (https://www.bloomreach.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
@@ -36,7 +36,7 @@ public class MoveFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
 
     private static final long serialVersionUID = 1L;
 
-    private static Logger log = LoggerFactory.getLogger(MoveFolderWorkflowMenuItemPlugin.class);
+    private static final Logger log = LoggerFactory.getLogger(MoveFolderWorkflowMenuItemPlugin.class);
 
     public MoveFolderWorkflowMenuItemPlugin(IPluginContext context, IPluginConfig config) {
         super(context, config);

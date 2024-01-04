@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Hippo B.V. (http://www.onehippo.com)
+ * Copyright 2024 Bloomreach (https://www.bloomreach.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,11 @@ package org.onehippo.forge.folderctxmenus.common;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class UUIDUtils {
 
-    private static Pattern UUID_PATTERN =
+    private static final Pattern UUID_PATTERN =
         Pattern.compile("^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$");
 
     private UUIDUtils() {

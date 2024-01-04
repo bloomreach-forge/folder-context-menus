@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Hippo B.V. (http://www.onehippo.com)
+ * Copyright 2024 Bloomreach (https://www.bloomreach.com)
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.value.IValueMap;
 import org.apache.wicket.util.value.ValueMap;
@@ -36,12 +36,12 @@ public abstract class AbstractFolderDialog extends AbstractDialog<FolderActionDo
 
     private static final long serialVersionUID = 1L;
 
-    private static Logger log = LoggerFactory.getLogger(AbstractFolderDialog.class);
+    private static final Logger log = LoggerFactory.getLogger(AbstractFolderDialog.class);
 
     private final IPluginContext pluginContext;
     private final IPluginConfig pluginConfig;
 
-    private IValueMap dialogProperties = new ValueMap("width=640,height=480").makeImmutable();
+    private final IValueMap dialogProperties = new ValueMap("width=640,height=480").makeImmutable();
 
     private final IModel<String> titleModel;
 
