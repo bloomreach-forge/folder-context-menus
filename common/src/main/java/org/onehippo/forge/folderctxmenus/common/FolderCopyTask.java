@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Bloomreach (http://www.bloomreach.com)
+ * Copyright 2023 Bloomreach (https://www.bloomreach.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -144,7 +144,7 @@ public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
 
             JcrTraverseUtils.traverseNodes(getDestFolderNode(),
                     new NodeTraverser() {
-                        private String sourceFolderBase = getSourceFolderNode().getPath() + "/";
+                        private final String sourceFolderBase = getSourceFolderNode().getPath() + "/";
 
                         @Override
                         public boolean isAcceptable(Node node) throws RepositoryException {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Bloomreach (http://www.bloomreach.com)
+ * Copyright 2023 Bloomreach (https://www.bloomreach.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AbstractFolderTask {
 
-    private static Logger defaultLogger = LoggerFactory.getLogger(AbstractFolderTask.class);
+    private static final Logger defaultLogger = LoggerFactory.getLogger(AbstractFolderTask.class);
 
     private Logger logger;
 

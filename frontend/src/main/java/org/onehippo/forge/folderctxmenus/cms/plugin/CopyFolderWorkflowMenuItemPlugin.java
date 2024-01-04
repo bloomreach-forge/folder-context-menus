@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Bloomreach (http://www.bloomreach.com)
+ * Copyright 2023 Bloomreach (https://www.bloomreach.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
 
     private static final long serialVersionUID = 1L;
 
-    private static Logger log = LoggerFactory.getLogger(CopyFolderWorkflowMenuItemPlugin.class);
+    private static final Logger log = LoggerFactory.getLogger(CopyFolderWorkflowMenuItemPlugin.class);
 
     public CopyFolderWorkflowMenuItemPlugin(IPluginContext context, IPluginConfig config) {
         super(context, config);

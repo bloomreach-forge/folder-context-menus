@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-    Copyright 2023 Bloomreach (http://www.bloomreach.com)
+    Copyright 2023 Bloomreach (https://www.bloomreach.com)
 
     Licensed to the Apache Software Foundation (ASF) under one or more
     contributor license agreements.  See the NOTICE file distributed with
@@ -61,7 +61,7 @@
     </section>
     <section name="Release Notes for Bloomreach XM 15">
     <subsection name="6.0.0">
-      <p class="smallinfo">Release date: 7 April 2023</p>
+      <p class="smallinfo">Release date: X January 2024</p>
       <ul>
         <li><a href='https://issues.onehippo.com/browse/FORGE-437'>FORGE-437</a><br/>
           Upgrade for Experience Manager 15 compatibility.

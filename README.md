@@ -1,6 +1,4 @@
-[![Build Status](https://travis-ci.org/bloomreach-forge/folder-context-menus.svg?branch=develop)](https://travis-ci.org/bloomreach-forge/folder-context-menus)
-
-# Hippo Folder Context Menus
+# Extra Folder Context Menus
 
 This project provides extra Folder Context Menu items such as 'Copy folder...' and 'Move folder...'
 for BloomReach XM with extensible base implementations for developers.
