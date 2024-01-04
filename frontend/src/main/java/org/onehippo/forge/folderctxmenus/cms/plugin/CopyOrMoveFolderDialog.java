@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Hippo B.V. (http://www.onehippo.com)
+ * Copyright 2024 Bloomreach (https://www.bloomreach.com)
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.swing.tree.TreeNode;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.head.CssHeaderItem;
@@ -45,7 +45,7 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
 
     private static final long serialVersionUID = 1L;
 
-    private static Logger log = LoggerFactory.getLogger(CopyOrMoveFolderDialog.class);
+    private static final Logger log = LoggerFactory.getLogger(CopyOrMoveFolderDialog.class);
 
     private static final String DEFAULT_START_PATH = "/content/documents";
 

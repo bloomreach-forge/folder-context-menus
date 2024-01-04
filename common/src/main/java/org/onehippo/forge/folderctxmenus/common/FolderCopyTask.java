@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Hippo B.V. (http://www.onehippo.com)
+ * Copyright 2024 Bloomreach (https://www.bloomreach.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hippoecm.repository.util.JcrUtils;
 
 public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
@@ -144,7 +144,7 @@ public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
 
             JcrTraverseUtils.traverseNodes(getDestFolderNode(),
                     new NodeTraverser() {
-                        private String sourceFolderBase = getSourceFolderNode().getPath() + "/";
+                        private final String sourceFolderBase = getSourceFolderNode().getPath() + "/";
 
                         @Override
                         public boolean isAcceptable(Node node) throws RepositoryException {
