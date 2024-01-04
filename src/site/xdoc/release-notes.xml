@@ -61,7 +61,7 @@
     </section>
     <section name="Release Notes for Bloomreach XM 15">
     <subsection name="6.0.0">
-      <p class="smallinfo">Release date: X January 2024</p>
+      <p class="smallinfo">Release date: 04 January 2024</p>
       <ul>
         <li><a href='https://issues.onehippo.com/browse/FORGE-437'>FORGE-437</a><br/>
           Upgrade for Experience Manager 15 compatibility.
