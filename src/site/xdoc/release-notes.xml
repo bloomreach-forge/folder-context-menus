@@ -8,9 +8,9 @@
     The ASF licenses this file to You under the Apache License, Version 2.0
     (the "License"); you may not use this file except in compliance with
     the License.  You may obtain a copy of the License at
-    
+
     http://www.apache.org/licenses/LICENSE-2.0
-    
+
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,6 +28,10 @@
         <tr>
           <th>Plugin version</th>
           <th>Bloomreach Experience Manager version</th>
+        </tr>
+        <tr>
+          <td>7.x</td>
+          <td>16.x</td>
         </tr>
         <tr>
           <td>6.x</td>
@@ -59,15 +63,26 @@
         </tr>
       </table>
     </section>
+
+    <section name="Release Notes for Bloomreach XM 16">
+      <subsection name="7.0.0">
+        <p class="smallinfo">Release date: 01 July 2024</p>
+        <ul>
+          <li><a href='https://issues.onehippo.com/browse/FORGE-535'>FORGE-535</a><br/>
+            Upgrade for Experience Manager 16 compatibility.
+          </li>
+        </ul>
+      </subsection>
+    </section>
     <section name="Release Notes for Bloomreach XM 15">
-    <subsection name="6.0.0">
-      <p class="smallinfo">Release date: 04 January 2024</p>
-      <ul>
-        <li><a href='https://issues.onehippo.com/browse/FORGE-437'>FORGE-437</a><br/>
-          Upgrade for Experience Manager 15 compatibility.
-        </li>
-      </ul>
-    </subsection>
+      <subsection name="6.0.0">
+        <p class="smallinfo">Release date: 04 January 2024</p>
+        <ul>
+          <li><a href='https://issues.onehippo.com/browse/FORGE-437'>FORGE-437</a><br/>
+            Upgrade for Experience Manager 15 compatibility.
+          </li>
+        </ul>
+      </subsection>
     </section>
     <section name="Release Notes for Bloomreach XM 14">
       <subsection name="5.0.0">
@@ -160,7 +175,7 @@
     <section name="Release Notes for Hippo CMS 7.9">
       <subsection name="0.2.10">
         <p>
-          Fixing the problem: "When a folder is moved, the hippo:paths property of a folder node still hasg old ancestors folder UUID."
+          Fixing the problem: "When a folder is moved, the hippo:paths property of a folder node still has old ancestors folder UUID."
         </p>
       </subsection>
       <subsection name="0.2.9">
