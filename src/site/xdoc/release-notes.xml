@@ -66,7 +66,7 @@
 
     <section name="Release Notes for Bloomreach XM 16">
       <subsection name="7.0.0">
-        <p class="smallinfo">Release date: 01 July 2024</p>
+        <p class="smallinfo">Release date: 09 July 2024</p>
         <ul>
           <li><a href='https://issues.onehippo.com/browse/FORGE-535'>FORGE-535</a><br/>
             Upgrade for Experience Manager 16 compatibility.
