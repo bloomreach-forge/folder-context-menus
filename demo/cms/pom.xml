@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.onehippo.forge.folderctxmenus</groupId>
     <artifactId>folderctxmenus-demo</artifactId>
-    <version>6.0.0</version>
+    <version>7.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>folderctxmenus-demo-cms</artifactId>
   <packaging>war</packaging>
@@ -36,7 +36,7 @@
       </plugin>
       <plugin>
         <groupId>org.codehaus.cargo</groupId>
-        <artifactId>cargo-maven2-plugin</artifactId>
+        <artifactId>cargo-maven3-plugin</artifactId>
         <configuration>
           <configuration>
             <type>runtime</type>
