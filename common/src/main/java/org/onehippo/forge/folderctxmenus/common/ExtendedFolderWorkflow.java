@@ -32,13 +32,15 @@ public interface ExtendedFolderWorkflow extends Workflow {
      * @param destParentFolderId the UUID of the destination folder into which the folder is copied
      * @param destFolderNodeName the node name of the new folder
      * @param destFolderDisplayName the display name of the new folder
+     * @param linkAsTranslation true to link the target documents as translations of the source
      * @throws WorkflowException when an exception occurs while copying
      */
     void copyFolder(final Locale locale,
                     final String sourceFolderId,
                     final String destParentFolderId,
                     final String destFolderNodeName,
-                    final String destFolderDisplayName)
+                    final String destFolderDisplayName,
+                    final Boolean linkAsTranslation)
             throws WorkflowException;
 
 
@@ -49,13 +51,15 @@ public interface ExtendedFolderWorkflow extends Workflow {
      * @param destParentFolderId the UUID of the destination folder into which the folder is copied
      * @param destFolderNodeName the node name of the new folder
      * @param destFolderDisplayName the display name of the new folder
+     * @param linkAsTranslation true to link the target documents as translations of the source
      * @throws WorkflowException when an exception occurs while copying
      */
     void moveFolder(final Locale locale,
                     final String sourceFolderId,
                     final String destParentFolderId,
                     final String destFolderNodeName,
-                    final String destFolderDisplayName)
+                    final String destFolderDisplayName,
+                    final Boolean linkAsTranslation)
             throws WorkflowException;
 
 }

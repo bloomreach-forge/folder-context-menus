@@ -28,7 +28,8 @@ public class FolderMoveTask extends AbstractFolderCopyOrMoveTask {
 
     public FolderMoveTask(final Session session, final Locale locale, final Node sourceFolderNode,
             final Node destParentFolderNode, final String destFolderNodeName, final String destFolderDisplayName) {
-        super(session, locale, sourceFolderNode, destParentFolderNode, destFolderNodeName, destFolderDisplayName);
+        //when moving, we want to keep any existing translation links
+        super(session, locale, sourceFolderNode, destParentFolderNode, destFolderNodeName, destFolderDisplayName, Boolean.TRUE);
     }
 
     @Override
@@ -55,6 +56,11 @@ public class FolderMoveTask extends AbstractFolderCopyOrMoveTask {
         recomputeHippoPaths(getDestFolderNode());
 
         updateFolderTranslations(getDestFolderNode(), getDestFolderDisplayName(), getLocale().getLanguage());
+    }
+
+    @Override
+    protected void doAfterExecute() throws RepositoryException {
+        resetHippoDocumentTranslationIds(!getLinkAsTranslation());
     }
 
 }

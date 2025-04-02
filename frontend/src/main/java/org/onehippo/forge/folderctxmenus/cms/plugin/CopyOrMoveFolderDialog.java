@@ -1,12 +1,12 @@
 /*
  * Copyright 2024 Bloomreach (https://www.bloomreach.com)
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *         http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,6 +24,8 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
@@ -62,9 +64,11 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
     private String destinationFolderPathDisplay = "";
     private String newFolderName = "";
     private String newFolderUrlName = "";
+    private Boolean linkAsTranslation = Boolean.FALSE;
 
     public CopyOrMoveFolderDialog(final IPluginContext pluginContext, final IPluginConfig pluginConfig,
-                                  IModel<String> titleModel, IModel<FolderActionDocumentArguments> model) {
+                                  IModel<String> titleModel, IModel<FolderActionDocumentArguments> model,
+                                  boolean isCopyDialog) {
 
         super(pluginContext, pluginConfig, titleModel, model);
 
@@ -125,7 +129,7 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
         final TextField<String> newFolderUrlNameField =
             new TextField<String>("newFolderUrlName", new PropertyModel<String>(this, "newFolderUrlName"));
         newFolderUrlNameField.setOutputMarkupId(true);
-        newFolderUrlNameField.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        newFolderUrlNameField.add(new AjaxFormComponentUpdatingBehavior("change") {
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -137,7 +141,7 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
         final TextField<String> newFolderNameField =
             new TextField<String>("newFolderName", new PropertyModel<String>(this, "newFolderName"));
         newFolderNameField.setOutputMarkupId(true);
-        newFolderNameField.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        newFolderNameField.add(new AjaxFormComponentUpdatingBehavior("change") {
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -147,6 +151,15 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
             }
         });
         form.add(newFolderNameField);
+
+        WebMarkupContainer row = new WebMarkupContainer("linkAsTranslationRow");
+        row.setVisible(isCopyDialog); // this will remove the <tr> from the HTML output
+        form.add(row);
+        final CheckBox linkAsTranslationsField =
+            new CheckBox("linkAsTranslation", new PropertyModel<Boolean>(this, "linkAsTranslation"));
+        linkAsTranslationsField.setOutputMarkupId(true);
+        linkAsTranslationsField.setVisible(isCopyDialog);
+        row.add(linkAsTranslationsField);
 
         add(form);
     }
@@ -203,5 +216,13 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
 
     public void setNewFolderUrlName(String newFolderUrlName) {
         this.newFolderUrlName = newFolderUrlName;
+    }
+
+    public Boolean getLinkAsTranslation() {
+        return linkAsTranslation;
+    }
+
+    public void setLinkAsTranslation(Boolean linkAsTranslation) {
+        this.linkAsTranslation = linkAsTranslation;
     }
 }

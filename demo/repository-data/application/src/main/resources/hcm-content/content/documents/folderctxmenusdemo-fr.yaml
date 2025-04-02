@@ -1,0 +1,8 @@
+/content/documents/folderctxmenusdemo-fr:
+  jcr:primaryType: hippostd:folder
+  jcr:mixinTypes: ['hippo:named', 'hippotranslation:translated', 'mix:versionable']
+  jcr:uuid: cad67090-0cd2-4ecd-b26f-00dbc256b4d2
+  hippo:name: BloomReach XM Extra Folder Context Menus Demo FR
+  hippostd:foldertype: [new-translated-folder, new-document]
+  hippotranslation:id: 996bcac5-86cf-49b5-a7a3-16a74863e814
+  hippotranslation:locale: fr
