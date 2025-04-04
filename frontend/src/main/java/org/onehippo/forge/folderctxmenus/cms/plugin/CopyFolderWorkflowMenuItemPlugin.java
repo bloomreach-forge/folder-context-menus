@@ -83,7 +83,7 @@ public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
                     final Optional<ExtendedFolderWorkflow> advancedFolderWorkflow = getExtendedFolderWorkflow(hippoSession.getNodeByIdentifier(getSourceFolderIdentifier()));
                     if(advancedFolderWorkflow.isPresent()) {
                         advancedFolderWorkflow.get().copyFolder(UserSession.get().getLocale(), getSourceFolderIdentifier(),
-                                getDestinationFolderIdentifier(), getNewFolderUrlName(), getNewFolderName(), getLinkAsTranslation());
+                                getDestinationFolderIdentifier(), getNewFolderUrlName(), getNewFolderName(), !getLinkAsTranslation());
                     } else {
                         log.error("Extended folder workflow is not available");
                         error("Unable to copy folder.");

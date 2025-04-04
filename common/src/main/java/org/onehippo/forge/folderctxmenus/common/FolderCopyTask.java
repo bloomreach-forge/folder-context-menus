@@ -35,8 +35,8 @@ public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
 
     public FolderCopyTask(final Session session, final Locale locale, final Node sourceFolderNode,
             final Node destParentFolderNode, final String destFolderNodeName, final String destFolderDisplayName,
-            final Boolean linkAsTranslation) {
-        super(session, locale, sourceFolderNode, destParentFolderNode, destFolderNodeName, destFolderDisplayName, linkAsTranslation);
+            final Boolean resetTranslations) {
+        super(session, locale, sourceFolderNode, destParentFolderNode, destFolderNodeName, destFolderDisplayName, resetTranslations);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
     protected void doAfterExecute() throws RepositoryException {
         resetHippoDocBaseLinks();
         takeOfflineHippoDocs();
-        resetHippoDocumentTranslationIds(!getLinkAsTranslation());
+        resetHippoDocumentTranslationIds(getResetTranslations());
     }
 
     /**

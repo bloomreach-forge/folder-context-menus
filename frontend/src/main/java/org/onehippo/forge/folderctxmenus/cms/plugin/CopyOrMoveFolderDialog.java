@@ -40,6 +40,7 @@ import org.hippoecm.frontend.plugin.config.IPluginConfig;
 import org.hippoecm.frontend.plugins.standards.tree.FolderTreeNode;
 import org.hippoecm.frontend.session.UserSession;
 import org.hippoecm.repository.api.StringCodecFactory;
+import org.hippoecm.repository.translation.HippoTranslationNodeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,6 +75,7 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
 
         folderActionDocumentModel = model.getObject();
 
+        boolean isSourceFolderTranslated = false;
         if (StringUtils.isNotEmpty(folderActionDocumentModel.getSourceFolderIdentifier())) {
             try {
                 Node sourceFolderNode = UserSession.get().getJcrSession().getNodeByIdentifier(folderActionDocumentModel.getSourceFolderIdentifier());
@@ -81,6 +83,7 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
                 sourceFolderPathDisplay = getDisplayPathOfNode(sourceFolderNode);
                 newFolderName = getDisplayNameOfNode(sourceFolderNode);
                 newFolderUrlName = folderActionDocumentModel.getSourceFolderUriName();
+                isSourceFolderTranslated = sourceFolderNode.isNodeType("hippotranslation:translated");
             } catch (RepositoryException e) {
                 log.error("Failed to retrieve source folder node.", e);
             }
@@ -153,12 +156,12 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
         form.add(newFolderNameField);
 
         WebMarkupContainer row = new WebMarkupContainer("linkAsTranslationRow");
-        row.setVisible(isCopyDialog); // this will remove the <tr> from the HTML output
+        row.setVisible(isCopyDialog && isSourceFolderTranslated); // this will remove the <tr> from the HTML output
         form.add(row);
         final CheckBox linkAsTranslationsField =
             new CheckBox("linkAsTranslation", new PropertyModel<Boolean>(this, "linkAsTranslation"));
         linkAsTranslationsField.setOutputMarkupId(true);
-        linkAsTranslationsField.setVisible(isCopyDialog);
+        linkAsTranslationsField.setVisible(isCopyDialog && isSourceFolderTranslated);
         row.add(linkAsTranslationsField);
 
         add(form);
