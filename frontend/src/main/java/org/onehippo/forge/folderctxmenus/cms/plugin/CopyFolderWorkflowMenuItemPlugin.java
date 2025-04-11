@@ -59,7 +59,8 @@ public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
 
     @Override
     protected AbstractDialog<FolderActionDocumentArguments> createDialogInstance(final FolderActionDocumentArguments folderActionDocumentModel) {
-        return new CopyOrMoveFolderDialog(getPluginContext(), getPluginConfig(), getDialogTitleModel(), new Model<FolderActionDocumentArguments>(folderActionDocumentModel)) {
+        return new CopyOrMoveFolderDialog(getPluginContext(), getPluginConfig(), getDialogTitleModel(),
+            new Model<FolderActionDocumentArguments>(folderActionDocumentModel), true) {
 
             private static final long serialVersionUID = 1L;
 
@@ -82,7 +83,7 @@ public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
                     final Optional<ExtendedFolderWorkflow> advancedFolderWorkflow = getExtendedFolderWorkflow(hippoSession.getNodeByIdentifier(getSourceFolderIdentifier()));
                     if(advancedFolderWorkflow.isPresent()) {
                         advancedFolderWorkflow.get().copyFolder(UserSession.get().getLocale(), getSourceFolderIdentifier(),
-                                getDestinationFolderIdentifier(), getNewFolderUrlName(), getNewFolderName());
+                                getDestinationFolderIdentifier(), getNewFolderUrlName(), getNewFolderName(), !getLinkAsTranslation());
                     } else {
                         log.error("Extended folder workflow is not available");
                         error("Unable to copy folder.");

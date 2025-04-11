@@ -2,9 +2,9 @@
   jcr:primaryType: hst:containeritemcomponent
   hst:componentclassname: org.onehippo.cms7.essentials.components.EssentialsEventsComponent
   hst:label: Events List
-  hst:parameternames: [hidePastEvents, documentTypes, sortField, sortOrder, includeSubtypes,
-    showPagination, path, pageSize, documentDateField]
-  hst:parametervalues: ['on', 'folderctxmenusdemo:eventsdocument', '', desc, 'off',
-    'on', '', '10', 'folderctxmenusdemo:enddate']
+  hst:parameternames: [path, hidePastEvents, documentDateField, documentTypes, sortOrder,
+    sortField, pageSize, showPagination, includeSubtypes, org.hippoecm.hst.core.component.template]
+  hst:parametervalues: [events, 'off', 'folderctxmenusdemo:enddate', 'folderctxmenusdemo:eventsdocument',
+    desc, '', '10', 'on', 'off', 'webfile:/freemarker/hstdefault/eventslist-main-eventslist.ftl']
   hst:template: eventslist-main-eventslist
   hst:xtype: hst.item

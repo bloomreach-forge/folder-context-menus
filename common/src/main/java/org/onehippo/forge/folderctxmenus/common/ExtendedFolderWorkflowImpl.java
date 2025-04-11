@@ -47,7 +47,8 @@ public class ExtendedFolderWorkflowImpl extends FolderWorkflowImpl implements Ex
                            final String sourceFolderId,
                            final String destParentFolderId,
                            final String destFolderNodeName,
-                           final String destFolderDisplayName) throws WorkflowException {
+                           final String destFolderDisplayName,
+                           final Boolean resetTranslations) throws WorkflowException {
         try {
             final Node sourceFolderNode = rootSession.getNodeByIdentifier(sourceFolderId);
             final Node destParentFolderNode = rootSession.getNodeByIdentifier(destParentFolderId);
@@ -66,7 +67,8 @@ public class ExtendedFolderWorkflowImpl extends FolderWorkflowImpl implements Ex
                     sourceFolderNode,
                     destParentFolderNode,
                     destFolderNodeName,
-                    destFolderDisplayName);
+                    destFolderDisplayName,
+                    resetTranslations);
             task.execute();
             rootSession.save();
         } catch (final RepositoryException e) {

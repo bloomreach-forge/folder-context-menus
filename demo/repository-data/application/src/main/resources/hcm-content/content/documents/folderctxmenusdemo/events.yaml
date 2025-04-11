@@ -16,16 +16,17 @@
       jcr:primaryType: hippostd:folder
       jcr:mixinTypes: ['hippo:named', 'hippotranslation:translated', 'mix:referenceable']
       jcr:uuid: d852a868-71cf-4565-a491-ee989c49db5c
+      hippo:name: January
       hippostd:foldertype: [new-events-document, new-events-folder]
       hippotranslation:id: b3941a1c-b752-4cab-9815-c69e1f4e830f
       hippotranslation:locale: en
-      hippo:name: January
       /breakfast:
         jcr:primaryType: hippo:handle
-        jcr:mixinTypes: ['hippo:named', 'mix:referenceable']
+        jcr:mixinTypes: ['hippo:named', 'hippo:versionInfo', 'mix:referenceable']
         jcr:uuid: b8f5eb45-7200-452a-b26e-3118a0dc60b8
         hippo:name: Breakfast
-        /breakfast:
+        hippo:versionHistory: 2fb3a1d7-c1ac-4057-a4da-40311cbaefde
+        /breakfast[1]:
           jcr:primaryType: folderctxmenusdemo:eventsdocument
           jcr:mixinTypes: ['mix:referenceable']
           jcr:uuid: a7b91172-3893-4ef2-b1e4-5752fd10f4f8
@@ -35,14 +36,48 @@
           folderctxmenusdemo:introduction: Start the day with a nice breakfast.
           folderctxmenusdemo:location: Room 101
           folderctxmenusdemo:title: Breakfast
-          hippo:availability: [live, preview]
+          hippo:availability: [live]
           hippostd:holder: admin
           hippostd:state: published
           hippostdpubwf:createdBy: admin
           hippostdpubwf:creationDate: 2013-11-12T11:00:00+01:00
           hippostdpubwf:lastModificationDate: 2013-11-12T11:11:00+01:00
           hippostdpubwf:lastModifiedBy: admin
-          hippostdpubwf:publicationDate: 2013-11-12T12:16:00+01:00
+          hippostdpubwf:publicationDate: 2025-04-02T10:09:06.411+02:00
+          hippotranslation:id: d6533622-1023-4fba-9b4e-412322f0501c
+          hippotranslation:locale: en
+          /folderctxmenusdemo:content:
+            jcr:primaryType: hippostd:html
+            hippostd:content: |-
+              <html>
+                        <body>
+
+                        <p>Breakfast is served starting from 8:00 until 9:30.</p>
+
+                        </body>
+                        </html>
+          /folderctxmenusdemo:image:
+            jcr:primaryType: hippogallerypicker:imagelink
+            hippo:docbase: c8f03498-56eb-46c9-83b2-cf014f2e03d7
+            hippo:facets: []
+            hippo:modes: []
+            hippo:values: []
+        /breakfast[2]:
+          jcr:primaryType: folderctxmenusdemo:eventsdocument
+          jcr:mixinTypes: ['mix:referenceable', 'mix:versionable']
+          jcr:uuid: 5665654d-a753-4af2-94dc-8ddecd124860
+          folderctxmenusdemo:date: 2013-11-12T08:00:00+01:00
+          folderctxmenusdemo:documenttype: event
+          folderctxmenusdemo:enddate: 2020-01-19T22:51:00+09:00
+          folderctxmenusdemo:introduction: Start the day with a nice breakfast.
+          folderctxmenusdemo:location: Room 101
+          folderctxmenusdemo:title: Breakfast
+          hippo:availability: [preview]
+          hippostd:state: unpublished
+          hippostdpubwf:createdBy: admin
+          hippostdpubwf:creationDate: 2013-11-12T11:00:00+01:00
+          hippostdpubwf:lastModificationDate: 2013-11-12T11:11:00+01:00
+          hippostdpubwf:lastModifiedBy: admin
           hippotranslation:id: d6533622-1023-4fba-9b4e-412322f0501c
           hippotranslation:locale: en
           /folderctxmenusdemo:content:
@@ -63,10 +98,11 @@
             hippo:values: []
       /introduction-speech:
         jcr:primaryType: hippo:handle
-        jcr:mixinTypes: ['hippo:named', 'mix:referenceable']
+        jcr:mixinTypes: ['hippo:named', 'hippo:versionInfo', 'mix:referenceable']
         jcr:uuid: 18e36c35-429d-4fee-b76e-eeabcbfc08bb
         hippo:name: Introduction speech
-        /introduction-speech:
+        hippo:versionHistory: 12c9a87d-6934-4631-82fd-83268a4491f7
+        /introduction-speech[1]:
           jcr:primaryType: folderctxmenusdemo:eventsdocument
           jcr:mixinTypes: ['mix:referenceable']
           jcr:uuid: ea0179bb-bec5-4060-807c-891191c9ad50
@@ -77,14 +113,49 @@
             speech.
           folderctxmenusdemo:location: Room 400
           folderctxmenusdemo:title: Introduction speech
-          hippo:availability: [live, preview]
+          hippo:availability: [live]
           hippostd:holder: admin
           hippostd:state: published
           hippostdpubwf:createdBy: admin
           hippostdpubwf:creationDate: 2013-11-12T11:02:00+01:00
           hippostdpubwf:lastModificationDate: 2013-11-12T11:16:00+01:00
           hippostdpubwf:lastModifiedBy: admin
-          hippostdpubwf:publicationDate: 2013-11-12T12:16:00+01:00
+          hippostdpubwf:publicationDate: 2025-04-02T10:09:06.254+02:00
+          hippotranslation:id: 78806ed1-5443-4356-acf4-3d0b3fbbd119
+          hippotranslation:locale: en
+          /folderctxmenusdemo:content:
+            jcr:primaryType: hippostd:html
+            hippostd:content: |-
+              <html>
+                        <body>
+
+                        <p>Speech will be about the workshop.</p>
+
+                        </body>
+                        </html>
+          /folderctxmenusdemo:image:
+            jcr:primaryType: hippogallerypicker:imagelink
+            hippo:docbase: 9f32434e-84e3-4150-a6f2-d89a67be2fb1
+            hippo:facets: []
+            hippo:modes: []
+            hippo:values: []
+        /introduction-speech[2]:
+          jcr:primaryType: folderctxmenusdemo:eventsdocument
+          jcr:mixinTypes: ['mix:referenceable', 'mix:versionable']
+          jcr:uuid: 63ccbbb1-647d-46f2-800a-c9b42bc10470
+          folderctxmenusdemo:date: 2013-11-12T10:00:00+01:00
+          folderctxmenusdemo:documenttype: event
+          folderctxmenusdemo:enddate: 2020-01-19T22:51:00+09:00
+          folderctxmenusdemo:introduction: After breakfast there will be an introductory
+            speech.
+          folderctxmenusdemo:location: Room 400
+          folderctxmenusdemo:title: Introduction speech
+          hippo:availability: [preview]
+          hippostd:state: unpublished
+          hippostdpubwf:createdBy: admin
+          hippostdpubwf:creationDate: 2013-11-12T11:02:00+01:00
+          hippostdpubwf:lastModificationDate: 2013-11-12T11:16:00+01:00
+          hippostdpubwf:lastModifiedBy: admin
           hippotranslation:id: 78806ed1-5443-4356-acf4-3d0b3fbbd119
           hippotranslation:locale: en
           /folderctxmenusdemo:content:
@@ -105,9 +176,10 @@
             hippo:values: []
       /workshop:
         jcr:primaryType: hippo:handle
-        jcr:mixinTypes: ['mix:referenceable']
+        jcr:mixinTypes: ['hippo:versionInfo', 'mix:referenceable']
         jcr:uuid: 7a29ec60-2689-48b2-aca2-49696c5c23eb
-        /workshop:
+        hippo:versionHistory: 6b634c15-dc44-4591-9a91-ed6637fe2ddc
+        /workshop[1]:
           jcr:primaryType: folderctxmenusdemo:eventsdocument
           jcr:mixinTypes: ['mix:referenceable']
           jcr:uuid: 2c0de7b3-195d-4155-85e2-37ce22a66367
@@ -117,14 +189,49 @@
           folderctxmenusdemo:introduction: Workshop starts at 1:00
           folderctxmenusdemo:location: Room 600
           folderctxmenusdemo:title: Workshop
-          hippo:availability: [live, preview]
+          hippo:availability: [live]
           hippostd:holder: admin
           hippostd:state: published
           hippostdpubwf:createdBy: admin
           hippostdpubwf:creationDate: 2013-11-12T11:16:00+01:00
           hippostdpubwf:lastModificationDate: 2013-11-12T11:18:00+01:00
           hippostdpubwf:lastModifiedBy: admin
-          hippostdpubwf:publicationDate: 2013-11-12T12:16:00+01:00
+          hippostdpubwf:publicationDate: 2025-04-02T10:09:06.332+02:00
+          hippotranslation:id: 2d259e72-ac03-4ace-99f2-18316f340243
+          hippotranslation:locale: en
+          /folderctxmenusdemo:content:
+            jcr:primaryType: hippostd:html
+            hippostd:content: |-
+              <html>
+                        <body>
+                        <strong>Everybody </strong>
+                        <p>can join the workshop and start practicing what they learned during the last
+                        week.</p>
+
+                        </body>
+                        </html>
+          /folderctxmenusdemo:image:
+            jcr:primaryType: hippogallerypicker:imagelink
+            hippo:docbase: d035387b-f9ce-49f6-bcb0-9ab6915a2d5f
+            hippo:facets: []
+            hippo:modes: []
+            hippo:values: []
+        /workshop[2]:
+          jcr:primaryType: folderctxmenusdemo:eventsdocument
+          jcr:mixinTypes: ['mix:referenceable', 'mix:versionable']
+          jcr:uuid: f7cc7a65-0fbc-46a9-8cd1-7818f7698bb1
+          folderctxmenusdemo:date: 2013-11-12T13:00:00+01:00
+          folderctxmenusdemo:documenttype: event
+          folderctxmenusdemo:enddate: 2020-01-19T22:51:00+09:00
+          folderctxmenusdemo:introduction: Workshop starts at 1:00
+          folderctxmenusdemo:location: Room 600
+          folderctxmenusdemo:title: Workshop
+          hippo:availability: [preview]
+          hippostd:state: unpublished
+          hippostdpubwf:createdBy: admin
+          hippostdpubwf:creationDate: 2013-11-12T11:16:00+01:00
+          hippostdpubwf:lastModificationDate: 2013-11-12T11:18:00+01:00
+          hippostdpubwf:lastModifiedBy: admin
           hippotranslation:id: 2d259e72-ac03-4ace-99f2-18316f340243
           hippotranslation:locale: en
           /folderctxmenusdemo:content:

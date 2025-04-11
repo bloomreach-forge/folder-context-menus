@@ -26,6 +26,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 
+import com.google.common.base.Strings;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hippoecm.repository.util.JcrUtils;
@@ -33,8 +34,9 @@ import org.hippoecm.repository.util.JcrUtils;
 public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
 
     public FolderCopyTask(final Session session, final Locale locale, final Node sourceFolderNode,
-            final Node destParentFolderNode, final String destFolderNodeName, final String destFolderDisplayName) {
-        super(session, locale, sourceFolderNode, destParentFolderNode, destFolderNodeName, destFolderDisplayName);
+            final Node destParentFolderNode, final String destFolderNodeName, final String destFolderDisplayName,
+            final Boolean resetTranslations) {
+        super(session, locale, sourceFolderNode, destParentFolderNode, destFolderNodeName, destFolderDisplayName, resetTranslations);
     }
 
     @Override
@@ -72,63 +74,7 @@ public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
     protected void doAfterExecute() throws RepositoryException {
         resetHippoDocBaseLinks();
         takeOfflineHippoDocs();
-        resetHippoDocumentTranslationIds();
-    }
-
-    /**
-     * Search all the hippotranslation:translated nodes under {@code destFolderNode} including {@code destFolderNode}
-     * and reset the hippotranslation:id property to a newly generate UUID.
-     */
-    protected void resetHippoDocumentTranslationIds() {
-        String destFolderNodePath = null;
-
-        try {
-            destFolderNodePath = getDestFolderNode().getPath();
-
-            final Map<String, String> uuidMappings = new HashMap<String, String>();
-
-            resetHippoTranslatedNodeWithNewUuid(getDestFolderNode(), uuidMappings);
-
-            JcrTraverseUtils.traverseNodes(getDestFolderNode(),
-                    new NodeTraverser() {
-                        @Override
-                        public boolean isAcceptable(Node node) throws RepositoryException {
-                            return node.isNodeType("hippotranslation:translated");
-                        }
-
-                        @Override
-                        public boolean isTraversable(Node node) throws RepositoryException {
-                            return !node.isNodeType("hippostdpubwf:document");
-                        }
-
-                        @Override
-                        public void accept(Node translatedNode) throws RepositoryException {
-                            resetHippoTranslatedNodeWithNewUuid(translatedNode, uuidMappings);
-                        }
-                    });
-        } catch (RepositoryException e) {
-            getLogger().error("Failed to reset hippotranslation:id properties under {}.", destFolderNodePath, e);
-        }
-    }
-
-    private void resetHippoTranslatedNodeWithNewUuid(final Node translatedNode, final Map<String, String> uuidMappings)
-            throws RepositoryException {
-        if (translatedNode != null && translatedNode.isNodeType("hippotranslation:translated")) {
-            String translationUuid = JcrUtils.getStringProperty(translatedNode, "hippotranslation:id", null);
-
-            if (UUIDUtils.isValidPattern(translationUuid)) {
-                String newTranslationUuid;
-
-                if (uuidMappings.containsKey(translationUuid)) {
-                    newTranslationUuid = uuidMappings.get(translationUuid);
-                } else {
-                    newTranslationUuid = UUID.randomUUID().toString();
-                    uuidMappings.put(translationUuid, newTranslationUuid);
-                }
-
-                translatedNode.setProperty("hippotranslation:id", newTranslationUuid);
-            }
-        }
+        resetHippoDocumentTranslationIds(getResetTranslations());
     }
 
     /**

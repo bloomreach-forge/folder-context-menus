@@ -59,7 +59,8 @@ public class MoveFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
 
     @Override
     protected AbstractDialog<FolderActionDocumentArguments> createDialogInstance(final FolderActionDocumentArguments folderActionDocumentModel) {
-        return new CopyOrMoveFolderDialog(getPluginContext(), getPluginConfig(), getDialogTitleModel(), new Model<FolderActionDocumentArguments>(folderActionDocumentModel)) {
+        return new CopyOrMoveFolderDialog(getPluginContext(), getPluginConfig(), getDialogTitleModel(),
+            new Model<FolderActionDocumentArguments>(folderActionDocumentModel), false) {
 
             private static final long serialVersionUID = 1L;
 

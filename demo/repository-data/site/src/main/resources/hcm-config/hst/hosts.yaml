@@ -12,3 +12,9 @@ definitions:
           jcr:primaryType: hst:mount
           hst:homepage: root
           hst:mountpoint: /hst:folderctxmenusdemo/hst:sites/folderctxmenusdemo
+          /fr:
+            .meta:residual-child-node-category: content
+            jcr:primaryType: hst:mount
+            hst:homepage: root
+            hst:mountpoint: /hst:folderctxmenusdemo/hst:sites/folderctxmenusdemo-fr
+            hst:locale: fr_FR

@@ -25,40 +25,57 @@
         for Bloomreach XM with extensible base implementations for developers.
       </p>
       <p>
-        The best way to explain this feature is probably to show screenshots.
+        The best way to explain this feature is probably to show screenshots. After installing this plugin, you will be able to see 'Copy folder...' and 'Move folder...' context menus.
       </p>
 
       <img alt="Folder copy and move context menu"
-           src="images/foldercpmvmenus.png" />
-      <p>After installing this plugin, you will be able to see 'Copy folder...' and 'Move folder...' context menus.</p>
+           src="images/foldercpmvmenus.png"/>
 
-      <img alt="Folder copy dialog"
-           src="images/copyfolder1.png" />
+      <p><strong>Copying folders</strong></p>
+
       <p>
         In the Folder Copy dialog, you can select the destination folder, folder name and folder URL name.
       </p>
+      <img alt="Folder copy dialog"
+           src="images/copyfolder1.png" />
 
-      <img alt="After copying a folder"
-           src="images/copyfolder2.png" />
       <p>
         Please try to click on the "See Also" links field to open the linked documents.
         The document links are automatically reset to the corresponding copied documents
         under the same copied root folder if the linked document was under the same root folder.
       </p>
+      <img alt="After copying a folder"
+           src="images/copyfolder2.png" />
 
-      <img alt="Folder move dialog"
-           src="images/movefolder1.png" />
+      <p><strong>Copying and translating folders</strong></p>
+
+      <p>When copying translated folders, there is the option of linking the copied folders and documents as translations.
+         This makes sense when copying between root folders that have different locales but are translations of each other.
+      </p>
+
+      <img alt="Folder copy with translation dialog"
+           src="images/copyfolder3.png" />
+      <p>
+        As you can see from the flags, the documents have been linked.
+      </p>
+
+      <img alt="After copying with translation a folder"
+           src="images/copyfolder4.png" />
+
+      <p><strong>Moving folders</strong></p>
       <p>
         In the Folder Move dialog, you can select the destination folder, folder name and folder URL name.
       </p>
+      <img alt="Folder move dialog"
+           src="images/movefolder1.png" />
 
-      <img alt="After moving a folder"
-           src="images/movefolder2.png" />
       <p>
         Please try to click on the "See Also" links field to open the linked documents.
         In this case, the document links are not affected by moving the folder
         because all the internal document lnks are based on node identifiers (UUIDs).
       </p>
+      <img alt="After moving a folder"
+           src="images/movefolder2.png" />
 
     </section>
 
@@ -81,6 +98,7 @@ import org.onehippo.forge.folderctxmenus.common.FolderCopyTask;
             String targetFolderPath = "/content/documents/myhippoproject";
             String destFolderNodeName = "news2";
             String destFolderDisplayName = "News 2";
+            Boolean resetTranslations = true;
 
             Node sourceFolderNode = jcrSession.getNode(sourceFolderPath);
             Node targetFolderNode = jcrSession.getNode(targetFolderPath);
@@ -88,7 +106,8 @@ import org.onehippo.forge.folderctxmenus.common.FolderCopyTask;
             FolderCopyTask task =
                     new FolderCopyTask(jcrSession, Locale.ENGLISH,
                                        sourceFolderNode, targetFolderNode,
-                                       destFolderNodeName, destFolderDisplayName);
+                                       destFolderNodeName, destFolderDisplayName,
+                                       resetTranslations);
 
             // copy /content/documents/myhippoproject/news to
             //      /content/documents/myhippoproject/news2
