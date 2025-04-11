@@ -16,14 +16,14 @@
   <parent>
     <groupId>org.onehippo.cms7</groupId>
     <artifactId>hippo-cms7-project</artifactId>
-    <version>16.0.0</version>
+    <version>16.2.0</version>
   </parent>
 
   <name>Bloomreach XM Extra Folder Context Menus</name>
   <description>Bloomreach XM Extra Folder Context Menus</description>
   <groupId>org.onehippo.forge.folderctxmenus</groupId>
   <artifactId>folderctxmenus</artifactId>
-  <version>7.0.0</version>
+  <version>7.1.0</version>
   <packaging>pom</packaging>
   <url>https://bloomreach-forge.github.io/folder-context-menus</url>
 
