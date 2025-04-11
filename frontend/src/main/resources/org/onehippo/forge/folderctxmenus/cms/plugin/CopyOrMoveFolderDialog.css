@@ -3,19 +3,19 @@
 }
 
 .folderctxmenus-dialog td {
-  vertical-align: top;
+  vertical-align: middle;
 }
 
 .folderctxmenus-dialog .field-label {
-  
+  width: 130px;
 }
 
 .folderctxmenus-dialog .field-value {
-  
+
 }
 
 .folderctxmenus-dialog .field-value input[type=text] {
-  width: 480px;
+  width: 460px;
 }
 
 .folderctxmenus-dialog .field-value input[type=text]:disabled {
@@ -27,7 +27,7 @@
   border: 1px solid lightgrey;
   height: 200px;
   overflow: auto;
-  width: 486px;
+  width: 466px;
 }
 
 .folderctxmenus-dialog .hippo-tree .wicket-tree .row-selected {

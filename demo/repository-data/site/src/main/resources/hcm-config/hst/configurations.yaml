@@ -22,3 +22,6 @@ definitions:
       /folderctxmenusdemo:
         jcr:primaryType: hst:configuration
         hst:inheritsfrom: [../common]
+      /folderctxmenusdemo-fr:
+        jcr:primaryType: hst:configuration
+        hst:inheritsfrom: [../common]

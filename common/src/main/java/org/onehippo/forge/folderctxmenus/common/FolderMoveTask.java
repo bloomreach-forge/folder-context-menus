@@ -57,4 +57,9 @@ public class FolderMoveTask extends AbstractFolderCopyOrMoveTask {
         updateFolderTranslations(getDestFolderNode(), getDestFolderDisplayName(), getLocale().getLanguage());
     }
 
+    @Override
+    protected void doAfterExecute() throws RepositoryException {
+        resetHippoDocumentTranslationIds(getResetTranslations());
+    }
+
 }

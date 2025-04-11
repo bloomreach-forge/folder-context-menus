@@ -1,0 +1,4 @@
+definitions:
+  config:
+    /hst:hst/hst:configurations/folderctxmenusdemo-fr/hst:abstractpages:
+      jcr:primaryType: hst:pages

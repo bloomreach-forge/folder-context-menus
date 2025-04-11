@@ -26,7 +26,7 @@
         </td>
       </tr>
       <tr>
-        <td>
+        <td style="vertical-align: middle;">
           <div class="field-label">
             <wicket:message key="folder.action.label.destination.folder.path">Destination:</wicket:message>
           </div>
@@ -59,6 +59,18 @@
         <td>
           <div class="field-value">
             <input type="text" wicket:id="newFolderUrlName" />
+          </div>
+        </td>
+      </tr>
+      <tr wicket:id="linkAsTranslationRow">
+        <td>
+          <div class="field-label">
+            <wicket:message key="folder.action.label.destination.folder.translation">Link as Translation:</wicket:message>
+          </div>
+        </td>
+        <td>
+          <div class="field-value">
+            <input type="checkbox" wicket:id="linkAsTranslation" />
           </div>
         </td>
       </tr>

@@ -1,0 +1,10 @@
+/hst:hst/hst:configurations/folderctxmenusdemo-fr/hst:workspace/hst:containers/eventslist/main/eventslist:
+  jcr:primaryType: hst:containeritemcomponent
+  hst:componentclassname: org.onehippo.cms7.essentials.components.EssentialsEventsComponent
+  hst:label: Events List
+  hst:parameternames: [path, hidePastEvents, documentDateField, documentTypes, sortOrder,
+    sortField, pageSize, showPagination, includeSubtypes, org.hippoecm.hst.core.component.template]
+  hst:parametervalues: [events, 'off', 'folderctxmenusdemo:enddate', 'folderctxmenusdemo:eventsdocument',
+    desc, '', '10', 'on', 'off', 'webfile:/freemarker/hstdefault/eventslist-main-eventslist.ftl']
+  hst:template: eventslist-main-eventslist
+  hst:xtype: hst.item

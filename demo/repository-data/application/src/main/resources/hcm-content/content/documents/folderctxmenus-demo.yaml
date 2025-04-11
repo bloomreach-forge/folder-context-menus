@@ -1,5 +1,4 @@
 /content/documents/folderctxmenusdemo:
-  .meta:order-before: administration
   jcr:primaryType: hippostd:folder
   jcr:mixinTypes: ['hippo:named', 'hippotranslation:translated', 'mix:referenceable']
   jcr:uuid: 2acd2256-bc84-48fe-bb60-d84d19878dd3

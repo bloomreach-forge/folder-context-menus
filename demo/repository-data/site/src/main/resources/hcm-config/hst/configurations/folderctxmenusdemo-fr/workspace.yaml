@@ -1,0 +1,74 @@
+definitions:
+  config:
+    /hst:hst/hst:configurations/folderctxmenusdemo-fr/hst:workspace:
+      jcr:primaryType: hst:workspace
+      /hst:containers:
+        jcr:primaryType: hst:containercomponentfolder
+        /base:
+          jcr:primaryType: hst:containercomponentfolder
+          /top:
+            .meta:residual-child-node-category: content
+            jcr:primaryType: hst:containercomponent
+            hippo:identifier: fff0eca5-a707-4672-a82d-98485b2e98da
+            hst:label: Top
+            hst:xtype: hst.vbox
+          /footer:
+            .meta:residual-child-node-category: content
+            jcr:primaryType: hst:containercomponent
+            hippo:identifier: 1e09bc34-bafa-4d2d-8735-6882fc8d85e6
+            hst:label: Footer
+            hst:xtype: hst.vbox
+        /homepage:
+          jcr:primaryType: hst:containercomponentfolder
+          /main:
+            .meta:residual-child-node-category: content
+            jcr:primaryType: hst:containercomponent
+            hippo:identifier: 80dc5894-8fcc-4e20-a9b6-d87592816c11
+            hst:label: Home Page Main
+            hst:xtype: hst.vbox
+        /pagenotfound:
+          jcr:primaryType: hst:containercomponentfolder
+          /main:
+            .meta:residual-child-node-category: content
+            jcr:primaryType: hst:containercomponent
+            hippo:identifier: 50053f43-a191-4d07-bcd9-dae8f97be359
+            hst:label: Page-Not-Found Main
+            hst:xtype: hst.vbox
+        /eventslist:
+          jcr:primaryType: hst:containercomponentfolder
+          /main:
+            .meta:residual-child-node-category: content
+            jcr:primaryType: hst:containercomponent
+            hippo:identifier: a718c4d2-e2bc-487d-9095-45265c5ab511
+            hst:label: Event List Main
+            hst:xtype: hst.vbox
+            hst:lastmodified: 2025-04-02T10:07:38.673+02:00
+        /eventspage:
+          jcr:primaryType: hst:containercomponentfolder
+          /main:
+            .meta:residual-child-node-category: content
+            jcr:primaryType: hst:containercomponent
+            hippo:identifier: 29c3d447-331c-49ee-b22e-483b0cb2ff08
+            hst:label: Event Page Main
+            hst:xtype: hst.vbox
+        /newslist:
+          jcr:primaryType: hst:containercomponentfolder
+          /main:
+            .meta:residual-child-node-category: content
+            jcr:primaryType: hst:containercomponent
+            hippo:identifier: 9747f40e-7936-4faa-a5a8-02f6d15d9b15
+            hst:label: News List Main
+            hst:xtype: hst.vbox
+        /newspage:
+          jcr:primaryType: hst:containercomponentfolder
+          /main:
+            .meta:residual-child-node-category: content
+            jcr:primaryType: hst:containercomponent
+            hippo:identifier: 9389a57f-a2d7-4809-bf17-97569f43ed68
+            hst:label: News Page Main
+            hst:xtype: hst.vbox
+      /hst:sitemenus:
+        jcr:primaryType: hst:sitemenus
+        /main:
+          .meta:residual-child-node-category: content
+          jcr:primaryType: hst:sitemenu
