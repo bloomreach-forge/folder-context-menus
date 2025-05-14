@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.onehippo.forge.folderctxmenus</groupId>
     <artifactId>folderctxmenus-demo</artifactId>
-    <version>7.1.1-SNAPSHOT</version>
+    <version>7.1.1</version>
   </parent>
   <artifactId>folderctxmenus-demo-cms</artifactId>
   <packaging>war</packaging>
