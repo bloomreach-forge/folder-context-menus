@@ -65,6 +65,16 @@
     </section>
 
     <section name="Release Notes for Bloomreach XM 16">
+      <subsection name="7.1.1">
+        <p class="smallinfo">Release date: 14 May 2025</p>
+        <ul>
+          <li>FORGE-565: Prevent documents from showing up in the folder list view
+            <ul>
+              <li>See <a href="https://github.com/bloomreach-forge/folder-context-menus/pull/7" target="_blank">https://github.com/bloomreach-forge/folder-context-menus/pull/7</a></li>
+            </ul>
+          </li>
+        </ul>
+      </subsection>
       <subsection name="7.1.0">
         <p class="smallinfo">Release date: 11 April 2025</p>
         <ul>
@@ -86,6 +96,16 @@
       </subsection>
     </section>
     <section name="Release Notes for Bloomreach XM 15">
+      <subsection name="6.1.1">
+        <p class="smallinfo">Release date: 14 May 2025</p>
+        <ul>
+          <li>FORGE-565: Prevent documents from showing up in the folder list view
+            <ul>
+              <li>See <a href="https://github.com/bloomreach-forge/folder-context-menus/pull/7" target="_blank">https://github.com/bloomreach-forge/folder-context-menus/pull/7</a></li>
+            </ul>
+          </li>
+        </ul>
+      </subsection>
       <subsection name="6.1.0">
         <p class="smallinfo">Release date: 11 April 2025</p>
         <ul>
