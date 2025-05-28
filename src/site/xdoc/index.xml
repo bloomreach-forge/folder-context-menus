@@ -51,6 +51,7 @@
 
       <p>When copying translated folders, there is the option of linking the copied folders and documents as translations.
          This makes sense when copying between root folders that have different locales but are translations of each other.
+         This option can be configured as follows: <code>default.linkTranslation: true</code> (<code>false</code> by default).
       </p>
 
       <img alt="Folder copy with translation dialog"
