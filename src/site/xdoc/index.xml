@@ -51,7 +51,8 @@
 
       <p>When copying translated folders, there is the option of linking the copied folders and documents as translations.
          This makes sense when copying between root folders that have different locales but are translations of each other.
-         This option can be configured as follows: <code>default.linkTranslation: true</code> (<code>false</code> by default).
+         The default value for this option can be configured with <code>default.linkTranslation: true</code> (<code>false</code> by default)
+         on the folder configurations in <code>/hippo:configuration/hippo:workflows/threepane/</code>.
       </p>
 
       <img alt="Folder copy with translation dialog"
