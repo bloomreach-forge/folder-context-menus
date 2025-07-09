@@ -40,7 +40,6 @@ import org.hippoecm.frontend.plugin.config.IPluginConfig;
 import org.hippoecm.frontend.plugins.standards.tree.FolderTreeNode;
 import org.hippoecm.frontend.session.UserSession;
 import org.hippoecm.repository.api.StringCodecFactory;
-import org.hippoecm.repository.translation.HippoTranslationNodeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +50,7 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
     private static final Logger log = LoggerFactory.getLogger(CopyOrMoveFolderDialog.class);
 
     private static final String DEFAULT_START_PATH = "/content/documents";
+    public static final String DEFAULT_LINK_TRANSLATION = "default.linkTranslation";
 
     private final FolderActionDocumentArguments folderActionDocumentModel;
 
@@ -158,6 +158,7 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
         WebMarkupContainer row = new WebMarkupContainer("linkAsTranslationRow");
         row.setVisible(isCopyDialog && isSourceFolderTranslated); // this will remove the <tr> from the HTML output
         form.add(row);
+        linkAsTranslation = pluginConfig.getAsBoolean(DEFAULT_LINK_TRANSLATION);
         final CheckBox linkAsTranslationsField =
             new CheckBox("linkAsTranslation", new PropertyModel<Boolean>(this, "linkAsTranslation"));
         linkAsTranslationsField.setOutputMarkupId(true);

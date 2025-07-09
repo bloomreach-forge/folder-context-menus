@@ -4,3 +4,4 @@ definitions:
       jcr:primaryType: frontend:plugin
       plugin.class: org.onehippo.forge.folderctxmenus.cms.plugin.CopyFolderWorkflowMenuItemPlugin
       wicket.id: ${item}
+      default.linkTranslation: false
