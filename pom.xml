@@ -23,7 +23,7 @@
   <description>Bloomreach XM Extra Folder Context Menus</description>
   <groupId>org.onehippo.forge.folderctxmenus</groupId>
   <artifactId>folderctxmenus</artifactId>
-  <version>6.1.2-SNAPSHOT</version>
+  <version>6.1.2</version>
   <packaging>pom</packaging>
   <url>https://bloomreach-forge.github.io/folder-context-menus</url>
 
