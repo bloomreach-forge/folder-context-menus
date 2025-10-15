@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Copyright 2024 Bloomreach (https://www.bloomreach.com)
+    Copyright 2025 Bloomreach (https://www.bloomreach.com)
 
     Licensed under the Apache License, Version 2.0 (the  "License");
     you may not use this file except in compliance with the License.
@@ -32,8 +32,8 @@
       <!-- SNIP -->
 
       <repository>
-        <id>hippo-maven2-forge</id>
-        <name>Hippo Maven 2 Forge repository</name>
+        <id>bloomreach-maven2-forge</id>
+        <name>Bloomreach Maven 2 Forge repository</name>
         <url>https://maven.bloomreach.com/maven2-forge/</url>
         <snapshots />
       </repository>
@@ -119,8 +119,8 @@
       <!-- SNIP -->
 
       <repository>
-        <id>hippo-maven2-forge</id>
-        <name>Hippo Maven 2 Forge repository</name>
+        <id>bloomreach-maven2-forge</id>
+        <name>Bloomreach Maven 2 Forge repository</name>
         <url>https://maven.bloomreach.com/maven2-forge/</url>
         <snapshots />
       </repository>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Bloomreach (https://www.bloomreach.com)
+ * Copyright 2025 Bloomreach (https://www.bloomreach.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,7 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
     private JcrNodeModel rootNodeModel;
 
     private String sourceFolderIdentifier = "";
+    private String sourceFolderPath = "";
     private String sourceFolderPathDisplay = "";
     private String destinationFolderIdentifier = "";
     private String destinationFolderPathDisplay = "";
@@ -80,6 +81,7 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
             try {
                 Node sourceFolderNode = UserSession.get().getJcrSession().getNodeByIdentifier(folderActionDocumentModel.getSourceFolderIdentifier());
                 sourceFolderIdentifier = sourceFolderNode.getIdentifier();
+                sourceFolderPath = sourceFolderNode.getPath();
                 sourceFolderPathDisplay = getDisplayPathOfNode(sourceFolderNode);
                 newFolderName = getDisplayNameOfNode(sourceFolderNode);
                 newFolderUrlName = folderActionDocumentModel.getSourceFolderUriName();
@@ -102,7 +104,7 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
         destinationFolderPathDisplayField.setOutputMarkupId(true);
         form.add(destinationFolderPathDisplayField);
 
-        rootNodeModel = new JcrNodeModel(DEFAULT_START_PATH);
+        rootNodeModel = new JcrNodeModel(sourceFolderPath.replaceAll("^(/[^/]+/[^/]+).*", "$1"));
         FolderOnlyDocumentListFilter folderOnlyTreeConfig = new FolderOnlyDocumentListFilter(pluginConfig);
         rootTreeNode = new FolderTreeNode(rootNodeModel, folderOnlyTreeConfig);
         treeModel = new JcrTreeModel(rootTreeNode);
