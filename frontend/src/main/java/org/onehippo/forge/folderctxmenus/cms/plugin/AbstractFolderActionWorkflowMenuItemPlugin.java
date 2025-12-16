@@ -47,7 +47,16 @@ public abstract class AbstractFolderActionWorkflowMenuItemPlugin extends RenderP
 
     private static final String THREEPANE = "threepane";
 
+    /**
+     * @deprecated Use {@link #PRIVILEGE_FOLDERCTXMENUS_COPY} and {@link #PRIVILEGE_FOLDERCTXMENUS_MOVE} instead.
+     * Kept for backward compatibility.
+     */
+    @Deprecated
     private static final String PRIVILEGE_FOLDERCTXMENUS_EDITOR = "folderctxmenus:editor";
+
+    private static final String PRIVILEGE_FOLDERCTXMENUS_COPY = "folderctxmenus:copy";
+
+    private static final String PRIVILEGE_FOLDERCTXMENUS_MOVE = "folderctxmenus:move";
 
     private static final Logger log = LoggerFactory.getLogger(AbstractFolderActionWorkflowMenuItemPlugin.class);
 
@@ -138,16 +147,51 @@ public abstract class AbstractFolderActionWorkflowMenuItemPlugin extends RenderP
         return WorkflowUtils.getWorkflow(sourceFolderNode, THREEPANE, ExtendedFolderWorkflow.class);
     }
 
-    protected boolean userHasAdvancedFolderPrivileges() {
+    /**
+     * Checks if the current user has copy folder privilege.
+     *
+     * @return true if user has folderctxmenus:copy privilege, false otherwise
+     */
+    protected boolean userHasCopyFolderPrivilege() {
+        return checkPrivilege(PRIVILEGE_FOLDERCTXMENUS_COPY);
+    }
+
+    /**
+     * Checks if the current user has move folder privilege.
+     *
+     * @return true if user has folderctxmenus:move privilege, false otherwise
+     */
+    protected boolean userHasMoveFolderPrivilege() {
+        return checkPrivilege(PRIVILEGE_FOLDERCTXMENUS_MOVE);
+    }
+
+    /**
+     * Checks if the current user has a specific privilege.
+     *
+     * @param privilegeName the name of the privilege to check
+     * @return true if user has the privilege, false otherwise
+     */
+    private boolean checkPrivilege(final String privilegeName) {
         try {
             final String path = getNode().getPath();
             final HippoSession hippoSession = UserSession.get().getJcrSession();
             final AccessControlManager accessControlManager = hippoSession.getAccessControlManager();
-            return accessControlManager.hasPrivileges(path, new Privilege[]{accessControlManager.privilegeFromName(PRIVILEGE_FOLDERCTXMENUS_EDITOR)});
+            return accessControlManager.hasPrivileges(path, new Privilege[]{accessControlManager.privilegeFromName(privilegeName)});
         } catch (final RepositoryException e) {
-            log.error("Error checking privileges", e);
+            log.error("Error checking privilege: " + privilegeName, e);
             return false;
         }
+    }
+
+    /**
+     * @deprecated Use {@link #userHasCopyFolderPrivilege()} and {@link #userHasMoveFolderPrivilege()} instead.
+     * Kept for backward compatibility. Returns true if user has either copy or move privilege.
+     *
+     * @return true if user has both copy and move privileges
+     */
+    @Deprecated
+    protected boolean userHasAdvancedFolderPrivileges() {
+        return userHasCopyFolderPrivilege() && userHasMoveFolderPrivilege();
     }
 
     private HippoNode getNode() throws RepositoryException {
