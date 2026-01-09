@@ -47,6 +47,8 @@ public abstract class AbstractFolderActionWorkflowMenuItemPlugin extends RenderP
 
     private static final String THREEPANE = "threepane";
 
+    private static final String MENU_ITEM_ID = "menuItem";
+
     /**
      * @deprecated Use {@link #PRIVILEGE_FOLDERCTXMENUS_COPY} and {@link #PRIVILEGE_FOLDERCTXMENUS_MOVE} instead.
      * Kept for backward compatibility.
@@ -73,54 +75,64 @@ public abstract class AbstractFolderActionWorkflowMenuItemPlugin extends RenderP
     public AbstractFolderActionWorkflowMenuItemPlugin(IPluginContext context, IPluginConfig config) {
         super(context, config);
 
-        if(userHasAdvancedFolderPrivileges()) {
-            add(new StdWorkflow<FolderWorkflow>("menuItem",
-                    getMenuItemLabelModel(),
-                    (WorkflowDescriptorModel) getModel()) {
-
-                private FolderActionDocumentArguments folderActionDocumentModel;
-
-                @Override
-                protected ResourceReference getIcon() {
-                    return getMenuItemIconResourceReference();
-                }
-
-                @Override
-                protected String execute(FolderWorkflow workflow) throws Exception {
-                    final IDialogService dialogService = getDialogService();
-
-                    if (!dialogService.isShowingDialog()) {
-                        folderActionDocumentModel = createFolderActionDocumentModel();
-                        final IDialogFactory dialogFactory = createDialogFactory(folderActionDocumentModel);
-                        dialogService.show(dialogFactory.createDialog());
-                    }
-
-                    return null;
-                }
-
-                private FolderActionDocumentArguments createFolderActionDocumentModel() {
-                    FolderActionDocumentArguments model = new FolderActionDocumentArguments();
-
-                    try {
-                        HippoNode node = getNode();
-
-                        model.setSourceFolderIdentifier(node.getIdentifier());
-                        model.setSourceFolderName(node.getDisplayName());
-                        model.setSourceFolderUriName(node.getName());
-                        model.setSourceFolderNodeType(node.getPrimaryNodeType().getName());
-                    } catch (RepositoryException e) {
-                        log.error("Could not retrieve folder action workflow document", e);
-
-                        model.setSourceFolderName("");
-                        model.setSourceFolderUriName("");
-                        model.setSourceFolderNodeType(null);
-                    }
-
-                    return model;
-                }
-
-            });
+        if (hasRequiredPrivilege()) {
+            add(createMenuItemWorkflow());
         }
+    }
+
+    /**
+     * Subclasses implement to specify required privilege check.
+     *
+     * @return true if the user has the required privilege, false otherwise
+     */
+    protected abstract boolean hasRequiredPrivilege();
+
+    /**
+     * Creates the workflow menu item component using Template Method pattern.
+     */
+    private StdWorkflow<FolderWorkflow> createMenuItemWorkflow() {
+        return new StdWorkflow<FolderWorkflow>(MENU_ITEM_ID,
+                getMenuItemLabelModel(),
+                (WorkflowDescriptorModel) getModel()) {
+
+            @Override
+            protected ResourceReference getIcon() {
+                return getMenuItemIconResourceReference();
+            }
+
+            @Override
+            protected String execute(FolderWorkflow workflow) throws Exception {
+                final IDialogService dialogService = getDialogService();
+
+                if (!dialogService.isShowingDialog()) {
+                    FolderActionDocumentArguments model = createFolderActionDocumentModel();
+                    dialogService.show(createDialogFactory(model).createDialog());
+                }
+
+                return null;
+            }
+
+            private FolderActionDocumentArguments createFolderActionDocumentModel() {
+                FolderActionDocumentArguments model = new FolderActionDocumentArguments();
+
+                try {
+                    HippoNode node = getNode();
+                    model.setSourceFolderIdentifier(node.getIdentifier());
+                    model.setSourceFolderName(node.getDisplayName());
+                    model.setSourceFolderUriName(node.getName());
+                    model.setSourceFolderNodeType(node.getPrimaryNodeType().getName());
+                } catch (RepositoryException e) {
+                    log.error("Could not retrieve folder action workflow document", e);
+                    throw new IllegalStateException("Failed to retrieve folder information", e);
+                }
+
+                return model;
+            }
+
+            private IDialogService getDialogService() {
+                return getPluginContext().getService(IDialogService.class.getName(), IDialogService.class);
+            }
+        };
     }
 
     protected abstract IModel<String> getMenuItemLabelModel();
@@ -194,7 +206,13 @@ public abstract class AbstractFolderActionWorkflowMenuItemPlugin extends RenderP
         return userHasCopyFolderPrivilege() && userHasMoveFolderPrivilege();
     }
 
-    private HippoNode getNode() throws RepositoryException {
+    /**
+     * Retrieves the HippoNode from the workflow descriptor model.
+     *
+     * @return the HippoNode associated with this workflow
+     * @throws RepositoryException if the node cannot be retrieved
+     */
+    protected HippoNode getNode() throws RepositoryException {
         return (HippoNode) ((WorkflowDescriptorModel) getDefaultModel()).getNode();
     }
 
