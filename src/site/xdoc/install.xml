@@ -183,24 +183,60 @@
 
 
     <section name="Permissions for Extra Folder Context Menus Plugin">
-      <subsection name="Granting permissions / privileges for extra folder options">
+      <subsection name="Overview">
         <p>
-          For users to have access to the extra folder options, it is required that they are granted an additional
-          role folderctxmenus-editor (privilege 'folderctxmenus:editor'). This privilege should be granted on the folders
-          for which those extra actions should become available.
+          The plugin provides granular permission control for folder copy and move operations. As of version 7.1.2+
+          (FORGE-575), permissions can be split to allow copy-only or move-only access. The older unified permission
+          model is still supported for backward compatibility.
         </p>
-
         <p>
-          By default only the admin has privileges to use the extra folder options. This is specified in the security
-          domain 'extra-folder-options'. By default all users that have the xm.content.admin user role, will have
-          the extra folder options on all content.
+          For detailed permission configuration, examples, and troubleshooting, see the <a href="PERMISSIONS.html">Permission Configuration Guide</a>.
         </p>
       </subsection>
+
+      <subsection name="Permission Models">
+        <p><strong>Available Privileges:</strong></p>
+        <table border="1" cellpadding="5" cellspacing="0">
+          <tr>
+            <th>Privilege</th>
+            <th>Role Name</th>
+            <th>Purpose</th>
+          </tr>
+          <tr>
+            <td><code>folderctxmenus:copy</code></td>
+            <td><code>folderctxmenus-copy</code></td>
+            <td>Grants permission to copy folders (NEW - FORGE-575)</td>
+          </tr>
+          <tr>
+            <td><code>folderctxmenus:move</code></td>
+            <td><code>folderctxmenus-move</code></td>
+            <td>Grants permission to move folders (NEW - FORGE-575)</td>
+          </tr>
+          <tr>
+            <td><code>folderctxmenus:editor</code></td>
+            <td><code>folderctxmenus-editor</code></td>
+            <td>Grants both copy and move permissions (Deprecated - for backward compatibility)</td>
+          </tr>
+        </table>
+      </subsection>
+
+      <subsection name="Default Configuration">
+        <p>
+          By default, only the admin has privileges to use the extra folder options. This is specified in the security
+          domain 'extra-folder-options'. By default all users that have the <code>xm.content.admin</code> user role will have
+          both copy and move permissions on all content.
+        </p>
+      </subsection>
+
       <subsection name="Extending privileges to allow extra folder options on folders for certain users">
         <p>
           To allow editors to access the copy and move options on folders, a domain rule needs to be added which
-          provides the 'folderctxmenus-editor' privilege to a specified set of folders. The following example will
-          provide those options on the folderctxmenusdemo specific (documents, gallery and assets) folders.
+          provides the appropriate privileges to a specified set of folders.
+        </p>
+
+        <p><strong>Example 1: Copy and Move Access (Both Privileges)</strong></p>
+        <p>
+          To provide both copy and move options on folders, use the <code>folderctxmenus-editor</code> role:
         </p>
         <div>
           <source><![CDATA[
@@ -208,30 +244,12 @@ definitions:
   config:
     /hippo:configuration/hippo:domains/folder-context-menus-demo-content:
       jcr:primaryType: hipposys:domain
-      /content-document-domain:
+      /content-domain:
         jcr:primaryType: hipposys:domainrule
-        /content-and-descendants:
-          jcr:primaryType: hipposys:facetrule
-          hipposys:equals: true
-          hipposys:facet: jcr:path
-          hipposys:type: Reference
-          hipposys:value: /content/documents/folderctxmenusdemo
-      /content-gallery-domain:
-        jcr:primaryType: hipposys:domainrule
-        /content-and-descendants:
-          jcr:primaryType: hipposys:facetrule
-          hipposys:equals: true
-          hipposys:facet: jcr:path
-          hipposys:type: Reference
-          hipposys:value: /content/gallery/folderctxmenusdemo
-      /content-assets-domain:
-        jcr:primaryType: hipposys:domainrule
-        /content-and-descendants:
-          jcr:primaryType: hipposys:facetrule
-          hipposys:equals: true
-          hipposys:facet: jcr:path
-          hipposys:type: Reference
-          hipposys:value: /content/assets/folderctxmenusdemo
+        hipposys:equals: true
+        hipposys:facet: jcr:path
+        hipposys:type: Reference
+        hipposys:value: /content
       /editor:
         jcr:primaryType: hipposys:authrole
         hipposys:groups:
@@ -248,7 +266,86 @@ definitions:
           value: []
         ]]></source>
         </div>
-        <p>For more information about Bloomreach Authorization model concepts, check out the  <a href="https://documentation.bloomreach.com" target="_blank">Bloomreach documentation website</a>.</p>
+
+        <p><strong>Example 2: Copy-Only Access</strong></p>
+        <p>
+          To allow users to copy folders but not move them, use the <code>folderctxmenus-copy</code> role:
+        </p>
+        <div>
+          <source><![CDATA[
+definitions:
+  config:
+    /hippo:configuration/hippo:domains/folder-context-menus-demo-content:
+      jcr:primaryType: hipposys:domain
+      /content-domain:
+        jcr:primaryType: hipposys:domainrule
+        hipposys:equals: true
+        hipposys:facet: jcr:path
+        hipposys:type: Reference
+        hipposys:value: /content
+      /author-copy-only:
+        jcr:primaryType: hipposys:authrole
+        hipposys:groups:
+          .meta:category: system
+          .meta:add-new-system-values: true
+          type: string
+          value: []
+        hipposys:role: folderctxmenus-copy
+        hipposys:userrole: xm.content.author
+        hipposys:users:
+          .meta:category: system
+          .meta:add-new-system-values: true
+          type: string
+          value: []
+        ]]></source>
+        </div>
+
+        <p><strong>Example 3: Move-Only Access</strong></p>
+        <p>
+          To allow users to move folders but not copy them, use the <code>folderctxmenus-move</code> role:
+        </p>
+        <div>
+          <source><![CDATA[
+definitions:
+  config:
+    /hippo:configuration/hippo:domains/folder-context-menus-demo-content:
+      jcr:primaryType: hipposys:domain
+      /content-domain:
+        jcr:primaryType: hipposys:domainrule
+        hipposys:equals: true
+        hipposys:facet: jcr:path
+        hipposys:type: Reference
+        hipposys:value: /content
+      /manager-move-only:
+        jcr:primaryType: hipposys:authrole
+        hipposys:groups:
+          .meta:category: system
+          .meta:add-new-system-values: true
+          type: string
+          value: []
+        hipposys:role: folderctxmenus-move
+        hipposys:userrole: xm.content.manager
+        hipposys:users:
+          .meta:category: system
+          .meta:add-new-system-values: true
+          type: string
+          value: []
+        ]]></source>
+        </div>
+
+        <p>
+          For more information about Bloomreach Authorization model concepts and advanced permission configuration,
+          check out the <a href="https://documentation.bloomreach.com" target="_blank">Bloomreach documentation website</a>
+          and the <a href="PERMISSIONS.html">Permission Configuration Guide</a>.
+        </p>
+      </subsection>
+
+      <subsection name="Backward Compatibility">
+        <p>
+          The older <code>folderctxmenus:editor</code> privilege is still fully supported. Existing configurations using
+          this privilege will continue to work without any changes and will grant both copy and move permissions.
+          No migration is required.
+        </p>
       </subsection>
     </section>
 

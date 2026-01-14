@@ -65,6 +65,19 @@
     </section>
 
     <section name="Release Notes for Bloomreach XM 16">
+      <subsection name="7.1.4">
+        <p class="smallinfo">Release date: TBD</p>
+        <ul>
+          <li>FORGE-575: Split copy and move folder permissions
+            <ul>
+              <li>Permissions can now be granularly controlled to allow copy-only or move-only access</li>
+              <li>New privileges: <code>folderctxmenus:copy</code> and <code>folderctxmenus:move</code></li>
+              <li>Legacy privilege <code>folderctxmenus:editor</code> is deprecated but fully supported for backward compatibility</li>
+              <li>See <a href="install.html">Installation Guide</a> and <a href="PERMISSIONS.html">Permission Configuration Guide</a> for details</li>
+            </ul>
+          </li>
+        </ul>
+      </subsection>
       <subsection name="7.1.3">
         <p class="smallinfo">Release date: 16 October 2025</p>
         <ul>
