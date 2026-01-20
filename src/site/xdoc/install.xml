@@ -190,7 +190,7 @@
           model is still supported for backward compatibility.
         </p>
         <p>
-          For detailed permission configuration, examples, and troubleshooting, see the <a href="PERMISSIONS.html">Permission Configuration Guide</a>.
+          For detailed permission configuration, examples, and troubleshooting, see the <a href="PERMISSIONS.md">Permission Configuration Guide</a>.
         </p>
       </subsection>
 
@@ -335,8 +335,8 @@ definitions:
 
         <p>
           For more information about Bloomreach Authorization model concepts and advanced permission configuration,
-          check out the <a href="https://documentation.bloomreach.com" target="_blank">Bloomreach documentation website</a>
-          and the <a href="PERMISSIONS.html">Permission Configuration Guide</a>.
+          check out the <a href="https://xmdocumentation.bloomreach.com/library/concepts/security/authorization-model-concepts.html" target="_blank">Bloomreach Authorization Model Concepts</a>
+          and the <a href="PERMISSIONS.md">Permission Configuration Guide</a>.
         </p>
       </subsection>
 
