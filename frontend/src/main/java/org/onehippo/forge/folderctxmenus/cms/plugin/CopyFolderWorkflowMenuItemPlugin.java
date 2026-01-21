@@ -15,6 +15,11 @@
  */
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+
+import java.util.Optional;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -30,8 +35,6 @@ import org.onehippo.forge.folderctxmenus.common.ExtendedFolderWorkflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Optional;
-
 public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkflowMenuItemPlugin {
 
     private static final long serialVersionUID = 1L;
@@ -40,6 +43,11 @@ public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
 
     public CopyFolderWorkflowMenuItemPlugin(IPluginContext context, IPluginConfig config) {
         super(context, config);
+    }
+
+    @Override
+    protected boolean hasRequiredPrivilege() {
+        return userHasCopyFolderPrivilege();
     }
 
     @Override
@@ -58,38 +66,58 @@ public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
     }
 
     @Override
-    protected AbstractDialog<FolderActionDocumentArguments> createDialogInstance(final FolderActionDocumentArguments folderActionDocumentModel) {
+    protected AbstractDialog<FolderActionDocumentArguments> createDialogInstance(
+            final FolderActionDocumentArguments folderActionDocumentModel) {
         return new CopyOrMoveFolderDialog(getPluginContext(), getPluginConfig(), getDialogTitleModel(),
-            new Model<FolderActionDocumentArguments>(folderActionDocumentModel), true) {
+                new Model<>(folderActionDocumentModel), true) {
 
             private static final long serialVersionUID = 1L;
 
             @Override
             protected void onOk() {
-                if (StringUtils.isBlank(getDestinationFolderIdentifier())) {
-                    error("Please select the target folder.");
+                if (!validateInput()) {
                     super.onOk();
                     return;
+                }
+
+                executeCopy();
+            }
+
+            private boolean validateInput() {
+                if (StringUtils.isBlank(getDestinationFolderIdentifier())) {
+                    error("Please select the target folder.");
+                    return false;
                 }
 
                 if (StringUtils.isBlank(getNewFolderUrlName()) || StringUtils.isBlank(getNewFolderName())) {
                     error("Please enter the destination folder name.");
-                    super.onOk();
-                    return;
+                    return false;
                 }
 
+                return true;
+            }
+
+            private void executeCopy() {
                 try {
-                    final HippoSession hippoSession = UserSession.get().getJcrSession();
-                    final Optional<ExtendedFolderWorkflow> advancedFolderWorkflow = getExtendedFolderWorkflow(hippoSession.getNodeByIdentifier(getSourceFolderIdentifier()));
-                    if(advancedFolderWorkflow.isPresent()) {
-                        advancedFolderWorkflow.get().copyFolder(UserSession.get().getLocale(), getSourceFolderIdentifier(),
-                                getDestinationFolderIdentifier(), getNewFolderUrlName(), getNewFolderName(), !getLinkAsTranslation());
+                    HippoSession session = UserSession.get().getJcrSession();
+                    Node sourceNode = session.getNodeByIdentifier(getSourceFolderIdentifier());
+                    Optional<ExtendedFolderWorkflow> workflow = getExtendedFolderWorkflow(sourceNode);
+
+                    if (workflow.isPresent()) {
+                        workflow.get().copyFolder(
+                            UserSession.get().getLocale(),
+                            getSourceFolderIdentifier(),
+                            getDestinationFolderIdentifier(),
+                            getNewFolderUrlName(),
+                            getNewFolderName(),
+                            !getLinkAsTranslation()
+                        );
+                        super.onOk();
                     } else {
                         log.error("Extended folder workflow is not available");
                         error("Unable to copy folder.");
                     }
-                    super.onOk();
-                } catch (final Exception e) {
+                } catch (Exception e) {
                     log.error("Failed to copy folder.", e);
                     error(e.getLocalizedMessage());
                 }
