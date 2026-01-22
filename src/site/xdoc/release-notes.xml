@@ -76,12 +76,14 @@
               <li>See <a href="install.html">Installation Guide</a> and <a href="PERMISSIONS.html">Permission Configuration Guide</a> for details</li>
             </ul>
           </li>
-          <li>Progress indicator for folder operations
+          <li>FORGE-574: Progress indicator for folder operations
             <ul>
               <li>Copy and move operations now display a progress bar showing operation status</li>
-              <li>Shows current item count, percentage complete, and current path being processed</li>
+              <li>Shows current item count, percentage complete, estimated time remaining, and current path being processed</li>
               <li>Cancel button allows users to abort long-running operations</li>
-              <li>Improves user experience for large folder operations</li>
+              <li>Cancelled operations show summary with count of items processed before cancellation</li>
+              <li>Post-processing (taking documents offline, resetting links) runs even after cancellation</li>
+              <li>Move operations complete instantly (atomic JCR operation); progress tracks post-move processing</li>
             </ul>
           </li>
         </ul>

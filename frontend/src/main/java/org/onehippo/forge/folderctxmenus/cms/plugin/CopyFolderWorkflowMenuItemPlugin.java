@@ -20,7 +20,6 @@ import java.util.Locale;
 import javax.jcr.Node;
 import javax.jcr.Session;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -87,20 +86,6 @@ public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
                 }
             }
 
-            private boolean validateInput() {
-                if (StringUtils.isBlank(getDestinationFolderIdentifier())) {
-                    error("Please select the target folder.");
-                    return false;
-                }
-
-                if (StringUtils.isBlank(getNewFolderUrlName()) || StringUtils.isBlank(getNewFolderName())) {
-                    error("Please enter the destination folder name.");
-                    return false;
-                }
-
-                return true;
-            }
-
             private void executeCopy(AjaxRequestTarget target) {
                 final String sourceId = getSourceFolderIdentifier();
                 final String destId = getDestinationFolderIdentifier();
@@ -109,6 +94,10 @@ public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
                 final boolean resetTranslations = !getLinkAsTranslation();
                 final Locale locale = UserSession.get().getLocale();
                 final Session session = UserSession.get().getJcrSession();
+
+                if (destinationExists(session)) {
+                    return;
+                }
 
                 startOperationWithProgress(target, progress -> {
                     Node sourceNode = session.getNodeByIdentifier(sourceId);

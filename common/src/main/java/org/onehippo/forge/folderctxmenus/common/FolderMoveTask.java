@@ -64,13 +64,16 @@ public class FolderMoveTask extends AbstractFolderCopyOrMoveTask {
 
         setDestFolderNode(JcrUtils.getNodeIfExists(getDestParentFolderNode(), getDestFolderNodeName()));
 
-        if (getOperationProgress() != null) {
-            recomputeHippoPathsWithProgress(totalNodes);
-        } else {
-            recomputeHippoPaths();
+        try {
+            if (getOperationProgress() != null) {
+                recomputeHippoPathsWithProgress(totalNodes);
+            } else {
+                recomputeHippoPaths();
+            }
+        } finally {
+            // Update folder translations even if path recomputation was cancelled
+            updateFolderTranslations(getDestFolderNode(), getDestFolderDisplayName(), getLocale().getLanguage());
         }
-
-        updateFolderTranslations(getDestFolderNode(), getDestFolderDisplayName(), getLocale().getLanguage());
     }
 
     private void recomputeHippoPathsWithProgress(long totalNodes) throws RepositoryException {

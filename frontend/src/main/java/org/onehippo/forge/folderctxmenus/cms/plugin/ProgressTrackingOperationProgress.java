@@ -24,9 +24,13 @@ public class ProgressTrackingOperationProgress implements OperationProgress {
     private volatile String currentPath;
     private volatile boolean cancelled;
     private volatile boolean completed;
+    private volatile long startTimeNanos;
 
     @Override
     public void updateProgress(long current, long total, String currentItemPath) {
+        if (startTimeNanos == 0) {
+            startTimeNanos = System.nanoTime();
+        }
         this.currentCount = current;
         this.totalCount = total;
         this.currentPath = currentItemPath;
@@ -70,6 +74,27 @@ public class ProgressTrackingOperationProgress implements OperationProgress {
             return 0;
         }
         return (int) ((currentCount * 100) / totalCount);
+    }
+
+    public String getEstimatedTimeRemaining() {
+        if (currentCount == 0 || totalCount == 0 || startTimeNanos == 0) {
+            return "";
+        }
+
+        long elapsedNanos = System.nanoTime() - startTimeNanos;
+        double itemsPerNano = (double) currentCount / elapsedNanos;
+        long remainingItems = totalCount - currentCount;
+        if (remainingItems <= 0) {
+            return "";
+        }
+        long remainingNanos = (long) (remainingItems / itemsPerNano);
+        long remainingSeconds = remainingNanos / 1_000_000_000;
+
+        if (remainingSeconds < 60) {
+            return remainingSeconds + "s remaining";
+        } else {
+            return (remainingSeconds / 60) + "m " + (remainingSeconds % 60) + "s remaining";
+        }
     }
 
 }

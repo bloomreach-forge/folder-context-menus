@@ -23,6 +23,8 @@ import javax.jcr.RepositoryException;
 
 public class JcrTraverseUtils {
 
+    private static final long DEBUG_DELAY_MS = Long.getLong("folderctxmenus.debug.delay", 0);
+
     private JcrTraverseUtils() {
     }
 
@@ -61,6 +63,14 @@ public class JcrTraverseUtils {
         if (nodeTraverser.isAcceptable(node)) {
             if (progress != null) {
                 progress.updateProgress(counter.incrementAndGet(), total, node.getPath());
+
+                if (DEBUG_DELAY_MS > 0) {
+                    try {
+                        Thread.sleep(DEBUG_DELAY_MS);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
             }
             nodeTraverser.accept(node);
         }

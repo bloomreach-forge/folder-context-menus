@@ -21,6 +21,7 @@ import java.util.concurrent.Executors;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.swing.tree.TreeNode;
 
 import org.apache.commons.lang3.StringUtils;
@@ -66,8 +67,6 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
         return thread;
     });
 
-    private final FolderActionDocumentArguments folderActionDocumentModel;
-
     private final FolderSelectionCmsJcrTree folderTree;
     private JcrTreeModel treeModel;
     private JcrTreeNode rootTreeNode;
@@ -87,6 +86,7 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
     private String newFolderName = "";
     private String newFolderUrlName = "";
     private Boolean linkAsTranslation = Boolean.FALSE;
+    private final boolean isCopyOperation;
 
     public CopyOrMoveFolderDialog(final IPluginContext pluginContext, final IPluginConfig pluginConfig,
                                   IModel<String> titleModel, IModel<FolderActionDocumentArguments> model,
@@ -94,7 +94,8 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
 
         super(pluginContext, pluginConfig, titleModel, model);
 
-        folderActionDocumentModel = model.getObject();
+        this.isCopyOperation = isCopyDialog;
+        final FolderActionDocumentArguments folderActionDocumentModel = model.getObject();
 
         boolean isSourceFolderTranslated = false;
         if (StringUtils.isNotEmpty(folderActionDocumentModel.getSourceFolderIdentifier())) {
@@ -265,6 +266,24 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
         }
     }
 
+    @Override
+    public void onCancel() {
+        cancelOperationIfRunning();
+        super.onCancel();
+    }
+
+    @Override
+    public void onClose() {
+        cancelOperationIfRunning();
+        super.onClose();
+    }
+
+    private void cancelOperationIfRunning() {
+        if (operationProgress != null && !operationProgress.isCompleted()) {
+            operationProgress.cancel();
+        }
+    }
+
     protected void startOperationWithProgress(AjaxRequestTarget target, FolderOperationExecutor executor) {
         inProgressMode = true;
         operationProgress = new ProgressTrackingOperationProgress();
@@ -275,21 +294,38 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
         setCancelVisible(false);
 
         progressContainer.setVisible(true);
-        progressContainer.replace(new ProgressPanel("progressPanel", operationProgress) {
+        ProgressPanel progressPanel = new ProgressPanel("progressPanel", operationProgress) {
             private static final long serialVersionUID = 1L;
 
             @Override
             protected void onOperationComplete(AjaxRequestTarget target) {
+                String message;
+                boolean isError;
+                long count = operationProgress.getCurrentCount();
+
                 if (operationError instanceof OperationCancelledException || operationProgress.isCancelled()) {
-                    log.info("Folder operation was cancelled by user");
-                    warn("Operation was cancelled");
+                    String gerund = isCopyOperation ? "copying" : "moving";
+                    message = "Cancelled after " + gerund + " " + count + " items";
+                    isError = false;
                 } else if (operationError != null) {
-                    error(operationError.getMessage());
-                    log.error("Folder operation failed", operationError);
+                    log.error("Folder operation failed after {} items", count, operationError);
+                    message = "Error after " + count + " items: " + operationError.getMessage();
+                    isError = true;
+                } else {
+                    String pastTense = isCopyOperation ? "copied" : "moved";
+                    message = "Successfully " + pastTense + " " + count + " items";
+                    isError = false;
                 }
+
+                showCompletionSummary(target, message, isError);
+            }
+
+            @Override
+            protected void onCloseClicked(AjaxRequestTarget target) {
                 closeDialog();
             }
-        });
+        };
+        progressContainer.replace(progressPanel);
 
         target.add(formContainer, progressContainer);
         target.appendJavaScript("FolderContextMenus.resizeDialog(" + PROGRESS_DIALOG_WIDTH + ")");
@@ -303,6 +339,35 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
                 operationProgress.markCompleted();
             }
         }, FOLDER_OP_EXECUTOR);
+    }
+
+    protected boolean validateInput() {
+        if (StringUtils.isBlank(destinationFolderIdentifier)) {
+            error("Please select the target folder.");
+            return false;
+        }
+        if (StringUtils.isBlank(newFolderUrlName) || StringUtils.isBlank(newFolderName)) {
+            error("Please enter the destination folder name.");
+            return false;
+        }
+        return true;
+    }
+
+    protected boolean destinationExists(Session session) {
+        try {
+            Node destParentNode = session.getNodeByIdentifier(destinationFolderIdentifier);
+            String destPath = destParentNode.getPath() + "/" + newFolderUrlName;
+            if (session.nodeExists(destPath)) {
+                error("A folder named '" + newFolderName + "' already exists at the destination. " +
+                        "Please choose a different name or destination.");
+                return true;
+            }
+        } catch (RepositoryException e) {
+            log.error("Failed to check destination folder", e);
+            error("Failed to verify destination: " + e.getMessage());
+            return true;
+        }
+        return false;
     }
 
     public interface FolderOperationExecutor {

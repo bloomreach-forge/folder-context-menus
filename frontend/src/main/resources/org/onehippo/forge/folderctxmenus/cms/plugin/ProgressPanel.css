@@ -73,3 +73,20 @@
     cursor: not-allowed;
     pointer-events: none;
 }
+
+.progress-actions .close-btn {
+    background: #0073e6;
+}
+
+.progress-actions .close-btn:hover {
+    background: #0056b3;
+}
+
+.progress-bar-error {
+    background: linear-gradient(90deg, #dc3545 0%, #c82333 100%);
+    width: 100%;
+}
+
+.progress-actions .hidden-btn {
+    display: none !important;
+}

@@ -61,18 +61,21 @@ public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
             throw new RuntimeException("Destination folder already exists: " + getDestFolderPath());
         }
 
-        if (getOperationProgress() != null) {
-            long totalNodes = countSourceNodes();
-            JcrCopyUtils.copy(getSourceFolderNode(), getDestFolderNodeName(), getDestParentFolderNode(),
-                    getOperationProgress(), totalNodes);
-        } else if (getCopyHandler() != null) {
-            JcrCopyUtils.copy(getSourceFolderNode(), getDestFolderNodeName(), getDestParentFolderNode(),
-                    getCopyHandler());
-        } else {
-            JcrCopyUtils.copy(getSourceFolderNode(), getDestFolderNodeName(), getDestParentFolderNode());
+        try {
+            if (getOperationProgress() != null) {
+                long totalNodes = countSourceNodes();
+                JcrCopyUtils.copy(getSourceFolderNode(), getDestFolderNodeName(), getDestParentFolderNode(),
+                        getOperationProgress(), totalNodes);
+            } else if (getCopyHandler() != null) {
+                JcrCopyUtils.copy(getSourceFolderNode(), getDestFolderNodeName(), getDestParentFolderNode(),
+                        getCopyHandler());
+            } else {
+                JcrCopyUtils.copy(getSourceFolderNode(), getDestFolderNodeName(), getDestParentFolderNode());
+            }
+        } finally {
+            // Set destFolderNode even on cancellation so doAfterExecute can clean up partial copy
+            setDestFolderNode(JcrUtils.getNodeIfExists(getDestParentFolderNode(), getDestFolderNodeName()));
         }
-
-        setDestFolderNode(JcrUtils.getNodeIfExists(getDestParentFolderNode(), getDestFolderNodeName()));
 
         updateFolderTranslations(getDestFolderNode(), getDestFolderDisplayName(), getLocale().getLanguage());
     }
@@ -91,6 +94,10 @@ public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
      * by comparing the relative paths with the corresponding nodes under the sourceFolderNode.
      */
     protected void resetHippoDocBaseLinks() {
+        if (getDestFolderNode() == null) {
+            return;
+        }
+
         String destFolderNodePath = null;
 
         try {
@@ -142,6 +149,10 @@ public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
      * Takes offline all the hippo documents under the {@code destFolderNode}.
      */
     protected void takeOfflineHippoDocs() {
+        if (getDestFolderNode() == null) {
+            return;
+        }
+
         String destFolderNodePath = null;
 
         try {

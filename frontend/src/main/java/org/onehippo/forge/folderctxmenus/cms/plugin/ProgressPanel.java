@@ -25,6 +25,7 @@ import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -43,6 +44,9 @@ public abstract class ProgressPanel extends Panel {
     private final Label progressLabel;
     private final Label pathLabel;
     private final AjaxLink<Void> cancelButton;
+    private final AjaxLink<Void> closeButton;
+    private final AbstractAjaxTimerBehavior timerBehavior;
+    private volatile boolean closing = false;
 
     public ProgressPanel(String id, ProgressTrackingOperationProgress progress) {
         super(id);
@@ -63,6 +67,7 @@ public abstract class ProgressPanel extends Panel {
 
         pathLabel = new Label("pathLabel", Model.of(""));
         pathLabel.setOutputMarkupId(true);
+        pathLabel.setOutputMarkupPlaceholderTag(true);
         add(pathLabel);
 
         cancelButton = new AjaxLink<Void>("cancelButton") {
@@ -77,27 +82,60 @@ public abstract class ProgressPanel extends Panel {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 progress.cancel();
-                setEnabled(false);
-                target.add(this);
+                closing = true;
+                cancelButton.setEnabled(false);
+                statusLabel.setDefaultModel(Model.of("Cancelling..."));
+                target.add(cancelButton, statusLabel);
+                // Don't close immediately - let the timer detect completion and close safely
             }
         };
         cancelButton.setOutputMarkupId(true);
         add(cancelButton);
 
-        AbstractAjaxTimerBehavior timerBehavior = new AbstractAjaxTimerBehavior(Duration.ofMillis(POLL_INTERVAL_MS)) {
+        closeButton = new AjaxLink<Void>("closeButton") {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                onCloseClicked(target);
+            }
+        };
+        closeButton.setOutputMarkupId(true);
+        add(closeButton);
+
+        timerBehavior = new AbstractAjaxTimerBehavior(Duration.ofMillis(POLL_INTERVAL_MS)) {
             private static final long serialVersionUID = 1L;
 
             @Override
             protected void onTimer(AjaxRequestTarget target) {
-                updateProgressDisplay(target);
-
                 if (progress.isCompleted()) {
                     stop(target);
                     onOperationComplete(target);
+                    return;
+                }
+
+                if (!closing) {
+                    updateProgressDisplay(target);
                 }
             }
         };
         add(timerBehavior);
+    }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        response.render(CssHeaderItem.forReference(
+                new CssResourceReference(ProgressPanel.class, "ProgressPanel.css")));
+
+        // For very fast operations, trigger an immediate check via JavaScript
+        if (progress.isCompleted() && !closing) {
+            String script = String.format(
+                "setTimeout(function() { Wicket.Ajax.get({'u': '%s'}); }, 50);",
+                timerBehavior.getCallbackUrl()
+            );
+            response.render(OnDomReadyHeaderItem.forScript(script));
+        }
     }
 
     private void updateProgressDisplay(AjaxRequestTarget target) {
@@ -107,15 +145,26 @@ public abstract class ProgressPanel extends Panel {
         updateStatus(total);
         updateProgressBar(percentage);
         updatePath(progress.getCurrentPath());
-        updateCancelButton();
 
-        target.add(statusLabel, progressBar, pathLabel, cancelButton);
+        target.add(statusLabel, progressBar, pathLabel);
+
+        // Only update cancel button when state changes to avoid DOM replacement issues
+        if (progress.isCancelled() && cancelButton.isEnabled()) {
+            cancelButton.setEnabled(false);
+            target.add(cancelButton);
+        }
     }
 
     private void updateStatus(long total) {
-        String status = total > 0
-                ? String.format("Processing %d/%d items", progress.getCurrentCount(), total)
-                : "Initializing...";
+        String status;
+        if (total > 0) {
+            String eta = progress.getEstimatedTimeRemaining();
+            status = String.format("Processing %d/%d items%s",
+                    progress.getCurrentCount(), total,
+                    eta.isEmpty() ? "" : " - " + eta);
+        } else {
+            status = "Initializing...";
+        }
         statusLabel.setDefaultModel(Model.of(status));
     }
 
@@ -139,19 +188,26 @@ public abstract class ProgressPanel extends Panel {
         return "..." + path.substring(path.length() - MAX_PATH_DISPLAY_LENGTH + 3);
     }
 
-    private void updateCancelButton() {
-        if (progress.isCancelled()) {
-            cancelButton.setEnabled(false);
-        }
-    }
-
-    @Override
-    public void renderHead(IHeaderResponse response) {
-        super.renderHead(response);
-        response.render(CssHeaderItem.forReference(
-                new CssResourceReference(ProgressPanel.class, "ProgressPanel.css")));
-    }
 
     protected abstract void onOperationComplete(AjaxRequestTarget target);
+
+    protected abstract void onCloseClicked(AjaxRequestTarget target);
+
+    public void showCompletionSummary(AjaxRequestTarget target, String message, boolean isError) {
+        statusLabel.setDefaultModel(Model.of(message));
+
+        if (isError) {
+            progressBar.add(AttributeModifier.replace("class", "progress-bar progress-bar-error"));
+        } else {
+            progressBar.add(AttributeModifier.replace("style", "width: 100%"));
+            progressLabel.setDefaultModel(Model.of("100%"));
+        }
+
+        pathLabel.setVisible(false);
+        cancelButton.add(AttributeModifier.append("class", " hidden-btn"));
+        closeButton.add(AttributeModifier.remove("style"));
+
+        target.add(statusLabel, progressBar, pathLabel, cancelButton, closeButton);
+    }
 
 }

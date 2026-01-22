@@ -115,6 +115,12 @@ public abstract class AbstractFolderCopyOrMoveTask extends AbstractFolderTask {
     }
 
     protected void logOperationCompleted() throws RepositoryException {
+        if (getDestFolderNode() == null) {
+            getLogger().info("{} folder operation completed (no destination created): '{}'",
+                    getOperationName(),
+                    getSourceFolderNode().getPath());
+            return;
+        }
         getLogger().info("{} folder operation completed: '{}' -> '{}'",
                 getOperationName(),
                 getSourceFolderNode().getPath(),
@@ -126,6 +132,10 @@ public abstract class AbstractFolderCopyOrMoveTask extends AbstractFolderTask {
     }
 
     protected void recomputeHippoPaths() {
+        if (getDestFolderNode() == null) {
+            return;
+        }
+
         try {
             JcrTraverseUtils.traverseNodes(getDestFolderNode(),
                     new NodeTraverser() {
@@ -166,6 +176,10 @@ public abstract class AbstractFolderCopyOrMoveTask extends AbstractFolderTask {
      * and reset the hippotranslation:id property to a newly generate UUID.
      */
     protected void resetHippoDocumentTranslationIds(boolean resetIds) {
+        if (getDestFolderNode() == null) {
+            return;
+        }
+
         String destFolderNodePath = null;
 
         try {
