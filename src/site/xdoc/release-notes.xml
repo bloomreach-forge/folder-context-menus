@@ -76,6 +76,14 @@
               <li>See <a href="install.html">Installation Guide</a> and <a href="PERMISSIONS.html">Permission Configuration Guide</a> for details</li>
             </ul>
           </li>
+          <li>Progress indicator for folder operations
+            <ul>
+              <li>Copy and move operations now display a progress bar showing operation status</li>
+              <li>Shows current item count, percentage complete, and current path being processed</li>
+              <li>Cancel button allows users to abort long-running operations</li>
+              <li>Improves user experience for large folder operations</li>
+            </ul>
+          </li>
         </ul>
       </subsection>
       <subsection name="7.1.3">

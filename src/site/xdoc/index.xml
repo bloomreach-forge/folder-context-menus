@@ -79,6 +79,20 @@
       <img alt="After moving a folder"
            src="images/movefolder2.png" />
 
+      <p><strong>Progress indicator</strong></p>
+      <p>
+        When copying or moving folders with many items, a progress indicator is displayed showing:
+      </p>
+      <ul>
+        <li>The current item count and total (e.g., "Processing 45/293 items")</li>
+        <li>A visual progress bar with percentage complete</li>
+        <li>The path of the item currently being processed</li>
+        <li>A cancel button to abort long-running operations</li>
+      </ul>
+      <p>
+        This provides visibility into the operation's progress and allows users to cancel if needed.
+      </p>
+
     </section>
 
     <section name="Programmatic Folder Copy and Move">

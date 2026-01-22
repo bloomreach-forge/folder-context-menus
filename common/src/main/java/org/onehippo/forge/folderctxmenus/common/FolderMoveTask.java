@@ -16,12 +16,15 @@
 package org.onehippo.forge.folderctxmenus.common;
 
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hippoecm.repository.api.HippoNode;
+import org.hippoecm.repository.api.HippoNodeType;
 import org.hippoecm.repository.util.JcrUtils;
 
 public class FolderMoveTask extends AbstractFolderCopyOrMoveTask {
@@ -29,6 +32,11 @@ public class FolderMoveTask extends AbstractFolderCopyOrMoveTask {
     public FolderMoveTask(final Session session, final Locale locale, final Node sourceFolderNode,
             final Node destParentFolderNode, final String destFolderNodeName, final String destFolderDisplayName) {
         super(session, locale, sourceFolderNode, destParentFolderNode, destFolderNodeName, destFolderDisplayName);
+    }
+
+    @Override
+    protected String getOperationName() {
+        return "Moving";
     }
 
     @Override
@@ -47,19 +55,63 @@ public class FolderMoveTask extends AbstractFolderCopyOrMoveTask {
             throw new RuntimeException("Destination folder already exists: " + getDestFolderPath());
         }
 
-        getLogger().info("Moving nodes: from {} to {}.", getSourceFolderNode().getPath(), getDestFolderPath());
+        long totalNodes = 0;
+        if (getOperationProgress() != null) {
+            totalNodes = countSourceNodes();
+        }
+
         getSession().move(getSourceFolderNode().getPath(), getDestFolderPath());
 
         setDestFolderNode(JcrUtils.getNodeIfExists(getDestParentFolderNode(), getDestFolderNodeName()));
 
-        recomputeHippoPaths(getDestFolderNode());
+        if (getOperationProgress() != null) {
+            recomputeHippoPathsWithProgress(totalNodes);
+        } else {
+            recomputeHippoPaths();
+        }
 
         updateFolderTranslations(getDestFolderNode(), getDestFolderDisplayName(), getLocale().getLanguage());
+    }
+
+    private void recomputeHippoPathsWithProgress(long totalNodes) throws RepositoryException {
+        AtomicLong counter = new AtomicLong(0);
+        JcrTraverseUtils.traverseNodes(getDestFolderNode(),
+                new NodeTraverser() {
+                    @Override
+                    public boolean isAcceptable(Node node) {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean isTraversable(Node node) {
+                        return true;
+                    }
+
+                    @Override
+                    public void accept(Node node) throws RepositoryException {
+                        recomputeDerivedDataIfNeeded(node);
+                    }
+                },
+                getOperationProgress(), counter, totalNodes);
+    }
+
+    private void recomputeDerivedDataIfNeeded(Node node) throws RepositoryException {
+        if (!(node instanceof HippoNode)) {
+            return;
+        }
+        boolean isDerived = node.isNodeType(HippoNodeType.NT_DERIVED);
+        boolean hasHippoPaths = node.isNodeType(HippoNodeType.NT_DOCUMENT)
+                && node.hasProperty(HippoNodeType.HIPPO_PATHS);
+
+        if (isDerived || hasHippoPaths) {
+            ((HippoNode) node).recomputeDerivedData();
+        }
     }
 
     @Override
     protected void doAfterExecute() throws RepositoryException {
         resetHippoDocumentTranslationIds(getResetTranslations());
+        logOperationCompleted();
     }
 
 }

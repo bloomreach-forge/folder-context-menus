@@ -41,6 +41,7 @@ public abstract class AbstractFolderCopyOrMoveTask extends AbstractFolderTask {
     private Boolean resetTranslations;
 
     private CopyHandler copyHandler;
+    private OperationProgress operationProgress;
 
     public AbstractFolderCopyOrMoveTask(final Session session, final Locale locale, final Node sourceFolderNode,
                                         final Node destParentFolderNode, final String destFolderNodeName, final String destFolderDisplayName) {
@@ -95,7 +96,36 @@ public abstract class AbstractFolderCopyOrMoveTask extends AbstractFolderTask {
         this.copyHandler = copyHandler;
     }
 
-    protected void recomputeHippoPaths(final Node folderNode) {
+    public OperationProgress getOperationProgress() {
+        return operationProgress;
+    }
+
+    public void setOperationProgress(OperationProgress operationProgress) {
+        this.operationProgress = operationProgress;
+    }
+
+    protected abstract String getOperationName();
+
+    @Override
+    protected void doBeforeExecute() throws RepositoryException {
+        getLogger().info("{} folder '{}' to '{}'",
+                getOperationName(),
+                getSourceFolderNode().getPath(),
+                getDestFolderPath());
+    }
+
+    protected void logOperationCompleted() throws RepositoryException {
+        getLogger().info("{} folder operation completed: '{}' -> '{}'",
+                getOperationName(),
+                getSourceFolderNode().getPath(),
+                getDestFolderNode().getPath());
+    }
+
+    protected long countSourceNodes() throws RepositoryException {
+        return NodeCounter.countNodes(getSourceFolderNode(), NodeTraverser.ACCEPT_ALL);
+    }
+
+    protected void recomputeHippoPaths() {
         try {
             JcrTraverseUtils.traverseNodes(getDestFolderNode(),
                     new NodeTraverser() {

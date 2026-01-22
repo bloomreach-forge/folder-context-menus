@@ -24,6 +24,26 @@ import javax.jcr.RepositoryException;
 public interface NodeTraverser {
 
     /**
+     * A traverser that accepts and traverses all nodes without performing any action.
+     */
+    NodeTraverser ACCEPT_ALL = new NodeTraverser() {
+        @Override
+        public boolean isAcceptable(Node node) {
+            return true;
+        }
+
+        @Override
+        public boolean isTraversable(Node node) {
+            return true;
+        }
+
+        @Override
+        public void accept(Node node) {
+            // no-op
+        }
+    };
+
+    /**
      * Returns true if the {@code node} is acceptable.
      * @param node node
      * @return true if the {@code node} is acceptable

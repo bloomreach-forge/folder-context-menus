@@ -40,6 +40,11 @@ public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
     }
 
     @Override
+    protected String getOperationName() {
+        return "Copying";
+    }
+
+    @Override
     protected void doExecute() throws RepositoryException {
         if (getSourceFolderNode().getParent().isSame(getDestParentFolderNode())) {
             if (StringUtils.equals(getSourceFolderNode().getName(), getDestFolderNodeName())) {
@@ -56,9 +61,11 @@ public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
             throw new RuntimeException("Destination folder already exists: " + getDestFolderPath());
         }
 
-        getLogger().info("Copying nodes: from {} to {}.", getSourceFolderNode().getPath(), getDestFolderPath());
-
-        if (getCopyHandler() != null) {
+        if (getOperationProgress() != null) {
+            long totalNodes = countSourceNodes();
+            JcrCopyUtils.copy(getSourceFolderNode(), getDestFolderNodeName(), getDestParentFolderNode(),
+                    getOperationProgress(), totalNodes);
+        } else if (getCopyHandler() != null) {
             JcrCopyUtils.copy(getSourceFolderNode(), getDestFolderNodeName(), getDestParentFolderNode(),
                     getCopyHandler());
         } else {
@@ -75,6 +82,7 @@ public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
         resetHippoDocBaseLinks();
         takeOfflineHippoDocs();
         resetHippoDocumentTranslationIds(getResetTranslations());
+        logOperationCompleted();
     }
 
     /**

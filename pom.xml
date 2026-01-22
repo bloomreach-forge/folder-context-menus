@@ -29,6 +29,7 @@
 
   <properties>
     <plugin.jxr.version>3.3.0</plugin.jxr.version>
+    <brut.version>5.0.1</brut.version>
   </properties>
 
   <licenses>

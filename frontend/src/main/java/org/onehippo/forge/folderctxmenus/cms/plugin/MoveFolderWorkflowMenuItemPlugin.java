@@ -15,12 +15,13 @@
  */
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
+import java.util.Locale;
 
-import java.util.Optional;
+import javax.jcr.Node;
+import javax.jcr.Session;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
@@ -30,8 +31,7 @@ import org.hippoecm.frontend.dialog.AbstractDialog;
 import org.hippoecm.frontend.plugin.IPluginContext;
 import org.hippoecm.frontend.plugin.config.IPluginConfig;
 import org.hippoecm.frontend.session.UserSession;
-import org.hippoecm.repository.api.HippoSession;
-import org.onehippo.forge.folderctxmenus.common.ExtendedFolderWorkflow;
+import org.onehippo.forge.folderctxmenus.common.FolderMoveTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +68,9 @@ public class MoveFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
     @Override
     protected AbstractDialog<FolderActionDocumentArguments> createDialogInstance(
             final FolderActionDocumentArguments folderActionDocumentModel) {
-        return new CopyOrMoveFolderDialog(getPluginContext(), getPluginConfig(), getDialogTitleModel(),
+        final IPluginContext pluginContext = getPluginContext();
+
+        return new CopyOrMoveFolderDialog(pluginContext, getPluginConfig(), getDialogTitleModel(),
                 new Model<>(folderActionDocumentModel), false) {
 
             private static final long serialVersionUID = 1L;
@@ -76,11 +78,13 @@ public class MoveFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
             @Override
             protected void onOk() {
                 if (!validateInput()) {
-                    super.onOk();
                     return;
                 }
 
-                executeMove();
+                AjaxRequestTarget target = getRequestCycle().find(AjaxRequestTarget.class).orElse(null);
+                if (target != null) {
+                    executeMove(target);
+                }
             }
 
             private boolean validateInput() {
@@ -97,29 +101,25 @@ public class MoveFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
                 return true;
             }
 
-            private void executeMove() {
-                try {
-                    HippoSession session = UserSession.get().getJcrSession();
-                    Node sourceNode = session.getNodeByIdentifier(getSourceFolderIdentifier());
-                    Optional<ExtendedFolderWorkflow> workflow = getExtendedFolderWorkflow(sourceNode);
+            private void executeMove(AjaxRequestTarget target) {
+                final String sourceId = getSourceFolderIdentifier();
+                final String destId = getDestinationFolderIdentifier();
+                final String newUrlName = getNewFolderUrlName();
+                final String newName = getNewFolderName();
+                final Locale locale = UserSession.get().getLocale();
+                final Session session = UserSession.get().getJcrSession();
 
-                    if (workflow.isPresent()) {
-                        workflow.get().moveFolder(
-                            UserSession.get().getLocale(),
-                            getSourceFolderIdentifier(),
-                            getDestinationFolderIdentifier(),
-                            getNewFolderUrlName(),
-                            getNewFolderName()
-                        );
-                        super.onOk();
-                    } else {
-                        log.error("Extended folder workflow is not available");
-                        error("Unable to move folder.");
-                    }
-                } catch (Exception e) {
-                    log.error("Failed to move folder.", e);
-                    error(e.getLocalizedMessage());
-                }
+                startOperationWithProgress(target, progress -> {
+                    Node sourceNode = session.getNodeByIdentifier(sourceId);
+                    Node destParentNode = session.getNodeByIdentifier(destId);
+
+                    FolderMoveTask task = new FolderMoveTask(
+                            session, locale, sourceNode, destParentNode,
+                            newUrlName, newName);
+                    task.setOperationProgress(progress);
+                    task.execute();
+                    session.save();
+                });
             }
         };
     }
