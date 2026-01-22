@@ -19,7 +19,9 @@ import java.time.Duration;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
+import org.apache.wicket.ajax.AjaxChannel;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -65,6 +67,12 @@ public abstract class ProgressPanel extends Panel {
 
         cancelButton = new AjaxLink<Void>("cancelButton") {
             private static final long serialVersionUID = 1L;
+
+            @Override
+            protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                super.updateAjaxAttributes(attributes);
+                attributes.setChannel(new AjaxChannel("cancel-op", AjaxChannel.Type.ACTIVE));
+            }
 
             @Override
             public void onClick(AjaxRequestTarget target) {

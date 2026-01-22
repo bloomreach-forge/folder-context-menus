@@ -15,6 +15,10 @@
  */
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.swing.tree.TreeNode;
@@ -56,6 +60,11 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
     private static final int PROGRESS_DIALOG_WIDTH = 450;
     private static final JavaScriptResourceReference JS_REFERENCE =
             new JavaScriptResourceReference(CopyOrMoveFolderDialog.class, "CopyOrMoveFolderDialog.js");
+    private static final Executor FOLDER_OP_EXECUTOR = Executors.newCachedThreadPool(runnable -> {
+        Thread thread = new Thread(runnable, "FolderContextMenus-Operation");
+        thread.setDaemon(true);
+        return thread;
+    });
 
     private final FolderActionDocumentArguments folderActionDocumentModel;
 
@@ -285,17 +294,15 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
         target.add(formContainer, progressContainer);
         target.appendJavaScript("FolderContextMenus.resizeDialog(" + PROGRESS_DIALOG_WIDTH + ")");
 
-        Thread operationThread = new Thread(() -> {
+        CompletableFuture.runAsync(() -> {
             try {
                 executor.execute(operationProgress);
-                operationProgress.markCompleted();
             } catch (Exception e) {
                 operationError = e;
+            } finally {
                 operationProgress.markCompleted();
             }
-        }, "FolderOperation");
-        operationThread.setDaemon(true);
-        operationThread.start();
+        }, FOLDER_OP_EXECUTOR);
     }
 
     public interface FolderOperationExecutor {
