@@ -16,7 +16,7 @@
   <parent>
     <groupId>org.onehippo.cms7</groupId>
     <artifactId>hippo-cms7-project</artifactId>
-    <version>16.2.0</version>
+    <version>16.6.5</version>
   </parent>
 
   <name>Bloomreach XM Extra Folder Context Menus</name>
@@ -125,6 +125,18 @@
       <dependency>
         <groupId>org.onehippo.cms7</groupId>
         <artifactId>hippo-cms-perspectives</artifactId>
+        <version>${hippo.release.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.onehippo.cms7</groupId>
+        <artifactId>hippo-services</artifactId>
+        <version>${hippo.release.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.onehippo.cms7</groupId>
+        <artifactId>hippo-cms7-commons</artifactId>
         <version>${hippo.release.version}</version>
       </dependency>
 

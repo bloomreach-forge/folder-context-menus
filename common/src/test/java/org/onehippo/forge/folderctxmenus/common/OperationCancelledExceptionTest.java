@@ -15,18 +15,26 @@
  */
 package org.onehippo.forge.folderctxmenus.common;
 
-public interface OperationProgress {
+import javax.jcr.RepositoryException;
 
-    void updateProgress(long current, long total, String currentItemPath);
+import org.junit.jupiter.api.Test;
 
-    boolean isCancelled();
+import static org.junit.jupiter.api.Assertions.*;
 
-    /**
-     * Hook called after progress is updated. Implementations can override
-     * to add behavior such as throttling or debug delays.
-     */
-    default void onProgressUpdated() {
-        // no-op by default
+class OperationCancelledExceptionTest {
+
+    @Test
+    void shouldExtendRepositoryException() {
+        OperationCancelledException ex = new OperationCancelledException("test");
+
+        assertTrue(ex instanceof RepositoryException);
     }
 
+    @Test
+    void shouldPreserveMessage() {
+        String message = "Operation was cancelled by user";
+        OperationCancelledException ex = new OperationCancelledException(message);
+
+        assertEquals(message, ex.getMessage());
+    }
 }

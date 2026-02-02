@@ -23,8 +23,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hippoecm.repository.api.HippoNode;
-import org.hippoecm.repository.api.HippoNodeType;
 import org.hippoecm.repository.util.JcrUtils;
 
 public class FolderMoveTask extends AbstractFolderCopyOrMoveTask {
@@ -55,30 +53,31 @@ public class FolderMoveTask extends AbstractFolderCopyOrMoveTask {
             throw new RuntimeException("Destination folder already exists: " + getDestFolderPath());
         }
 
-        long totalNodes = 0;
+        // Phase 1: Count with progress (read-only traversal of SOURCE before move)
+        // This shows progress to user without triggering JCR events
         if (getOperationProgress() != null) {
-            totalNodes = countSourceNodes();
+            countSourceNodesWithProgress();
         }
 
+        // Phase 2: Atomic move (instant, no progress tracking needed)
         getSession().move(getSourceFolderNode().getPath(), getDestFolderPath());
-
         setDestFolderNode(JcrUtils.getNodeIfExists(getDestParentFolderNode(), getDestFolderNodeName()));
 
-        try {
-            if (getOperationProgress() != null) {
-                recomputeHippoPathsWithProgress(totalNodes);
-            } else {
-                recomputeHippoPaths();
-            }
-        } finally {
-            // Update folder translations even if path recomputation was cancelled
-            updateFolderTranslations(getDestFolderNode(), getDestFolderDisplayName(), getLocale().getLanguage());
-        }
+        // Phase 3: Post-processing (fast operations, no progress tracking)
+        recomputeHippoPaths();
+        updateFolderTranslations(getDestFolderNode(), getDestFolderDisplayName(), getLocale().getLanguage());
     }
 
-    private void recomputeHippoPathsWithProgress(long totalNodes) throws RepositoryException {
+    /**
+     * Count source nodes with progress tracking. This is a read-only traversal
+     * that shows progress to the user before the actual move happens.
+     * No JCR changes occur during this phase, avoiding the race condition.
+     */
+    private void countSourceNodesWithProgress() throws RepositoryException {
+        long total = countSourceNodes();
         AtomicLong counter = new AtomicLong(0);
-        JcrTraverseUtils.traverseNodes(getDestFolderNode(),
+
+        JcrTraverseUtils.traverseNodes(getSourceFolderNode(),
                 new NodeTraverser() {
                     @Override
                     public boolean isAcceptable(Node node) {
@@ -91,24 +90,11 @@ public class FolderMoveTask extends AbstractFolderCopyOrMoveTask {
                     }
 
                     @Override
-                    public void accept(Node node) throws RepositoryException {
-                        recomputeDerivedDataIfNeeded(node);
+                    public void accept(Node node) {
+                        // No-op: traversal is only for progress display
                     }
                 },
-                getOperationProgress(), counter, totalNodes);
-    }
-
-    private void recomputeDerivedDataIfNeeded(Node node) throws RepositoryException {
-        if (!(node instanceof HippoNode)) {
-            return;
-        }
-        boolean isDerived = node.isNodeType(HippoNodeType.NT_DERIVED);
-        boolean hasHippoPaths = node.isNodeType(HippoNodeType.NT_DOCUMENT)
-                && node.hasProperty(HippoNodeType.HIPPO_PATHS);
-
-        if (isDerived || hasHippoPaths) {
-            ((HippoNode) node).recomputeDerivedData();
-        }
+                getOperationProgress(), counter, total);
     }
 
     @Override

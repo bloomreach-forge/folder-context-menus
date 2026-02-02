@@ -100,6 +100,8 @@ public class FolderOperationProgressIntegrationTest {
         task.execute();
 
         assertTrue(progress.updateCount > 0, "Progress should have been updated");
+        assertTrue(progress.hookCallCount > 0, "onProgressUpdated hook should have been called");
+        assertEquals(progress.updateCount, progress.hookCallCount, "Hook should be called once per update");
         assertTrue(progress.lastTotal > 0, "Total should be greater than zero");
         assertFalse(progress.cancelled, "Should not be cancelled");
 
@@ -124,6 +126,7 @@ public class FolderOperationProgressIntegrationTest {
         task.execute();
 
         assertTrue(progress.updateCount > 0, "Progress should have been updated");
+        assertTrue(progress.hookCallCount > 0, "onProgressUpdated hook should have been called");
         assertTrue(progress.lastTotal > 0, "Total should be greater than zero");
         assertFalse(progress.cancelled, "Should not be cancelled");
 
@@ -175,6 +178,7 @@ public class FolderOperationProgressIntegrationTest {
 
     private static class TestOperationProgress implements OperationProgress {
         int updateCount = 0;
+        int hookCallCount = 0;
         long lastCurrent = 0;
         long lastTotal = 0;
         String lastPath = null;
@@ -191,6 +195,11 @@ public class FolderOperationProgressIntegrationTest {
         @Override
         public boolean isCancelled() {
             return cancelled;
+        }
+
+        @Override
+        public void onProgressUpdated() {
+            hookCallCount++;
         }
     }
 

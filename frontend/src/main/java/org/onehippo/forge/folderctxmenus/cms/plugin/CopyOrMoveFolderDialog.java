@@ -16,12 +16,17 @@
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
+import javax.jcr.AccessDeniedException;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.lock.LockException;
+import javax.jcr.nodetype.ConstraintViolationException;
 import javax.swing.tree.TreeNode;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,9 +41,9 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.LambdaModel;
+import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
-import org.apache.wicket.request.resource.PackageResourceReference;
 import org.hippoecm.frontend.model.JcrNodeModel;
 import org.hippoecm.frontend.model.tree.IJcrTreeNode;
 import org.hippoecm.frontend.model.tree.JcrTreeModel;
@@ -59,13 +64,22 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
     private static final Logger log = LoggerFactory.getLogger(CopyOrMoveFolderDialog.class);
     public static final String DEFAULT_LINK_TRANSLATION = "default.linkTranslation";
     private static final int PROGRESS_DIALOG_WIDTH = 450;
+    private static final CssResourceReference CSS_REFERENCE =
+            new CssResourceReference(CopyOrMoveFolderDialog.class, "CopyOrMoveFolderDialog.css");
     private static final JavaScriptResourceReference JS_REFERENCE =
             new JavaScriptResourceReference(CopyOrMoveFolderDialog.class, "CopyOrMoveFolderDialog.js");
-    private static final Executor FOLDER_OP_EXECUTOR = Executors.newCachedThreadPool(runnable -> {
-        Thread thread = new Thread(runnable, "FolderContextMenus-Operation");
-        thread.setDaemon(true);
-        return thread;
-    });
+    private static final int MAX_CONCURRENT_OPERATIONS = Integer.getInteger("folderctxmenus.maxConcurrentOps", 4);
+    private static final ThreadPoolExecutor FOLDER_OP_EXECUTOR = new ThreadPoolExecutor(
+            1, MAX_CONCURRENT_OPERATIONS,
+            60L, TimeUnit.SECONDS,
+            new LinkedBlockingQueue<>(16),
+            runnable -> {
+                Thread thread = new Thread(runnable, "FolderContextMenus-Operation");
+                thread.setDaemon(true);
+                return thread;
+            },
+            new ThreadPoolExecutor.CallerRunsPolicy()
+    );
 
     private final FolderSelectionCmsJcrTree folderTree;
     private JcrTreeModel treeModel;
@@ -75,13 +89,14 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
     private WebMarkupContainer formContainer;
     private WebMarkupContainer progressContainer;
     private ProgressTrackingOperationProgress operationProgress;
-    private volatile Exception operationError;
+    private final AtomicReference<Exception> operationError = new AtomicReference<>(null);
     private boolean inProgressMode = false;
 
     private String sourceFolderIdentifier = "";
     private String sourceFolderPath = "";
     private String sourceFolderPathDisplay = "";
     private String destinationFolderIdentifier = "";
+    private String destinationFolderPath = "";
     private String destinationFolderPathDisplay = "";
     private String newFolderName = "";
     private String newFolderUrlName = "";
@@ -128,12 +143,12 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
         formContainer.add(form);
 
         final TextField<String> sourceFolderPathDisplayField =
-            new TextField<String>("sourceFolderPathDisplay", new PropertyModel<String>(this, "sourceFolderPathDisplay"));
+            new TextField<>("sourceFolderPathDisplay", LambdaModel.of(this::getSourceFolderPathDisplay, this::setSourceFolderPathDisplay));
         sourceFolderPathDisplayField.setEnabled(false);
         form.add(sourceFolderPathDisplayField);
 
         final TextField<String> destinationFolderPathDisplayField =
-            new TextField<String>("destinationFolderPathDisplay", new PropertyModel<String>(this, "destinationFolderPathDisplay"));
+            new TextField<>("destinationFolderPathDisplay", LambdaModel.of(this::getDestinationFolderPathDisplay, this::setDestinationFolderPathDisplay));
         destinationFolderPathDisplayField.setEnabled(false);
         destinationFolderPathDisplayField.setOutputMarkupId(true);
         form.add(destinationFolderPathDisplayField);
@@ -154,6 +169,7 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
                         final IJcrTreeNode treeNodeModel = (IJcrTreeNode) clickedNode;
                         final Node folderNode = treeNodeModel.getNodeModel().getObject();
                         destinationFolderIdentifier = folderNode.getIdentifier();
+                        destinationFolderPath = folderNode.getPath();
                         destinationFolderPathDisplay = getDisplayPathOfNode(folderNode);
                         target.add(destinationFolderPathDisplayField);
                     } catch (RepositoryException e) {
@@ -166,19 +182,12 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
         form.add(folderTree);
 
         final TextField<String> newFolderUrlNameField =
-            new TextField<String>("newFolderUrlName", new PropertyModel<String>(this, "newFolderUrlName"));
+            new TextField<>("newFolderUrlName", LambdaModel.of(this::getNewFolderUrlName, this::setNewFolderUrlName));
         newFolderUrlNameField.setOutputMarkupId(true);
-        newFolderUrlNameField.add(new AjaxFormComponentUpdatingBehavior("change") {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            protected void onUpdate(final AjaxRequestTarget target) {
-            }
-        });
         form.add(newFolderUrlNameField);
 
         final TextField<String> newFolderNameField =
-            new TextField<String>("newFolderName", new PropertyModel<String>(this, "newFolderName"));
+            new TextField<>("newFolderName", LambdaModel.of(this::getNewFolderName, this::setNewFolderName));
         newFolderNameField.setOutputMarkupId(true);
         newFolderNameField.add(new AjaxFormComponentUpdatingBehavior("change") {
             private static final long serialVersionUID = 1L;
@@ -196,7 +205,7 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
         form.add(row);
         linkAsTranslation = pluginConfig.getAsBoolean(DEFAULT_LINK_TRANSLATION);
         final CheckBox linkAsTranslationsField =
-            new CheckBox("linkAsTranslation", new PropertyModel<Boolean>(this, "linkAsTranslation"));
+            new CheckBox("linkAsTranslation", LambdaModel.of(this::getLinkAsTranslation, this::setLinkAsTranslation));
         linkAsTranslationsField.setOutputMarkupId(true);
         linkAsTranslationsField.setVisible(isCopyDialog && isSourceFolderTranslated);
         row.add(linkAsTranslationsField);
@@ -205,8 +214,7 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
     @Override
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
-        response.render(CssHeaderItem.forReference(
-                new PackageResourceReference(CopyOrMoveFolderDialog.class, "CopyOrMoveFolderDialog.css")));
+        response.render(CssHeaderItem.forReference(CSS_REFERENCE));
         response.render(JavaScriptHeaderItem.forReference(JS_REFERENCE));
     }
 
@@ -266,66 +274,62 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
         }
     }
 
-    @Override
-    public void onCancel() {
-        cancelOperationIfRunning();
-        super.onCancel();
-    }
-
-    @Override
-    public void onClose() {
-        cancelOperationIfRunning();
-        super.onClose();
-    }
-
-    private void cancelOperationIfRunning() {
-        if (operationProgress != null && !operationProgress.isCompleted()) {
-            operationProgress.cancel();
-        }
-    }
-
     protected void startOperationWithProgress(AjaxRequestTarget target, FolderOperationExecutor executor) {
         inProgressMode = true;
         operationProgress = new ProgressTrackingOperationProgress();
-        operationError = null;
+        operationError.set(null);
 
         formContainer.setVisible(false);
         setOkVisible(false);
         setCancelVisible(false);
 
         progressContainer.setVisible(true);
-        ProgressPanel progressPanel = new ProgressPanel("progressPanel", operationProgress) {
+        progressContainer.replace(new ProgressPanel("progressPanel", operationProgress) {
             private static final long serialVersionUID = 1L;
 
             @Override
             protected void onOperationComplete(AjaxRequestTarget target) {
-                String message;
-                boolean isError;
+                Exception error = operationError.get();
                 long count = operationProgress.getCurrentCount();
+                boolean cancelled = error instanceof OperationCancelledException || operationProgress.isCancelled();
 
-                if (operationError instanceof OperationCancelledException || operationProgress.isCancelled()) {
-                    String gerund = isCopyOperation ? "copying" : "moving";
-                    message = "Cancelled after " + gerund + " " + count + " items";
-                    isError = false;
-                } else if (operationError != null) {
-                    log.error("Folder operation failed after {} items", count, operationError);
-                    message = "Error after " + count + " items: " + operationError.getMessage();
-                    isError = true;
+                if (cancelled) {
+                    log.info("Folder {} operation was cancelled by user", isCopyOperation ? "copy" : "move");
+                } else if (error != null) {
+                    log.error("Folder {} operation failed", isCopyOperation ? "copy" : "move", error);
                 } else {
-                    String pastTense = isCopyOperation ? "copied" : "moved";
-                    message = "Successfully " + pastTense + " " + count + " items";
-                    isError = false;
+                    logOperationEvent(count);
                 }
 
-                showCompletionSummary(target, message, isError);
+                // For copy operations, show summary modal
+                if (isCopyOperation) {
+                    String message;
+                    boolean isError;
+
+                    if (cancelled) {
+                        message = "Cancelled after copying " + count + " items";
+                        isError = false;
+                    } else if (error != null) {
+                        message = "Error after " + count + " items: " + getUserFriendlyErrorMessage(error);
+                        isError = true;
+                    } else {
+                        message = "Successfully copied " + count + " items";
+                        isError = false;
+                    }
+
+                    showCompletionSummary(target, message, isError);
+                    return;
+                }
+
+                // For move operations, just close the dialog
+                closeDialog();
             }
 
             @Override
             protected void onCloseClicked(AjaxRequestTarget target) {
                 closeDialog();
             }
-        };
-        progressContainer.replace(progressPanel);
+        });
 
         target.add(formContainer, progressContainer);
         target.appendJavaScript("FolderContextMenus.resizeDialog(" + PROGRESS_DIALOG_WIDTH + ")");
@@ -334,7 +338,7 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
             try {
                 executor.execute(operationProgress);
             } catch (Exception e) {
-                operationError = e;
+                operationError.set(e);
             } finally {
                 operationProgress.markCompleted();
             }
@@ -368,6 +372,44 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
             return true;
         }
         return false;
+    }
+
+    private static String getUserFriendlyErrorMessage(Exception e) {
+        Throwable cause = e;
+        while (cause != null) {
+            if (cause instanceof AccessDeniedException) {
+                return "Access denied. You may not have permission to perform this operation.";
+            }
+            if (cause instanceof LockException) {
+                return "The content is currently locked by another user or process.";
+            }
+            if (cause instanceof ConstraintViolationException) {
+                return "The operation violates repository constraints.";
+            }
+            cause = cause.getCause();
+        }
+
+        if (e instanceof RepositoryException) {
+            return "A repository error occurred. Please try again or contact support.";
+        }
+        return "An unexpected error occurred.";
+    }
+
+    private void logOperationEvent(long itemCount) {
+        try {
+            String userId = UserSession.get().getJcrSession().getUserID();
+            String destJcrPath = destinationFolderPath + "/" + newFolderUrlName;
+            String operation = isCopyOperation ? "copy" : "move";
+
+            log.info("Folder {} completed: user='{}', source='{}', destination='{}', items={}",
+                    operation,
+                    userId,
+                    sourceFolderPath,
+                    destJcrPath,
+                    itemCount);
+        } catch (Exception e) {
+            log.warn("Failed to log folder operation event: {}", e.getMessage(), e);
+        }
     }
 
     public interface FolderOperationExecutor {

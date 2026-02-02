@@ -25,7 +25,6 @@ import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -45,8 +44,6 @@ public abstract class ProgressPanel extends Panel {
     private final Label pathLabel;
     private final AjaxLink<Void> cancelButton;
     private final AjaxLink<Void> closeButton;
-    private final AbstractAjaxTimerBehavior timerBehavior;
-    private volatile boolean closing = false;
 
     public ProgressPanel(String id, ProgressTrackingOperationProgress progress) {
         super(id);
@@ -82,11 +79,9 @@ public abstract class ProgressPanel extends Panel {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 progress.cancel();
-                closing = true;
                 cancelButton.setEnabled(false);
                 statusLabel.setDefaultModel(Model.of("Cancelling..."));
                 target.add(cancelButton, statusLabel);
-                // Don't close immediately - let the timer detect completion and close safely
             }
         };
         cancelButton.setOutputMarkupId(true);
@@ -103,7 +98,7 @@ public abstract class ProgressPanel extends Panel {
         closeButton.setOutputMarkupId(true);
         add(closeButton);
 
-        timerBehavior = new AbstractAjaxTimerBehavior(Duration.ofMillis(POLL_INTERVAL_MS)) {
+        AbstractAjaxTimerBehavior timerBehavior = new AbstractAjaxTimerBehavior(Duration.ofMillis(POLL_INTERVAL_MS)) {
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -114,9 +109,7 @@ public abstract class ProgressPanel extends Panel {
                     return;
                 }
 
-                if (!closing) {
-                    updateProgressDisplay(target);
-                }
+                updateProgressDisplay(target);
             }
         };
         add(timerBehavior);
@@ -127,15 +120,6 @@ public abstract class ProgressPanel extends Panel {
         super.renderHead(response);
         response.render(CssHeaderItem.forReference(
                 new CssResourceReference(ProgressPanel.class, "ProgressPanel.css")));
-
-        // For very fast operations, trigger an immediate check via JavaScript
-        if (progress.isCompleted() && !closing) {
-            String script = String.format(
-                "setTimeout(function() { Wicket.Ajax.get({'u': '%s'}); }, 50);",
-                timerBehavior.getCallbackUrl()
-            );
-            response.render(OnDomReadyHeaderItem.forScript(script));
-        }
     }
 
     private void updateProgressDisplay(AjaxRequestTarget target) {
@@ -148,7 +132,6 @@ public abstract class ProgressPanel extends Panel {
 
         target.add(statusLabel, progressBar, pathLabel);
 
-        // Only update cancel button when state changes to avoid DOM replacement issues
         if (progress.isCancelled() && cancelButton.isEnabled()) {
             cancelButton.setEnabled(false);
             target.add(cancelButton);
@@ -188,7 +171,6 @@ public abstract class ProgressPanel extends Panel {
         return "..." + path.substring(path.length() - MAX_PATH_DISPLAY_LENGTH + 3);
     }
 
-
     protected abstract void onOperationComplete(AjaxRequestTarget target);
 
     protected abstract void onCloseClicked(AjaxRequestTarget target);
@@ -209,5 +191,4 @@ public abstract class ProgressPanel extends Panel {
 
         target.add(statusLabel, progressBar, pathLabel, cancelButton, closeButton);
     }
-
 }

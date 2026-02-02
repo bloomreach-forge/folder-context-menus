@@ -47,6 +47,14 @@ public class JcrTraverseUtilsTest {
         when(childNode1.getPath()).thenReturn("/root/child1");
         when(childNode2.getPath()).thenReturn("/root/child2");
 
+        // Configure nodes as folders for user-visible item detection
+        when(rootNode.isNodeType("nt:folder")).thenReturn(true);
+        when(rootNode.isNodeType("hippo:handle")).thenReturn(false);
+        when(childNode1.isNodeType("nt:folder")).thenReturn(true);
+        when(childNode1.isNodeType("hippo:handle")).thenReturn(false);
+        when(childNode2.isNodeType("nt:folder")).thenReturn(true);
+        when(childNode2.isNodeType("hippo:handle")).thenReturn(false);
+
         NodeIterator rootIterator = mock(NodeIterator.class);
         when(rootIterator.hasNext()).thenReturn(true, true, false);
         when(rootIterator.nextNode()).thenReturn(childNode1, childNode2);
@@ -79,6 +87,16 @@ public class JcrTraverseUtilsTest {
         verify(progress).updateProgress(1, total, "/root");
         verify(progress).updateProgress(2, total, "/root/child1");
         verify(progress).updateProgress(3, total, "/root/child2");
+    }
+
+    @Test
+    public void traverseNodes_withProgress_shouldCallOnProgressUpdated() throws RepositoryException {
+        AtomicLong counter = new AtomicLong(0);
+        long total = 3;
+
+        JcrTraverseUtils.traverseNodes(rootNode, traverser, progress, counter, total);
+
+        verify(progress, times(3)).onProgressUpdated();
     }
 
     @Test

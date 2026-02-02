@@ -23,8 +23,6 @@ import javax.jcr.RepositoryException;
 
 public class JcrTraverseUtils {
 
-    private static final long DEBUG_DELAY_MS = Long.getLong("folderctxmenus.debug.delay", 0);
-
     private JcrTraverseUtils() {
     }
 
@@ -60,18 +58,13 @@ public class JcrTraverseUtils {
             throw new OperationCancelledException("Operation was cancelled");
         }
 
-        if (nodeTraverser.isAcceptable(node)) {
-            if (progress != null) {
-                progress.updateProgress(counter.incrementAndGet(), total, node.getPath());
+        // Report progress only for user-visible items (folders and handles)
+        if (progress != null && NodeTraverser.USER_VISIBLE_ITEMS.isAcceptable(node)) {
+            progress.updateProgress(counter.incrementAndGet(), total, node.getPath());
+            progress.onProgressUpdated();
+        }
 
-                if (DEBUG_DELAY_MS > 0) {
-                    try {
-                        Thread.sleep(DEBUG_DELAY_MS);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                    }
-                }
-            }
+        if (nodeTraverser.isAcceptable(node)) {
             nodeTraverser.accept(node);
         }
 

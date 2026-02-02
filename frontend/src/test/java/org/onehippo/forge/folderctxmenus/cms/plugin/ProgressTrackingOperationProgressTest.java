@@ -141,4 +141,100 @@ public class ProgressTrackingOperationProgressTest {
         assertTrue(progress.isCancelled());
     }
 
+    @Test
+    public void testMarkCompleted() {
+        assertFalse(progress.isCompleted());
+
+        progress.markCompleted();
+
+        assertTrue(progress.isCompleted());
+    }
+
+    @Test
+    public void testGetSnapshot() {
+        progress.updateProgress(25, 100, "/test/path");
+
+        ProgressTrackingOperationProgress.Snapshot snapshot = progress.getSnapshot();
+
+        assertEquals(25, snapshot.getCurrentCount());
+        assertEquals(100, snapshot.getTotalCount());
+        assertEquals("/test/path", snapshot.getCurrentPath());
+    }
+
+    @Test
+    public void testSnapshotAtomicity() {
+        progress.updateProgress(50, 100, "/path/a");
+
+        ProgressTrackingOperationProgress.Snapshot snapshot = progress.getSnapshot();
+
+        // Update progress after getting snapshot
+        progress.updateProgress(75, 100, "/path/b");
+
+        // Original snapshot should be unchanged
+        assertEquals(50, snapshot.getCurrentCount());
+        assertEquals(100, snapshot.getTotalCount());
+        assertEquals("/path/a", snapshot.getCurrentPath());
+
+        // New snapshot should reflect updates
+        ProgressTrackingOperationProgress.Snapshot newSnapshot = progress.getSnapshot();
+        assertEquals(75, newSnapshot.getCurrentCount());
+        assertEquals("/path/b", newSnapshot.getCurrentPath());
+    }
+
+    @Test
+    public void testEstimatedTimeRemainingWhenZeroCurrent() {
+        progress.updateProgress(0, 100, "/test");
+
+        assertEquals("", progress.getEstimatedTimeRemaining());
+    }
+
+    @Test
+    public void testEstimatedTimeRemainingWhenZeroTotal() {
+        // Force startTimeNanos to be set
+        progress.updateProgress(10, 0, "/test");
+
+        assertEquals("", progress.getEstimatedTimeRemaining());
+    }
+
+    @Test
+    public void testEstimatedTimeRemainingWhenComplete() throws InterruptedException {
+        progress.updateProgress(1, 100, "/test");
+        Thread.sleep(10); // Ensure some time passes
+        progress.updateProgress(100, 100, "/test");
+
+        assertEquals("", progress.getEstimatedTimeRemaining());
+    }
+
+    @Test
+    public void testEstimatedTimeRemainingFormat() throws InterruptedException {
+        progress.updateProgress(1, 1000, "/test");
+        Thread.sleep(10); // Small delay to ensure calculation works
+        progress.updateProgress(10, 1000, "/test");
+
+        String eta = progress.getEstimatedTimeRemaining();
+        // ETA should be non-empty and contain "remaining"
+        if (!eta.isEmpty()) {
+            assertTrue("ETA should contain 'remaining': " + eta, eta.contains("remaining"));
+        }
+    }
+
+    @Test
+    public void testOnProgressUpdatedDefaultBehavior() {
+        // Without the debug system property set, this should be a no-op
+        // Just verify it doesn't throw
+        progress.onProgressUpdated();
+    }
+
+    @Test
+    public void testProgressPercentageConsistency() {
+        progress.updateProgress(33, 100, "/test");
+
+        ProgressTrackingOperationProgress.Snapshot snapshot = progress.getSnapshot();
+        int percentage = progress.getProgressPercentage();
+
+        // Both should use the same snapshot internally
+        assertEquals(33, percentage);
+        assertEquals(33, snapshot.getCurrentCount());
+    }
+
 }

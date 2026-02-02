@@ -25,8 +25,6 @@ import org.hippoecm.repository.util.NodeInfo;
 
 public class ProgressTrackingCopyHandler extends DefaultCopyHandler {
 
-    private static final long DEBUG_DELAY_MS = Long.getLong("folderctxmenus.debug.delay", 0);
-
     private final OperationProgress progress;
     private final AtomicLong counter;
     private final long total;
@@ -43,7 +41,7 @@ public class ProgressTrackingCopyHandler extends DefaultCopyHandler {
     public void startNode(NodeInfo nodeInfo) throws RepositoryException {
         checkCancelled();
         super.startNode(nodeInfo);
-        reportProgress();
+        reportProgressIfUserVisible();
     }
 
     private void checkCancelled() throws RepositoryException {
@@ -52,20 +50,23 @@ public class ProgressTrackingCopyHandler extends DefaultCopyHandler {
         }
     }
 
-    private void reportProgress() throws RepositoryException {
-        if (progress != null) {
-            Node current = getCurrent();
-            String path = current != null ? current.getPath() : "";
-            progress.updateProgress(counter.incrementAndGet(), total, path);
-
-            if (DEBUG_DELAY_MS > 0) {
-                try {
-                    Thread.sleep(DEBUG_DELAY_MS);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }
+    private void reportProgressIfUserVisible() throws RepositoryException {
+        if (progress == null) {
+            return;
         }
+
+        Node current = getCurrent();
+        if (current == null) {
+            return;
+        }
+
+        if (!NodeTraverser.USER_VISIBLE_ITEMS.isAcceptable(current)) {
+            return;
+        }
+
+        String path = current.getPath();
+        progress.updateProgress(counter.incrementAndGet(), total, path);
+        progress.onProgressUpdated();
     }
 
 }

@@ -128,7 +128,7 @@ public abstract class AbstractFolderCopyOrMoveTask extends AbstractFolderTask {
     }
 
     protected long countSourceNodes() throws RepositoryException {
-        return NodeCounter.countNodes(getSourceFolderNode(), NodeTraverser.ACCEPT_ALL);
+        return NodeCounter.countNodes(getSourceFolderNode(), NodeTraverser.USER_VISIBLE_ITEMS);
     }
 
     protected void recomputeHippoPaths() {

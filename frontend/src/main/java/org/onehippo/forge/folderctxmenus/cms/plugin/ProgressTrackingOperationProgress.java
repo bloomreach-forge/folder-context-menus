@@ -15,25 +15,47 @@
  */
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.onehippo.forge.folderctxmenus.common.OperationProgress;
 
 public class ProgressTrackingOperationProgress implements OperationProgress {
 
-    private volatile long currentCount;
-    private volatile long totalCount;
-    private volatile String currentPath;
+    private static final long DEBUG_DELAY_MS = Long.getLong("folderctxmenus.debug.delay", 0);
+
+    private volatile Snapshot snapshot = new Snapshot(0, 0, null);
     private volatile boolean cancelled;
     private volatile boolean completed;
-    private volatile long startTimeNanos;
+    private final AtomicLong startTimeNanos = new AtomicLong(0);
+
+    public static final class Snapshot {
+        private final long currentCount;
+        private final long totalCount;
+        private final String currentPath;
+
+        Snapshot(long currentCount, long totalCount, String currentPath) {
+            this.currentCount = currentCount;
+            this.totalCount = totalCount;
+            this.currentPath = currentPath;
+        }
+
+        public long getCurrentCount() {
+            return currentCount;
+        }
+
+        public long getTotalCount() {
+            return totalCount;
+        }
+
+        public String getCurrentPath() {
+            return currentPath;
+        }
+    }
 
     @Override
     public void updateProgress(long current, long total, String currentItemPath) {
-        if (startTimeNanos == 0) {
-            startTimeNanos = System.nanoTime();
-        }
-        this.currentCount = current;
-        this.totalCount = total;
-        this.currentPath = currentItemPath;
+        startTimeNanos.compareAndSet(0, System.nanoTime());
+        this.snapshot = new Snapshot(current, total, currentItemPath);
     }
 
     @Override
@@ -41,20 +63,34 @@ public class ProgressTrackingOperationProgress implements OperationProgress {
         return cancelled;
     }
 
+    public void onProgressUpdated() {
+        if (DEBUG_DELAY_MS > 0) {
+            try {
+                Thread.sleep(DEBUG_DELAY_MS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
     public void cancel() {
         this.cancelled = true;
     }
 
+    public Snapshot getSnapshot() {
+        return snapshot;
+    }
+
     public long getCurrentCount() {
-        return currentCount;
+        return snapshot.getCurrentCount();
     }
 
     public long getTotalCount() {
-        return totalCount;
+        return snapshot.getTotalCount();
     }
 
     public String getCurrentPath() {
-        return currentPath;
+        return snapshot.getCurrentPath();
     }
 
     public boolean isCompleted() {
@@ -70,20 +106,23 @@ public class ProgressTrackingOperationProgress implements OperationProgress {
     }
 
     public int getProgressPercentage() {
-        if (totalCount == 0) {
+        Snapshot s = snapshot;
+        if (s.getTotalCount() == 0) {
             return 0;
         }
-        return (int) ((currentCount * 100) / totalCount);
+        return (int) ((s.getCurrentCount() * 100) / s.getTotalCount());
     }
 
     public String getEstimatedTimeRemaining() {
-        if (currentCount == 0 || totalCount == 0 || startTimeNanos == 0) {
+        Snapshot s = snapshot;
+        long startNanos = startTimeNanos.get();
+        if (s.getCurrentCount() == 0 || s.getTotalCount() == 0 || startNanos == 0) {
             return "";
         }
 
-        long elapsedNanos = System.nanoTime() - startTimeNanos;
-        double itemsPerNano = (double) currentCount / elapsedNanos;
-        long remainingItems = totalCount - currentCount;
+        long elapsedNanos = System.nanoTime() - startNanos;
+        double itemsPerNano = (double) s.getCurrentCount() / elapsedNanos;
+        long remainingItems = s.getTotalCount() - s.getCurrentCount();
         if (remainingItems <= 0) {
             return "";
         }
