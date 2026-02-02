@@ -77,7 +77,7 @@
     <repository>
       <id>bloomreach-maven2</id>
       <name>Bloomreach Maven 2</name>
-      <url>https://maven.bloomreach.com/repository/maven2</url>
+      <url>https://maven.bloomreach.com/repository/maven2/</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
@@ -87,9 +87,14 @@
       </releases>
     </repository>
     <repository>
+      <id>bloomreach-maven2-enterprise</id>
+      <name>Bloomreach Maven 2 Enterprise</name>
+      <url>https://maven.bloomreach.com/repository/maven2-enterprise/</url>
+    </repository>
+    <repository>
       <id>bloomreach-maven2-forge</id>
       <name>Bloomreach Maven 2 Forge repository</name>
-      <url>https://maven.bloomreach.com/repository/maven2-forge</url>
+      <url>https://maven.bloomreach.com/repository/maven2-forge/</url>
       <snapshots />
     </repository>
   </repositories>
