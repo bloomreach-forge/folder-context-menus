@@ -15,6 +15,8 @@
  */
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxChannel;
@@ -36,8 +38,12 @@ public abstract class ProgressPanel extends Panel {
 
     private static final long serialVersionUID = 1L;
     private static final int MAX_PATH_DISPLAY_LENGTH = 60;
+    private static final int POLLING_INTERVAL_MS = 200;
 
     private final ProgressTrackingOperationProgress progress;
+    private final Runnable startOperation;
+    private final AtomicBoolean operationStarted = new AtomicBoolean(false);
+
     private final Label statusLabel;
     private final WebMarkupContainer progressBar;
     private final Label progressLabel;
@@ -45,8 +51,6 @@ public abstract class ProgressPanel extends Panel {
     private final AjaxLink<Void> cancelButton;
     private final AjaxLink<Void> closeButton;
     private final AbstractDefaultAjaxBehavior progressBehavior;
-    private final Runnable startOperation;
-    private final java.util.concurrent.atomic.AtomicBoolean operationStarted = new java.util.concurrent.atomic.AtomicBoolean(false);
 
     public ProgressPanel(String id, ProgressTrackingOperationProgress progress, Runnable startOperation) {
         super(id);
@@ -54,25 +58,54 @@ public abstract class ProgressPanel extends Panel {
         this.progress = progress;
         this.startOperation = startOperation;
 
-        statusLabel = new Label("statusLabel", Model.of("Starting..."));
-        statusLabel.setOutputMarkupId(true);
-        add(statusLabel);
+        add(statusLabel = createStatusLabel());
+        add(progressLabel = createProgressLabel());
+        add(progressBar = createProgressBar(progressLabel));
+        add(pathLabel = createPathLabel());
+        add(cancelButton = createCancelButton());
+        add(closeButton = createCloseButton());
+        add(progressBehavior = createProgressBehavior());
+    }
 
-        progressBar = new WebMarkupContainer("progressBar");
-        progressBar.setOutputMarkupId(true);
-        progressBar.add(AttributeModifier.replace("style", "width: 0%"));
-        add(progressBar);
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        response.render(CssHeaderItem.forReference(
+                new CssResourceReference(ProgressPanel.class, "ProgressPanel.css")));
+        response.render(OnDomReadyHeaderItem.forScript(buildPollingScript()));
+    }
 
-        progressLabel = new Label("progressLabel", Model.of("0%"));
-        progressLabel.setOutputMarkupId(true);
-        progressBar.add(progressLabel);
+    protected abstract void onCloseClicked(AjaxRequestTarget target);
 
-        pathLabel = new Label("pathLabel", Model.of(""));
-        pathLabel.setOutputMarkupId(true);
-        pathLabel.setOutputMarkupPlaceholderTag(true);
-        add(pathLabel);
+    private Label createStatusLabel() {
+        Label label = new Label("statusLabel", Model.of("Starting..."));
+        label.setOutputMarkupId(true);
+        return label;
+    }
 
-        cancelButton = new AjaxLink<Void>("cancelButton") {
+    private WebMarkupContainer createProgressBar(Label label) {
+        WebMarkupContainer bar = new WebMarkupContainer("progressBar");
+        bar.setOutputMarkupId(true);
+        bar.add(AttributeModifier.replace("style", "width: 0%"));
+        bar.add(label);
+        return bar;
+    }
+
+    private Label createProgressLabel() {
+        Label label = new Label("progressLabel", Model.of("0%"));
+        label.setOutputMarkupId(true);
+        return label;
+    }
+
+    private Label createPathLabel() {
+        Label label = new Label("pathLabel", Model.of(""));
+        label.setOutputMarkupId(true);
+        label.setOutputMarkupPlaceholderTag(true);
+        return label;
+    }
+
+    private AjaxLink<Void> createCancelButton() {
+        AjaxLink<Void> button = new AjaxLink<Void>("cancelButton") {
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -84,15 +117,17 @@ public abstract class ProgressPanel extends Panel {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 progress.cancel();
-                cancelButton.setEnabled(false);
+                setEnabled(false);
                 statusLabel.setDefaultModel(Model.of("Cancelling..."));
-                target.add(cancelButton, statusLabel);
+                target.add(this, statusLabel);
             }
         };
-        cancelButton.setOutputMarkupId(true);
-        add(cancelButton);
+        button.setOutputMarkupId(true);
+        return button;
+    }
 
-        closeButton = new AjaxLink<Void>("closeButton") {
+    private AjaxLink<Void> createCloseButton() {
+        AjaxLink<Void> button = new AjaxLink<Void>("closeButton") {
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -100,34 +135,23 @@ public abstract class ProgressPanel extends Panel {
                 onCloseClicked(target);
             }
         };
-        closeButton.setOutputMarkupId(true);
-        add(closeButton);
+        button.setOutputMarkupId(true);
+        return button;
+    }
 
-        progressBehavior = new AbstractDefaultAjaxBehavior() {
+    private AbstractDefaultAjaxBehavior createProgressBehavior() {
+        return new AbstractDefaultAjaxBehavior() {
             private static final long serialVersionUID = 1L;
 
             @Override
             protected void respond(AjaxRequestTarget target) {
                 startOperationIfNeeded();
-                String payload = buildProgressPayload();
+                String payload = ProgressPanelJsonBuilder.buildProgressPayload(progress);
                 RequestCycle.get().scheduleRequestHandlerAfterCurrent(
                         new TextRequestHandler("application/json", "UTF-8", payload));
             }
         };
-        add(progressBehavior);
     }
-
-    @Override
-    public void renderHead(IHeaderResponse response) {
-        super.renderHead(response);
-        response.render(CssHeaderItem.forReference(
-                new CssResourceReference(ProgressPanel.class, "ProgressPanel.css")));
-        response.render(OnDomReadyHeaderItem.forScript(buildPollingScript()));
-    }
-
-    protected abstract void onOperationComplete(AjaxRequestTarget target);
-
-    protected abstract void onCloseClicked(AjaxRequestTarget target);
 
     private void startOperationIfNeeded() {
         if (startOperation == null) {
@@ -138,121 +162,19 @@ public abstract class ProgressPanel extends Panel {
         }
     }
 
-    private String buildProgressPayload() {
-        StringBuilder payload = new StringBuilder(256);
-        boolean[] first = new boolean[] { true };
-        payload.append('{');
-
-        appendJsonField(payload, first, "current", progress.getCurrentCount());
-        appendJsonField(payload, first, "total", progress.getTotalCount());
-        appendJsonField(payload, first, "percent", progress.getProgressPercentage());
-        appendJsonField(payload, first, "path", progress.getCurrentPath());
-        appendJsonField(payload, first, "eta", progress.getEstimatedTimeRemaining());
-        appendJsonField(payload, first, "cancelled", progress.isCancelled());
-        appendJsonField(payload, first, "completed", progress.isCompleted());
-
-        ProgressCompletionSummary summary = progress.getCompletionSummary();
-        if (summary != null) {
-            if (!first[0]) {
-                payload.append(',');
-            }
-            first[0] = false;
-            payload.append("\"summary\":{");
-            boolean[] summaryFirst = new boolean[] { true };
-            appendJsonField(payload, summaryFirst, "message", summary.getMessage());
-            appendJsonField(payload, summaryFirst, "error", summary.isError());
-            payload.append('}');
-        }
-
-        payload.append('}');
-        return payload.toString();
-    }
-
     private String buildPollingScript() {
-        StringBuilder config = new StringBuilder(256);
-        boolean[] first = new boolean[] { true };
-        config.append('{');
-        appendJsonField(config, first, "url", progressBehavior.getCallbackUrl().toString());
-        appendJsonField(config, first, "panelId", getMarkupId());
-        appendJsonField(config, first, "intervalMs", 200);
-        appendJsonField(config, first, "maxPathLength", MAX_PATH_DISPLAY_LENGTH);
-        appendJsonField(config, first, "statusId", statusLabel.getMarkupId());
-        appendJsonField(config, first, "progressBarId", progressBar.getMarkupId());
-        appendJsonField(config, first, "progressLabelId", progressLabel.getMarkupId());
-        appendJsonField(config, first, "pathId", pathLabel.getMarkupId());
-        appendJsonField(config, first, "cancelId", cancelButton.getMarkupId());
-        appendJsonField(config, first, "closeId", closeButton.getMarkupId());
-        config.append('}');
-
-        return "FolderContextMenus.startProgressPolling(" + config + ");";
-    }
-
-    private static void appendJsonField(StringBuilder builder, boolean[] first, String key, long value) {
-        appendJsonFieldName(builder, first, key);
-        builder.append(value);
-    }
-
-    private static void appendJsonField(StringBuilder builder, boolean[] first, String key, int value) {
-        appendJsonFieldName(builder, first, key);
-        builder.append(value);
-    }
-
-    private static void appendJsonField(StringBuilder builder, boolean[] first, String key, boolean value) {
-        appendJsonFieldName(builder, first, key);
-        builder.append(value);
-    }
-
-    private static void appendJsonField(StringBuilder builder, boolean[] first, String key, String value) {
-        appendJsonFieldName(builder, first, key);
-        if (value == null) {
-            builder.append("null");
-        } else {
-            builder.append('"').append(jsonEscape(value)).append('"');
-        }
-    }
-
-    private static void appendJsonFieldName(StringBuilder builder, boolean[] first, String key) {
-        if (!first[0]) {
-            builder.append(',');
-        }
-        first[0] = false;
-        builder.append('"').append(key).append("\":");
-    }
-
-    private static String jsonEscape(String value) {
-        StringBuilder escaped = new StringBuilder(value.length() + 16);
-        for (int i = 0; i < value.length(); i++) {
-            char ch = value.charAt(i);
-            switch (ch) {
-                case '"':
-                    escaped.append("\\\"");
-                    break;
-                case '\\':
-                    escaped.append("\\\\");
-                    break;
-                case '\b':
-                    escaped.append("\\b");
-                    break;
-                case '\f':
-                    escaped.append("\\f");
-                    break;
-                case '\n':
-                    escaped.append("\\n");
-                    break;
-                case '\r':
-                    escaped.append("\\r");
-                    break;
-                case '\t':
-                    escaped.append("\\t");
-                    break;
-                default:
-                    if (ch < 0x20) {
-                        escaped.append(String.format("\\u%04x", (int) ch));
-                    } else {
-                        escaped.append(ch);
-                    }
-            }
-        }
-        return escaped.toString();
+        ProgressPanelJsonBuilder.PollingConfig config = new ProgressPanelJsonBuilder.PollingConfig(
+                progressBehavior.getCallbackUrl().toString(),
+                getMarkupId(),
+                POLLING_INTERVAL_MS,
+                MAX_PATH_DISPLAY_LENGTH,
+                statusLabel.getMarkupId(),
+                progressBar.getMarkupId(),
+                progressLabel.getMarkupId(),
+                pathLabel.getMarkupId(),
+                cancelButton.getMarkupId(),
+                closeButton.getMarkupId()
+        );
+        return "FolderContextMenus.startProgressPolling(" + ProgressPanelJsonBuilder.buildPollingConfig(config) + ");";
     }
 }

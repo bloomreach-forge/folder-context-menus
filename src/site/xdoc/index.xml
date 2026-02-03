@@ -143,6 +143,24 @@
         These steps run automatically, even after cancellation, on any content that was successfully copied.
       </p>
 
+      <p><strong>Known limitations</strong></p>
+      <p>
+        <em>Move operation dialog may close before summary is viewed:</em> In rare cases, the progress dialog
+        may close automatically after a move operation completes, before the user has a chance to review the
+        summary. This occurs because:
+      </p>
+      <ul>
+        <li>Move operations delete the source folder from JCR</li>
+        <li>When <code>session.save()</code> persists changes, JCR fires repository events</li>
+        <li>The CMS UI may respond to these events by refreshing, which closes modal dialogs</li>
+      </ul>
+      <p>
+        This is a CMS framework behavior, not a bug in this plugin. The operation completes successfully;
+        only the summary display is affected. Copy operations are not affected because they do not remove
+        the source folder. All operations are logged to the server logs with operation ID, user, source path,
+        destination path, and item count for traceability.
+      </p>
+
     </section>
 
     <section name="Programmatic Folder Copy and Move">

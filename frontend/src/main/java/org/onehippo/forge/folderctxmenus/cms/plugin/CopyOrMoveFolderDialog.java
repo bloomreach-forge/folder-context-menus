@@ -314,15 +314,6 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
             private static final long serialVersionUID = 1L;
 
             @Override
-            protected void onOperationComplete(AjaxRequestTarget target) {
-                Exception error = operationError.get();
-                logOutcome(error);
-                if (operationProgress.getCompletionSummary() == null) {
-                    operationProgress.setCompletionSummary(buildCompletionSummary(error));
-                }
-            }
-
-            @Override
             protected void onCloseClicked(AjaxRequestTarget target) {
                 closeDialog();
             }
