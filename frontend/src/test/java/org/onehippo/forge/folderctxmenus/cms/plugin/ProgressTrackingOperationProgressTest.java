@@ -79,7 +79,7 @@ public class ProgressTrackingOperationProgressTest {
     public void testCompletion() {
         assertFalse(progress.isCompleted());
 
-        progress.setCompleted(true);
+        progress.markCompleted();
 
         assertTrue(progress.isCompleted());
     }
@@ -218,12 +218,6 @@ public class ProgressTrackingOperationProgressTest {
         }
     }
 
-    @Test
-    public void testOnProgressUpdatedDefaultBehavior() {
-        // Without the debug system property set, this should be a no-op
-        // Just verify it doesn't throw
-        progress.onProgressUpdated();
-    }
 
     @Test
     public void testProgressPercentageConsistency() {
@@ -235,6 +229,31 @@ public class ProgressTrackingOperationProgressTest {
         // Both should use the same snapshot internally
         assertEquals(33, percentage);
         assertEquals(33, snapshot.getCurrentCount());
+    }
+
+    @Test
+    public void testCompletionSummaryInitiallyNull() {
+        assertNull(progress.getCompletionSummary());
+    }
+
+    @Test
+    public void testSetAndGetCompletionSummary() {
+        ProgressCompletionSummary summary = new ProgressCompletionSummary("Done", false);
+
+        progress.setCompletionSummary(summary);
+
+        assertSame(summary, progress.getCompletionSummary());
+        assertEquals("Done", progress.getCompletionSummary().getMessage());
+        assertFalse(progress.getCompletionSummary().isError());
+    }
+
+    @Test
+    public void testCompletionSummaryWithError() {
+        ProgressCompletionSummary summary = new ProgressCompletionSummary("Failed", true);
+
+        progress.setCompletionSummary(summary);
+
+        assertTrue(progress.getCompletionSummary().isError());
     }
 
 }

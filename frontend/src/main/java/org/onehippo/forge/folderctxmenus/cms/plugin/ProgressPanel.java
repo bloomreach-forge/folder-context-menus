@@ -15,26 +15,26 @@
  */
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
-import java.time.Duration;
-
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
+import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxChannel;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.handler.TextRequestHandler;
 import org.apache.wicket.request.resource.CssResourceReference;
 
 public abstract class ProgressPanel extends Panel {
 
     private static final long serialVersionUID = 1L;
-    private static final int POLL_INTERVAL_MS = 200;
     private static final int MAX_PATH_DISPLAY_LENGTH = 60;
 
     private final ProgressTrackingOperationProgress progress;
@@ -44,10 +44,15 @@ public abstract class ProgressPanel extends Panel {
     private final Label pathLabel;
     private final AjaxLink<Void> cancelButton;
     private final AjaxLink<Void> closeButton;
+    private final AbstractDefaultAjaxBehavior progressBehavior;
+    private final Runnable startOperation;
+    private final java.util.concurrent.atomic.AtomicBoolean operationStarted = new java.util.concurrent.atomic.AtomicBoolean(false);
 
-    public ProgressPanel(String id, ProgressTrackingOperationProgress progress) {
+    public ProgressPanel(String id, ProgressTrackingOperationProgress progress, Runnable startOperation) {
         super(id);
+        setOutputMarkupId(true);
         this.progress = progress;
+        this.startOperation = startOperation;
 
         statusLabel = new Label("statusLabel", Model.of("Starting..."));
         statusLabel.setOutputMarkupId(true);
@@ -98,21 +103,18 @@ public abstract class ProgressPanel extends Panel {
         closeButton.setOutputMarkupId(true);
         add(closeButton);
 
-        AbstractAjaxTimerBehavior timerBehavior = new AbstractAjaxTimerBehavior(Duration.ofMillis(POLL_INTERVAL_MS)) {
+        progressBehavior = new AbstractDefaultAjaxBehavior() {
             private static final long serialVersionUID = 1L;
 
             @Override
-            protected void onTimer(AjaxRequestTarget target) {
-                if (progress.isCompleted()) {
-                    stop(target);
-                    onOperationComplete(target);
-                    return;
-                }
-
-                updateProgressDisplay(target);
+            protected void respond(AjaxRequestTarget target) {
+                startOperationIfNeeded();
+                String payload = buildProgressPayload();
+                RequestCycle.get().scheduleRequestHandlerAfterCurrent(
+                        new TextRequestHandler("application/json", "UTF-8", payload));
             }
         };
-        add(timerBehavior);
+        add(progressBehavior);
     }
 
     @Override
@@ -120,75 +122,137 @@ public abstract class ProgressPanel extends Panel {
         super.renderHead(response);
         response.render(CssHeaderItem.forReference(
                 new CssResourceReference(ProgressPanel.class, "ProgressPanel.css")));
-    }
-
-    private void updateProgressDisplay(AjaxRequestTarget target) {
-        long total = progress.getTotalCount();
-        int percentage = total > 0 ? progress.getProgressPercentage() : 0;
-
-        updateStatus(total);
-        updateProgressBar(percentage);
-        updatePath(progress.getCurrentPath());
-
-        target.add(statusLabel, progressBar, pathLabel);
-
-        if (progress.isCancelled() && cancelButton.isEnabled()) {
-            cancelButton.setEnabled(false);
-            target.add(cancelButton);
-        }
-    }
-
-    private void updateStatus(long total) {
-        String status;
-        if (total > 0) {
-            String eta = progress.getEstimatedTimeRemaining();
-            status = String.format("Processing %d/%d items%s",
-                    progress.getCurrentCount(), total,
-                    eta.isEmpty() ? "" : " - " + eta);
-        } else {
-            status = "Initializing...";
-        }
-        statusLabel.setDefaultModel(Model.of(status));
-    }
-
-    private void updateProgressBar(int percentage) {
-        progressLabel.setDefaultModel(Model.of(percentage + "%"));
-        progressBar.add(AttributeModifier.replace("style", "width: " + percentage + "%"));
-    }
-
-    private void updatePath(String path) {
-        String displayPath = "";
-        if (path != null && !path.isEmpty()) {
-            displayPath = truncatePath(path);
-        }
-        pathLabel.setDefaultModel(Model.of(displayPath));
-    }
-
-    private String truncatePath(String path) {
-        if (path.length() <= MAX_PATH_DISPLAY_LENGTH) {
-            return path;
-        }
-        return "..." + path.substring(path.length() - MAX_PATH_DISPLAY_LENGTH + 3);
+        response.render(OnDomReadyHeaderItem.forScript(buildPollingScript()));
     }
 
     protected abstract void onOperationComplete(AjaxRequestTarget target);
 
     protected abstract void onCloseClicked(AjaxRequestTarget target);
 
-    public void showCompletionSummary(AjaxRequestTarget target, String message, boolean isError) {
-        statusLabel.setDefaultModel(Model.of(message));
+    private void startOperationIfNeeded() {
+        if (startOperation == null) {
+            return;
+        }
+        if (operationStarted.compareAndSet(false, true)) {
+            startOperation.run();
+        }
+    }
 
-        if (isError) {
-            progressBar.add(AttributeModifier.replace("class", "progress-bar progress-bar-error"));
-        } else {
-            progressBar.add(AttributeModifier.replace("style", "width: 100%"));
-            progressLabel.setDefaultModel(Model.of("100%"));
+    private String buildProgressPayload() {
+        StringBuilder payload = new StringBuilder(256);
+        boolean[] first = new boolean[] { true };
+        payload.append('{');
+
+        appendJsonField(payload, first, "current", progress.getCurrentCount());
+        appendJsonField(payload, first, "total", progress.getTotalCount());
+        appendJsonField(payload, first, "percent", progress.getProgressPercentage());
+        appendJsonField(payload, first, "path", progress.getCurrentPath());
+        appendJsonField(payload, first, "eta", progress.getEstimatedTimeRemaining());
+        appendJsonField(payload, first, "cancelled", progress.isCancelled());
+        appendJsonField(payload, first, "completed", progress.isCompleted());
+
+        ProgressCompletionSummary summary = progress.getCompletionSummary();
+        if (summary != null) {
+            if (!first[0]) {
+                payload.append(',');
+            }
+            first[0] = false;
+            payload.append("\"summary\":{");
+            boolean[] summaryFirst = new boolean[] { true };
+            appendJsonField(payload, summaryFirst, "message", summary.getMessage());
+            appendJsonField(payload, summaryFirst, "error", summary.isError());
+            payload.append('}');
         }
 
-        pathLabel.setVisible(false);
-        cancelButton.add(AttributeModifier.append("class", " hidden-btn"));
-        closeButton.add(AttributeModifier.remove("style"));
+        payload.append('}');
+        return payload.toString();
+    }
 
-        target.add(statusLabel, progressBar, pathLabel, cancelButton, closeButton);
+    private String buildPollingScript() {
+        StringBuilder config = new StringBuilder(256);
+        boolean[] first = new boolean[] { true };
+        config.append('{');
+        appendJsonField(config, first, "url", progressBehavior.getCallbackUrl().toString());
+        appendJsonField(config, first, "panelId", getMarkupId());
+        appendJsonField(config, first, "intervalMs", 200);
+        appendJsonField(config, first, "maxPathLength", MAX_PATH_DISPLAY_LENGTH);
+        appendJsonField(config, first, "statusId", statusLabel.getMarkupId());
+        appendJsonField(config, first, "progressBarId", progressBar.getMarkupId());
+        appendJsonField(config, first, "progressLabelId", progressLabel.getMarkupId());
+        appendJsonField(config, first, "pathId", pathLabel.getMarkupId());
+        appendJsonField(config, first, "cancelId", cancelButton.getMarkupId());
+        appendJsonField(config, first, "closeId", closeButton.getMarkupId());
+        config.append('}');
+
+        return "FolderContextMenus.startProgressPolling(" + config + ");";
+    }
+
+    private static void appendJsonField(StringBuilder builder, boolean[] first, String key, long value) {
+        appendJsonFieldName(builder, first, key);
+        builder.append(value);
+    }
+
+    private static void appendJsonField(StringBuilder builder, boolean[] first, String key, int value) {
+        appendJsonFieldName(builder, first, key);
+        builder.append(value);
+    }
+
+    private static void appendJsonField(StringBuilder builder, boolean[] first, String key, boolean value) {
+        appendJsonFieldName(builder, first, key);
+        builder.append(value);
+    }
+
+    private static void appendJsonField(StringBuilder builder, boolean[] first, String key, String value) {
+        appendJsonFieldName(builder, first, key);
+        if (value == null) {
+            builder.append("null");
+        } else {
+            builder.append('"').append(jsonEscape(value)).append('"');
+        }
+    }
+
+    private static void appendJsonFieldName(StringBuilder builder, boolean[] first, String key) {
+        if (!first[0]) {
+            builder.append(',');
+        }
+        first[0] = false;
+        builder.append('"').append(key).append("\":");
+    }
+
+    private static String jsonEscape(String value) {
+        StringBuilder escaped = new StringBuilder(value.length() + 16);
+        for (int i = 0; i < value.length(); i++) {
+            char ch = value.charAt(i);
+            switch (ch) {
+                case '"':
+                    escaped.append("\\\"");
+                    break;
+                case '\\':
+                    escaped.append("\\\\");
+                    break;
+                case '\b':
+                    escaped.append("\\b");
+                    break;
+                case '\f':
+                    escaped.append("\\f");
+                    break;
+                case '\n':
+                    escaped.append("\\n");
+                    break;
+                case '\r':
+                    escaped.append("\\r");
+                    break;
+                case '\t':
+                    escaped.append("\\t");
+                    break;
+                default:
+                    if (ch < 0x20) {
+                        escaped.append(String.format("\\u%04x", (int) ch));
+                    } else {
+                        escaped.append(ch);
+                    }
+            }
+        }
+        return escaped.toString();
     }
 }

@@ -19,6 +19,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.jcr.AccessDeniedException;
@@ -90,7 +92,10 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
     private WebMarkupContainer progressContainer;
     private ProgressTrackingOperationProgress operationProgress;
     private final AtomicReference<Exception> operationError = new AtomicReference<>(null);
+    private final AtomicBoolean outcomeLogged = new AtomicBoolean(false);
     private boolean inProgressMode = false;
+    private String operationUserId;
+    private String operationId;
 
     private String sourceFolderIdentifier = "";
     private String sourceFolderPath = "";
@@ -278,71 +283,56 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
         inProgressMode = true;
         operationProgress = new ProgressTrackingOperationProgress();
         operationError.set(null);
+        outcomeLogged.set(false);
+        operationUserId = resolveUserId();
+        operationId = UUID.randomUUID().toString();
 
         formContainer.setVisible(false);
         setOkVisible(false);
         setCancelVisible(false);
 
         progressContainer.setVisible(true);
-        progressContainer.replace(new ProgressPanel("progressPanel", operationProgress) {
+        ProgressPanel progressPanel = new ProgressPanel("progressPanel", operationProgress, () -> {
+            if (operationProgress.isCancelled()) {
+                operationProgress.setCompletionSummary(buildCompletionSummary(operationError.get()));
+                operationProgress.markCompleted();
+                return;
+            }
+            CompletableFuture.runAsync(() -> {
+                try {
+                    executor.execute(operationProgress);
+                } catch (Exception e) {
+                    operationError.set(e);
+                } finally {
+                    Exception error = operationError.get();
+                    logOutcome(error);
+                    operationProgress.setCompletionSummary(buildCompletionSummary(error));
+                    operationProgress.markCompleted();
+                }
+            }, FOLDER_OP_EXECUTOR);
+        }) {
             private static final long serialVersionUID = 1L;
 
             @Override
             protected void onOperationComplete(AjaxRequestTarget target) {
                 Exception error = operationError.get();
-                long count = operationProgress.getCurrentCount();
-                boolean cancelled = error instanceof OperationCancelledException || operationProgress.isCancelled();
-
-                if (cancelled) {
-                    log.info("Folder {} operation was cancelled by user", isCopyOperation ? "copy" : "move");
-                } else if (error != null) {
-                    log.error("Folder {} operation failed", isCopyOperation ? "copy" : "move", error);
-                } else {
-                    logOperationEvent(count);
+                logOutcome(error);
+                if (operationProgress.getCompletionSummary() == null) {
+                    operationProgress.setCompletionSummary(buildCompletionSummary(error));
                 }
-
-                // For copy operations, show summary modal
-                if (isCopyOperation) {
-                    String message;
-                    boolean isError;
-
-                    if (cancelled) {
-                        message = "Cancelled after copying " + count + " items";
-                        isError = false;
-                    } else if (error != null) {
-                        message = "Error after " + count + " items: " + getUserFriendlyErrorMessage(error);
-                        isError = true;
-                    } else {
-                        message = "Successfully copied " + count + " items";
-                        isError = false;
-                    }
-
-                    showCompletionSummary(target, message, isError);
-                    return;
-                }
-
-                // For move operations, just close the dialog
-                closeDialog();
             }
 
             @Override
             protected void onCloseClicked(AjaxRequestTarget target) {
                 closeDialog();
             }
-        });
+        };
+
+        progressContainer.replace(progressPanel);
 
         target.add(formContainer, progressContainer);
         target.appendJavaScript("FolderContextMenus.resizeDialog(" + PROGRESS_DIALOG_WIDTH + ")");
 
-        CompletableFuture.runAsync(() -> {
-            try {
-                executor.execute(operationProgress);
-            } catch (Exception e) {
-                operationError.set(e);
-            } finally {
-                operationProgress.markCompleted();
-            }
-        }, FOLDER_OP_EXECUTOR);
     }
 
     protected boolean validateInput() {
@@ -395,20 +385,62 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
         return "An unexpected error occurred.";
     }
 
+    private ProgressCompletionSummary buildCompletionSummary(Exception error) {
+        long count = operationProgress.getCurrentCount();
+        boolean cancelled = error instanceof OperationCancelledException || operationProgress.isCancelled();
+        String verb = isCopyOperation ? "copied" : "moved";
+
+        if (cancelled) {
+            return new ProgressCompletionSummary("Cancelled after " + verb + " " + count + " items", false);
+        }
+        if (error != null) {
+            return new ProgressCompletionSummary(
+                    "Error after " + count + " items: " + getUserFriendlyErrorMessage(error),
+                    true);
+        }
+        return new ProgressCompletionSummary("Successfully " + verb + " " + count + " items", false);
+    }
+
+    private void logOutcome(Exception error) {
+        if (!outcomeLogged.compareAndSet(false, true)) {
+            return;
+        }
+
+        long count = operationProgress.getCurrentCount();
+        boolean cancelled = error instanceof OperationCancelledException || operationProgress.isCancelled();
+
+        if (cancelled) {
+            log.info("Folder {} operation was cancelled by user", isCopyOperation ? "copy" : "move");
+        } else if (error != null) {
+            log.error("Folder {} operation failed", isCopyOperation ? "copy" : "move", error);
+        } else {
+            logOperationEvent(count);
+        }
+    }
+
     private void logOperationEvent(long itemCount) {
         try {
-            String userId = UserSession.get().getJcrSession().getUserID();
             String destJcrPath = destinationFolderPath + "/" + newFolderUrlName;
             String operation = isCopyOperation ? "copy" : "move";
 
-            log.info("Folder {} completed: user='{}', source='{}', destination='{}', items={}",
+            log.info("Folder {} completed: opId='{}', user='{}', source='{}', destination='{}', items={}",
                     operation,
-                    userId,
+                    operationId,
+                    operationUserId,
                     sourceFolderPath,
                     destJcrPath,
                     itemCount);
         } catch (Exception e) {
             log.warn("Failed to log folder operation event: {}", e.getMessage(), e);
+        }
+    }
+
+    private String resolveUserId() {
+        try {
+            return UserSession.get().getJcrSession().getUserID();
+        } catch (Exception e) {
+            log.warn("Failed to resolve user id for folder operation logging", e);
+            return "unknown";
         }
     }
 

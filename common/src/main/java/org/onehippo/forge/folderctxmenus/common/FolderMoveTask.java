@@ -63,8 +63,6 @@ public class FolderMoveTask extends AbstractFolderCopyOrMoveTask {
         getSession().move(getSourceFolderNode().getPath(), getDestFolderPath());
         setDestFolderNode(JcrUtils.getNodeIfExists(getDestParentFolderNode(), getDestFolderNodeName()));
 
-        // Phase 3: Post-processing (fast operations, no progress tracking)
-        recomputeHippoPaths();
         updateFolderTranslations(getDestFolderNode(), getDestFolderDisplayName(), getLocale().getLanguage());
     }
 
@@ -99,7 +97,8 @@ public class FolderMoveTask extends AbstractFolderCopyOrMoveTask {
 
     @Override
     protected void doAfterExecute() throws RepositoryException {
-        resetHippoDocumentTranslationIds(getResetTranslations());
+        // Combined post-processing: recompute paths + reset translation IDs in single traversal
+        performDestinationPostProcessing(getResetTranslations(), true);
         logOperationCompleted();
     }
 

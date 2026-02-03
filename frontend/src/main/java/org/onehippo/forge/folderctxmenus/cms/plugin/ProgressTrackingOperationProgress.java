@@ -26,6 +26,7 @@ public class ProgressTrackingOperationProgress implements OperationProgress {
     private volatile Snapshot snapshot = new Snapshot(0, 0, null);
     private volatile boolean cancelled;
     private volatile boolean completed;
+    private volatile ProgressCompletionSummary completionSummary;
     private final AtomicLong startTimeNanos = new AtomicLong(0);
 
     public static final class Snapshot {
@@ -63,16 +64,6 @@ public class ProgressTrackingOperationProgress implements OperationProgress {
         return cancelled;
     }
 
-    public void onProgressUpdated() {
-        if (DEBUG_DELAY_MS > 0) {
-            try {
-                Thread.sleep(DEBUG_DELAY_MS);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
-    }
-
     public void cancel() {
         this.cancelled = true;
     }
@@ -97,12 +88,16 @@ public class ProgressTrackingOperationProgress implements OperationProgress {
         return completed;
     }
 
-    public void setCompleted(boolean completed) {
-        this.completed = completed;
-    }
-
     public void markCompleted() {
         this.completed = true;
+    }
+
+    public ProgressCompletionSummary getCompletionSummary() {
+        return completionSummary;
+    }
+
+    public void setCompletionSummary(ProgressCompletionSummary completionSummary) {
+        this.completionSummary = completionSummary;
     }
 
     public int getProgressPercentage() {
