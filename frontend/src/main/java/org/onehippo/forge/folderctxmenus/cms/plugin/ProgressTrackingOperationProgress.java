@@ -21,8 +21,6 @@ import org.onehippo.forge.folderctxmenus.common.OperationProgress;
 
 public class ProgressTrackingOperationProgress implements OperationProgress {
 
-    private static final long DEBUG_DELAY_MS = Long.getLong("folderctxmenus.debug.delay", 0);
-
     private volatile Snapshot snapshot = new Snapshot(0, 0, null);
     private volatile boolean cancelled;
     private volatile boolean completed;
