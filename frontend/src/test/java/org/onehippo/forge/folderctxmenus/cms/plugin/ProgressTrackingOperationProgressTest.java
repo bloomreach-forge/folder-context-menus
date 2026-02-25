@@ -248,6 +248,32 @@ public class ProgressTrackingOperationProgressTest {
     }
 
     @Test
+    public void testFinalizingState_initiallyFalse() {
+        assertFalse(progress.isFinalizing());
+        assertEquals(0, progress.getFinalizingCount());
+    }
+
+    @Test
+    public void testEnterFinalizingPhase_setsFinalizingTrue() {
+        progress.enterFinalizingPhase();
+        assertTrue(progress.isFinalizing());
+    }
+
+    @Test
+    public void testUpdateFinalizingProgress_updatesCount() {
+        progress.enterFinalizingPhase();
+        progress.updateFinalizingProgress(57);
+        assertEquals(57, progress.getFinalizingCount());
+    }
+
+    @Test
+    public void testUpdateFinalizingProgress_withoutEnteringPhase_updatesCountButNotFlag() {
+        progress.updateFinalizingProgress(10);
+        assertEquals(10, progress.getFinalizingCount());
+        assertFalse(progress.isFinalizing());
+    }
+
+    @Test
     public void testCompletionSummaryWithError() {
         ProgressCompletionSummary summary = new ProgressCompletionSummary("Failed", true);
 

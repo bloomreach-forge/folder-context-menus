@@ -33,6 +33,8 @@ FolderContextMenus.resizeDialog = function(width) {
     });
 };
 
+FolderContextMenus._activeIntervalId = null;
+
 FolderContextMenus.startProgressPolling = function(options) {
     if (!options || !options.url || !options.panelId) {
         return;
@@ -43,9 +45,13 @@ FolderContextMenus.startProgressPolling = function(options) {
         return;
     }
 
-    if (panel._progressPollInterval) {
-        clearInterval(panel._progressPollInterval);
-        panel._progressPollInterval = null;
+    // Cancel any globally-tracked interval before starting a new one.
+    // Storing the handle only on the DOM element is unreliable: Wicket can
+    // reuse the same markup-id for a replacement ProgressPanel, causing the
+    // DOM guard to see the *new* element and never stop the *old* closure.
+    if (FolderContextMenus._activeIntervalId !== null) {
+        clearInterval(FolderContextMenus._activeIntervalId);
+        FolderContextMenus._activeIntervalId = null;
     }
 
     var intervalMs = options.intervalMs || 200;
@@ -110,6 +116,23 @@ FolderContextMenus.startProgressPolling = function(options) {
             return true;
         }
 
+        if (data.finalizing) {
+            if (statusEl) {
+                statusEl.textContent = 'Finalizing... (' + (data.finalizingCount || 0) + ' items)';
+            }
+            if (progressBarEl) {
+                progressBarEl.className = 'progress-bar progress-bar-finalizing';
+                progressBarEl.style.width = '100%';
+            }
+            if (progressLabelEl) {
+                progressLabelEl.textContent = '';
+            }
+            if (pathEl) {
+                pathEl.style.display = 'none';
+            }
+            return false;
+        }
+
         var total = data.total || 0;
         var current = data.current || 0;
         var eta = data.eta || '';
@@ -148,29 +171,51 @@ FolderContextMenus.startProgressPolling = function(options) {
         return false;
     };
 
+    var pollInFlight = false;
+    var intervalId = null;
+
+    var stopPolling = function() {
+        if (intervalId !== null) {
+            clearInterval(intervalId);
+            intervalId = null;
+            FolderContextMenus._activeIntervalId = null;
+        }
+    };
+
     var poll = function() {
+        if (!document.getElementById(options.panelId)) {
+            stopPolling();
+            return;
+        }
+        if (pollInFlight) {
+            return;
+        }
+        pollInFlight = true;
         fetch(options.url, { credentials: 'same-origin', cache: 'no-store' })
             .then(function(response) {
                 if (!response.ok) {
+                    stopPolling();
                     return null;
                 }
                 return response.json();
             })
             .then(function(data) {
+                pollInFlight = false;
                 if (!data) {
                     return;
                 }
                 var done = updateProgress(data);
                 if (done) {
-                    clearInterval(panel._progressPollInterval);
-                    panel._progressPollInterval = null;
+                    stopPolling();
                 }
             })
             .catch(function() {
-                // Ignore polling errors; next interval will retry.
+                pollInFlight = false;
+                // Ignore transient network errors; next interval will retry.
             });
     };
 
     poll();
-    panel._progressPollInterval = setInterval(poll, intervalMs);
+    intervalId = setInterval(poll, intervalMs);
+    FolderContextMenus._activeIntervalId = intervalId;
 };

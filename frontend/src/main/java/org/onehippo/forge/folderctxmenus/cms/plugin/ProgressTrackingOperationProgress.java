@@ -26,6 +26,8 @@ public class ProgressTrackingOperationProgress implements OperationProgress {
     private volatile boolean completed;
     private volatile ProgressCompletionSummary completionSummary;
     private final AtomicLong startTimeNanos = new AtomicLong(0);
+    private volatile boolean finalizing = false;
+    private volatile long finalizingCount = 0;
 
     public static final class Snapshot {
         private final long currentCount;
@@ -96,6 +98,24 @@ public class ProgressTrackingOperationProgress implements OperationProgress {
 
     public void setCompletionSummary(ProgressCompletionSummary completionSummary) {
         this.completionSummary = completionSummary;
+    }
+
+    @Override
+    public void enterFinalizingPhase() {
+        this.finalizing = true;
+    }
+
+    @Override
+    public void updateFinalizingProgress(long count) {
+        this.finalizingCount = count;
+    }
+
+    boolean isFinalizing() {
+        return finalizing;
+    }
+
+    long getFinalizingCount() {
+        return finalizingCount;
     }
 
     public int getProgressPercentage() {

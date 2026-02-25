@@ -34,11 +34,14 @@ import org.hippoecm.repository.util.JcrUtils;
 
 public abstract class AbstractFolderCopyOrMoveTask extends AbstractFolderTask {
 
+    private static final int POST_PROCESSING_SAVE_BATCH_SIZE =
+            Integer.getInteger("folderctxmenus.saveBatchSize", 200);
+
     private final Node destParentFolderNode;
     private final String destFolderNodeName;
     private final String destFolderDisplayName;
     private Node destFolderNode;
-    private Boolean resetTranslations;
+    private boolean resetTranslations;
 
     private CopyHandler copyHandler;
     private OperationProgress operationProgress;
@@ -46,12 +49,12 @@ public abstract class AbstractFolderCopyOrMoveTask extends AbstractFolderTask {
     public AbstractFolderCopyOrMoveTask(final Session session, final Locale locale, final Node sourceFolderNode,
                                         final Node destParentFolderNode, final String destFolderNodeName, final String destFolderDisplayName) {
         //when moving, we want to keep any existing translation links
-        this(session, locale, sourceFolderNode, destParentFolderNode, destFolderNodeName, destFolderDisplayName, Boolean.FALSE);
+        this(session, locale, sourceFolderNode, destParentFolderNode, destFolderNodeName, destFolderDisplayName, false);
     }
 
     public AbstractFolderCopyOrMoveTask(final Session session, final Locale locale, final Node sourceFolderNode,
             final Node destParentFolderNode, final String destFolderNodeName, final String destFolderDisplayName,
-            final Boolean resetTranslations) {
+            final boolean resetTranslations) {
         super(session, locale, sourceFolderNode);
 
         this.destParentFolderNode = destParentFolderNode;
@@ -84,7 +87,7 @@ public abstract class AbstractFolderCopyOrMoveTask extends AbstractFolderTask {
         return getDestParentFolderNode().getPath() + "/" + getDestFolderNodeName();
     }
 
-    public Boolean getResetTranslations() {
+    public boolean getResetTranslations() {
         return resetTranslations;
     }
 
@@ -143,6 +146,10 @@ public abstract class AbstractFolderCopyOrMoveTask extends AbstractFolderTask {
             return;
         }
 
+        if (getOperationProgress() != null) {
+            getOperationProgress().enterFinalizingPhase();
+        }
+
         try {
             final Map<String, String> uuidMappings = new HashMap<>();
             final String parentLocale = JcrUtils.getStringProperty(
@@ -153,6 +160,8 @@ public abstract class AbstractFolderCopyOrMoveTask extends AbstractFolderTask {
             // Process the root node first for translations
             processTranslationNode(getDestFolderNode(), context);
 
+            int[] postProcessingNodeCount = {0};
+            int[] userVisibleCount = {0};
             JcrTraverseUtils.traverseNodes(getDestFolderNode(), new NodeTraverser() {
                 @Override
                 public boolean isAcceptable(Node node) {
@@ -169,11 +178,28 @@ public abstract class AbstractFolderCopyOrMoveTask extends AbstractFolderTask {
                 @Override
                 public void accept(Node node) throws RepositoryException {
                     processNodeDuringPostProcessing(node, context);
+                    postProcessingNodeCount[0]++;
+                    if (getOperationProgress() != null && NodeTraverser.USER_VISIBLE_ITEMS.isAcceptable(node)) {
+                        getOperationProgress().updateFinalizingProgress(++userVisibleCount[0]);
+                    }
+                    maybeSaveAndRefreshPostProcessing(node, postProcessingNodeCount[0]);
                 }
             });
         } catch (RepositoryException e) {
             getLogger().error("Failed to perform post-processing under {}.", getDestFolderNodePath(), e);
         }
+    }
+
+    void maybeSaveAndRefreshPostProcessing(Node node, int nodeCount) throws RepositoryException {
+        if (POST_PROCESSING_SAVE_BATCH_SIZE <= 0) {
+            return;
+        }
+        if (nodeCount % POST_PROCESSING_SAVE_BATCH_SIZE != 0) {
+            return;
+        }
+        Session session = node.getSession();
+        session.save();
+        session.refresh(false);
     }
 
     /**

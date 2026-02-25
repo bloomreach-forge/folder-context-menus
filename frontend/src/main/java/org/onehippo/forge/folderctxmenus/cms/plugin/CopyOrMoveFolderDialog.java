@@ -41,7 +41,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.panel.EmptyPanel;
+
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LambdaModel;
 import org.apache.wicket.request.resource.CssResourceReference;
@@ -51,6 +51,7 @@ import org.hippoecm.frontend.model.tree.IJcrTreeNode;
 import org.hippoecm.frontend.model.tree.JcrTreeModel;
 import org.hippoecm.frontend.model.tree.JcrTreeNode;
 import org.hippoecm.frontend.plugin.IPluginContext;
+import org.hippoecm.frontend.service.IBrowseService;
 import org.hippoecm.frontend.plugin.config.IPluginConfig;
 import org.hippoecm.frontend.plugins.standards.tree.FolderTreeNode;
 import org.hippoecm.frontend.session.UserSession;
@@ -90,6 +91,7 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
 
     private WebMarkupContainer formContainer;
     private WebMarkupContainer progressContainer;
+    private ProgressPanel progressPanel;
     private ProgressTrackingOperationProgress operationProgress;
     private final AtomicReference<Exception> operationError = new AtomicReference<>(null);
     private final AtomicBoolean outcomeLogged = new AtomicBoolean(false);
@@ -141,7 +143,18 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
         progressContainer.setOutputMarkupId(true);
         progressContainer.setOutputMarkupPlaceholderTag(true);
         progressContainer.setVisible(false);
-        progressContainer.add(new EmptyPanel("progressPanel"));
+        progressPanel = new ProgressPanel("progressPanel", new ProgressTrackingOperationProgress(), null) {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            protected void onCloseClicked(AjaxRequestTarget target) {
+                refreshJcrSession();
+                closeDialog();
+                browseToDestinationIfSuccessful();
+            }
+        };
+        progressPanel.setVisible(false);
+        progressContainer.add(progressPanel);
         add(progressContainer);
 
         final Form form = new Form("form");
@@ -292,7 +305,7 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
         setCancelVisible(false);
 
         progressContainer.setVisible(true);
-        ProgressPanel progressPanel = new ProgressPanel("progressPanel", operationProgress, () -> {
+        progressPanel.reinitialize(operationProgress, () -> {
             if (operationProgress.isCancelled()) {
                 operationProgress.setCompletionSummary(buildCompletionSummary(operationError.get()));
                 operationProgress.markCompleted();
@@ -310,16 +323,8 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
                     operationProgress.markCompleted();
                 }
             }, FOLDER_OP_EXECUTOR);
-        }) {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            protected void onCloseClicked(AjaxRequestTarget target) {
-                closeDialog();
-            }
-        };
-
-        progressContainer.replace(progressPanel);
+        });
+        progressPanel.setVisible(true);
 
         target.add(formContainer, progressContainer);
         target.appendJavaScript("FolderContextMenus.resizeDialog(" + PROGRESS_DIALOG_WIDTH + ")");
@@ -423,6 +428,29 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
                     itemCount);
         } catch (Exception e) {
             log.warn("Failed to log folder operation event: {}", e.getMessage(), e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void browseToDestinationIfSuccessful() {
+        if (operationProgress == null || operationProgress.isCancelled() || operationError.get() != null) {
+            return;
+        }
+        if (StringUtils.isBlank(destinationFolderPath) || StringUtils.isBlank(newFolderUrlName)) {
+            return;
+        }
+        IBrowseService<JcrNodeModel> browseService = getPluginContext()
+                .getService(IBrowseService.class.getName(), IBrowseService.class);
+        if (browseService != null) {
+            browseService.browse(new JcrNodeModel(destinationFolderPath + "/" + newFolderUrlName));
+        }
+    }
+
+    private void refreshJcrSession() {
+        try {
+            UserSession.get().getJcrSession().refresh(false);
+        } catch (RepositoryException e) {
+            log.warn("Failed to refresh JCR session after folder operation", e);
         }
     }
 

@@ -31,7 +31,7 @@ public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
 
     public FolderCopyTask(final Session session, final Locale locale, final Node sourceFolderNode,
             final Node destParentFolderNode, final String destFolderNodeName, final String destFolderDisplayName,
-            final Boolean resetTranslations) {
+            final boolean resetTranslations) {
         super(session, locale, sourceFolderNode, destParentFolderNode, destFolderNodeName, destFolderDisplayName, resetTranslations);
     }
 

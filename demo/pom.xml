@@ -337,6 +337,9 @@
             <artifactId>cargo-maven3-plugin</artifactId>
             <configuration>
               <configuration>
+                <properties>
+                  <cargo.jvmargs>-Xms512m -Xmx1g</cargo.jvmargs>
+                </properties>
                 <configfiles>
                   <configfile>
                     <file>${project.basedir}/conf/context.xml</file>

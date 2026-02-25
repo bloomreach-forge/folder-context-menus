@@ -162,4 +162,33 @@ public class NodeCounterTest {
                 () -> NodeCounter.countNodes(rootNode, null));
     }
 
+    @Test
+    public void countNodes_whenIteratorYieldsNullChild_skipsNullWithoutError() throws RepositoryException {
+        NodeIterator nullChildIterator = mock(NodeIterator.class);
+        when(nullChildIterator.hasNext()).thenReturn(true, false);
+        when(nullChildIterator.nextNode()).thenReturn(null);
+        when(rootNode.getNodes()).thenReturn(nullChildIterator);
+
+        NodeTraverser traverser = new NodeTraverser() {
+            @Override
+            public boolean isAcceptable(Node node) {
+                return true;
+            }
+
+            @Override
+            public boolean isTraversable(Node node) {
+                return true;
+            }
+
+            @Override
+            public void accept(Node node) {
+            }
+        };
+
+        long count = NodeCounter.countNodes(rootNode, traverser);
+
+        // Only rootNode itself is counted; the null child is skipped
+        assertEquals(1, count);
+    }
+
 }

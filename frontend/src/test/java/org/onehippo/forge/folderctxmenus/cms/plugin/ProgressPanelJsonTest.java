@@ -106,6 +106,43 @@ public class ProgressPanelJsonTest {
     }
 
     @Test
+    public void buildProgressPayload_duringFinalizingPhase_shouldEmitFinalizingFields() throws Exception {
+        progress.updateProgress(100, 100, "/done");
+        progress.enterFinalizingPhase();
+        progress.updateFinalizingProgress(42);
+
+        String json = ProgressPanelJsonBuilder.buildProgressPayload(progress);
+        JsonNode node = MAPPER.readTree(json);
+
+        assertTrue(node.get("finalizing").asBoolean());
+        assertEquals(42, node.get("finalizingCount").asLong());
+        assertFalse(node.has("current"));
+        assertFalse(node.has("total"));
+        assertFalse(node.has("path"));
+    }
+
+    @Test
+    public void buildProgressPayload_duringFinalizingPhase_withCompletionSummary_shouldIncludeBothFinalizingAndSummary() throws Exception {
+        progress.enterFinalizingPhase();
+        progress.updateFinalizingProgress(42);
+        progress.setCompletionSummary(new ProgressCompletionSummary("Successfully copied 42 items", false));
+        progress.markCompleted();
+
+        String json = ProgressPanelJsonBuilder.buildProgressPayload(progress);
+        JsonNode node = MAPPER.readTree(json);
+
+        // finalizing fields must still be present
+        assertTrue(node.get("finalizing").asBoolean());
+        assertEquals(42, node.get("finalizingCount").asLong());
+        // summary must ALSO be present alongside finalizing so the JS
+        // summary-first check can stop polling after completion
+        assertTrue("summary must be present even while finalizing", node.has("summary"));
+        assertEquals("Successfully copied 42 items", node.get("summary").get("message").asText());
+        assertFalse(node.get("summary").get("error").asBoolean());
+        assertTrue(node.get("completed").asBoolean());
+    }
+
+    @Test
     public void buildPollingConfig_shouldContainAllElementIds() throws Exception {
         ProgressPanelJsonBuilder.PollingConfig config = new ProgressPanelJsonBuilder.PollingConfig(
                 "http://callback",

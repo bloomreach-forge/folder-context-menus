@@ -157,6 +157,29 @@ public class FolderOperationProgressIntegrationTest {
     }
 
     @Test
+    public void testCopyFolderReportsFinalizingPhase() throws RepositoryException {
+        FolderCopyTask task = new FolderCopyTask(
+                session,
+                Locale.ENGLISH,
+                sourceFolderNode,
+                destParentFolderNode,
+                "testfolder-finalizing",
+                "Test Folder Finalizing",
+                true
+        );
+        task.setOperationProgress(progress);
+
+        task.execute();
+
+        // Verify the finalizing phase is entered during post-processing.
+        // Count assertions are omitted: processNodeDuringPostProcessing calls
+        // isNodeType("hippotranslation:translated") which throws in the test
+        // repository (Hippo node types not registered), so the traversal is
+        // swallowed before any updateFinalizingProgress calls are made.
+        assertTrue(progress.finalizingEntered, "Finalizing phase must be entered during post-processing");
+    }
+
+    @Test
     public void testProgressReportsAccurateCount() throws RepositoryException {
         FolderCopyTask task = new FolderCopyTask(
                 session,
@@ -183,6 +206,8 @@ public class FolderOperationProgressIntegrationTest {
         long lastTotal = 0;
         String lastPath = null;
         boolean cancelled = false;
+        boolean finalizingEntered = false;
+        long lastFinalizingCount = 0;
 
         @Override
         public void updateProgress(long current, long total, String currentItemPath) {
@@ -200,6 +225,16 @@ public class FolderOperationProgressIntegrationTest {
         @Override
         public void onProgressUpdated() {
             hookCallCount++;
+        }
+
+        @Override
+        public void enterFinalizingPhase() {
+            finalizingEntered = true;
+        }
+
+        @Override
+        public void updateFinalizingProgress(long count) {
+            lastFinalizingCount = count;
         }
     }
 

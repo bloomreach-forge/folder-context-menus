@@ -27,19 +27,27 @@ final class ProgressPanelJsonBuilder {
     }
 
     static String buildProgressPayload(ProgressTrackingOperationProgress progress) {
-        ObjectNode json = MAPPER.createObjectNode()
-                .put("current", progress.getCurrentCount())
+        ObjectNode json = MAPPER.createObjectNode();
+
+        if (progress.isFinalizing()) {
+            json.put("finalizing", true)
+                .put("finalizingCount", progress.getFinalizingCount())
+                .put("cancelled", progress.isCancelled())
+                .put("completed", progress.isCompleted());
+        } else {
+            json.put("current", progress.getCurrentCount())
                 .put("total", progress.getTotalCount())
                 .put("percent", progress.getProgressPercentage())
                 .put("eta", progress.getEstimatedTimeRemaining())
                 .put("cancelled", progress.isCancelled())
                 .put("completed", progress.isCompleted());
 
-        String path = progress.getCurrentPath();
-        if (path == null) {
-            json.putNull("path");
-        } else {
-            json.put("path", path);
+            String path = progress.getCurrentPath();
+            if (path == null) {
+                json.putNull("path");
+            } else {
+                json.put("path", path);
+            }
         }
 
         ProgressCompletionSummary summary = progress.getCompletionSummary();

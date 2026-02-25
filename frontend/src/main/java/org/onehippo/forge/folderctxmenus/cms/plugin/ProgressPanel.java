@@ -40,8 +40,8 @@ public abstract class ProgressPanel extends Panel {
     private static final int MAX_PATH_DISPLAY_LENGTH = 60;
     private static final int POLLING_INTERVAL_MS = 200;
 
-    private final ProgressTrackingOperationProgress progress;
-    private final Runnable startOperation;
+    private ProgressTrackingOperationProgress progress;
+    private Runnable startOperation;
     private final AtomicBoolean operationStarted = new AtomicBoolean(false);
 
     private final Label statusLabel;
@@ -153,12 +153,20 @@ public abstract class ProgressPanel extends Panel {
         };
     }
 
+    void reinitialize(ProgressTrackingOperationProgress newProgress, Runnable newStartOperation) {
+        this.progress = newProgress;
+        this.startOperation = newStartOperation;
+        this.operationStarted.set(false);
+    }
+
     private void startOperationIfNeeded() {
         if (startOperation == null) {
             return;
         }
         if (operationStarted.compareAndSet(false, true)) {
-            startOperation.run();
+            Runnable pendingOperation = startOperation;
+            startOperation = null;
+            pendingOperation.run();
         }
     }
 

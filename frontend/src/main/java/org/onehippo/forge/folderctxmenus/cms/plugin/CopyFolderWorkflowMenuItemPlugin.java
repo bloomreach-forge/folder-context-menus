@@ -19,6 +19,7 @@ import java.util.Locale;
 
 import javax.jcr.Node;
 import javax.jcr.Session;
+import javax.jcr.SimpleCredentials;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
@@ -100,15 +101,21 @@ public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
                 }
 
                 startOperationWithProgress(target, progress -> {
-                    Node sourceNode = session.getNodeByIdentifier(sourceId);
-                    Node destParentNode = session.getNodeByIdentifier(destId);
+                    Session bgSession = session.impersonate(
+                            new SimpleCredentials(session.getUserID(), new char[0]));
+                    try {
+                        Node sourceNode = bgSession.getNodeByIdentifier(sourceId);
+                        Node destParentNode = bgSession.getNodeByIdentifier(destId);
 
-                    FolderCopyTask task = new FolderCopyTask(
-                            session, locale, sourceNode, destParentNode,
-                            newUrlName, newName, resetTranslations);
-                    task.setOperationProgress(progress);
-                    task.execute();
-                    session.save();
+                        FolderCopyTask task = new FolderCopyTask(
+                                bgSession, locale, sourceNode, destParentNode,
+                                newUrlName, newName, resetTranslations);
+                        task.setOperationProgress(progress);
+                        task.execute();
+                        bgSession.save();
+                    } finally {
+                        bgSession.logout();
+                    }
                 });
             }
         };

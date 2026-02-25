@@ -29,4 +29,8 @@ public interface OperationProgress {
         // no-op by default
     }
 
+    default void enterFinalizingPhase() {}
+
+    default void updateFinalizingProgress(long count) {}
+
 }

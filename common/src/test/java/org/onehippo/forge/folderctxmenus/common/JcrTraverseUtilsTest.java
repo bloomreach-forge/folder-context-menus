@@ -161,4 +161,82 @@ public class JcrTraverseUtilsTest {
                 () -> JcrTraverseUtils.traverseNodes(rootNode, null, progress, counter, 10));
     }
 
+    @Test
+    public void traverseNodes_withoutProgress_whenNodeNotAcceptable_doesNotCallAccept() throws RepositoryException {
+        // Root is not acceptable; children are still acceptable via the any() stub from setUp
+        when(traverser.isAcceptable(rootNode)).thenReturn(false);
+
+        JcrTraverseUtils.traverseNodes(rootNode, traverser);
+
+        verify(traverser, never()).accept(rootNode);
+        // children are still accepted
+        verify(traverser, times(2)).accept(any(Node.class));
+    }
+
+    @Test
+    public void traverseNodes_withoutProgress_whenNotTraversable_doesNotVisitChildren() throws RepositoryException {
+        when(traverser.isTraversable(rootNode)).thenReturn(false);
+
+        JcrTraverseUtils.traverseNodes(rootNode, traverser);
+
+        // Root is accepted, but children are never visited
+        verify(traverser, times(1)).accept(rootNode);
+        verify(traverser, never()).accept(childNode1);
+        verify(traverser, never()).accept(childNode2);
+    }
+
+    @Test
+    public void traverseNodes_withoutProgress_whenHasNoChildren_doesNotRecurse() throws RepositoryException {
+        when(rootNode.hasNodes()).thenReturn(false);
+
+        JcrTraverseUtils.traverseNodes(rootNode, traverser);
+
+        verify(traverser, times(1)).accept(rootNode);
+        verify(traverser, never()).accept(childNode1);
+        verify(traverser, never()).accept(childNode2);
+    }
+
+    @Test
+    public void traverseNodes_withoutProgress_whenIteratorYieldsNullChild_skipsNull() throws RepositoryException {
+        NodeIterator nullChildIterator = mock(NodeIterator.class);
+        when(nullChildIterator.hasNext()).thenReturn(true, false);
+        when(nullChildIterator.nextNode()).thenReturn(null);
+        when(rootNode.getNodes()).thenReturn(nullChildIterator);
+
+        JcrTraverseUtils.traverseNodes(rootNode, traverser);
+
+        // Only root is accepted; null child is skipped
+        verify(traverser, times(1)).accept(rootNode);
+    }
+
+    @Test
+    public void traverseNodes_withProgress_whenNodeNotUserVisible_doesNotUpdateProgressForThatNode()
+            throws RepositoryException {
+        // Make childNode1 neither a folder nor a handle → not user-visible
+        when(childNode1.isNodeType("nt:folder")).thenReturn(false);
+        when(childNode1.isNodeType("hippo:handle")).thenReturn(false);
+
+        AtomicLong counter = new AtomicLong(0);
+
+        JcrTraverseUtils.traverseNodes(rootNode, traverser, progress, counter, 3);
+
+        // root and childNode2 are nt:folder → 2 progress updates; childNode1 is skipped
+        verify(progress, times(2)).updateProgress(anyLong(), eq(3L), anyString());
+    }
+
+    @Test
+    public void traverseNodes_withProgress_whenIteratorYieldsNullChild_skipsNull() throws RepositoryException {
+        NodeIterator nullChildIterator = mock(NodeIterator.class);
+        when(nullChildIterator.hasNext()).thenReturn(true, false);
+        when(nullChildIterator.nextNode()).thenReturn(null);
+        when(rootNode.getNodes()).thenReturn(nullChildIterator);
+
+        AtomicLong counter = new AtomicLong(0);
+
+        JcrTraverseUtils.traverseNodes(rootNode, traverser, progress, counter, 1);
+
+        // Only root triggers progress; null child is skipped without error
+        verify(traverser, times(1)).accept(rootNode);
+    }
+
 }
