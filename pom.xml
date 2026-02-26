@@ -146,6 +146,24 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!-- Preserve parent add-opens flags for Java 17 and append JaCoCo agent via @{argLine} -->
+          <argLine>-Xmx1024m
+            --add-opens java.base/java.io=ALL-UNNAMED
+            --add-opens java.base/java.lang=ALL-UNNAMED
+            --add-opens java.base/java.lang.reflect=ALL-UNNAMED
+            --add-opens java.base/java.text=ALL-UNNAMED
+            --add-opens java.base/java.time=ALL-UNNAMED
+            --add-opens java.base/java.util=ALL-UNNAMED
+            --add-opens java.base/java.util.regex=ALL-UNNAMED
+            --add-opens java.base/java.util.stream=ALL-UNNAMED
+            --add-opens java.rmi/sun.rmi.transport=ALL-UNNAMED
+            @{argLine}</argLine>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
         <version>${maven.plugin.jacoco.version}</version>
@@ -158,7 +176,7 @@
           </execution>
           <execution>
             <id>jacoco-report</id>
-            <phase>verify</phase>
+            <phase>test</phase>
             <goals>
               <goal>report</goal>
             </goals>
