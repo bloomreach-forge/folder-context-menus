@@ -10,272 +10,281 @@
   OR CONDITIONS OF ANY KIND, either express or implied. See the License for
   the specific language governing permissions and limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.onehippo.cms7</groupId>
-    <artifactId>hippo-cms7-project</artifactId>
-    <version>16.6.5</version>
-  </parent>
-
-  <name>Bloomreach XM Extra Folder Context Menus</name>
-  <description>Bloomreach XM Extra Folder Context Menus</description>
-  <groupId>org.onehippo.forge.folderctxmenus</groupId>
-  <artifactId>folderctxmenus</artifactId>
-  <version>7.1.4-SNAPSHOT</version>
-  <packaging>pom</packaging>
-  <url>https://bloomreach-forge.github.io/folder-context-menus</url>
-
-  <properties>
-    <plugin.jxr.version>3.3.0</plugin.jxr.version>
-    <brut.version>5.0.1</brut.version>
-  </properties>
-
-  <licenses>
-    <license>
-      <name>The Apache Software License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
-
-  <developers>
-    <developer>
-      <name>Woonsan Ko</name>
-      <id>wko</id>
-      <email>w.ko @ onehippo . com</email>
-      <organization>Hippo</organization>
-      <roles>
-        <role>Project Lead</role>
-        <role>Java Developer</role>
-      </roles>
-      <timezone>-5</timezone>
-    </developer>
-  </developers>
-
-  <scm>
-    <connection>scm:git:git@github.com:bloomreach-forge/folder-context-menus.git</connection>
-    <developerConnection>scm:git:git@github.com:bloomreach-forge/folder-context-menus.git</developerConnection>
-    <url>https://github.com/bloomreach-forge/folder-context-menus.git</url>
-  </scm>
-
-  <issueManagement>
-    <system>Jira</system>
-    <url>https://issues.onehippo.com/browse/FORGE</url>
-  </issueManagement>
-
-  <distributionManagement>
-    <repository>
-      <name>Bloomreach Maven 2 Forge Repository</name>
-      <id>bloomreach-maven2-forge</id>
-      <url>https://maven.bloomreach.com/content/repositories/forge-releases</url>
-      <uniqueVersion>false</uniqueVersion>
-    </repository>
-  </distributionManagement>
-
-  <repositories>
-    <repository>
-      <id>bloomreach-maven2</id>
-      <name>Bloomreach Maven 2 Repository</name>
-      <url>https://maven.bloomreach.com/repository/maven2/</url>
-    </repository>
-    <repository>
-      <id>bloomreach-maven2-forge</id>
-      <name>Bloomreach Maven 2 Forge Repository</name>
-      <url>https://maven.bloomreach.com/repository/maven2-forge/</url>
-    </repository>
-  </repositories>
-
-  <dependencyManagement>
-
-    <dependencies>
-
-      <dependency>
+    <parent>
         <groupId>org.onehippo.cms7</groupId>
-        <artifactId>hippo-repository-api</artifactId>
-        <version>${hippo.release.version}</version>
-      </dependency>
+        <artifactId>hippo-cms7-project</artifactId>
+        <version>16.6.5</version>
+    </parent>
 
-      <dependency>
-        <groupId>org.onehippo.cms7</groupId>
-        <artifactId>hippo-repository-utilities</artifactId>
-        <version>${hippo.release.version}</version>
-      </dependency>
+    <name>Bloomreach XM Extra Folder Context Menus</name>
+    <description>Bloomreach XM Extra Folder Context Menus</description>
+    <groupId>org.onehippo.forge.folderctxmenus</groupId>
+    <artifactId>folderctxmenus</artifactId>
+    <version>7.1.4-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <url>https://bloomreach-forge.github.io/folder-context-menus</url>
 
-      <dependency>
-        <groupId>org.onehippo.cms7</groupId>
-        <artifactId>hippo-repository-workflow</artifactId>
-        <version>${hippo.release.version}</version>
-      </dependency>
+    <properties>
+        <plugin.jxr.version>3.3.0</plugin.jxr.version>
+        <brut.version>5.0.1</brut.version>
+    </properties>
 
-      <dependency>
-        <groupId>org.onehippo.cms7</groupId>
-        <artifactId>hippo-cms-api</artifactId>
-        <version>${hippo.release.version}</version>
-      </dependency>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
-      <dependency>
-        <groupId>org.onehippo.cms7</groupId>
-        <artifactId>hippo-cms-builtin</artifactId>
-        <version>${hippo.release.version}</version>
-      </dependency>
+    <developers>
+        <developer>
+            <name>Woonsan Ko</name>
+            <id>wko</id>
+            <email>w.ko @ onehippo . com</email>
+            <organization>Hippo</organization>
+            <roles>
+                <role>Project Lead</role>
+                <role>Java Developer</role>
+            </roles>
+            <timezone>-5</timezone>
+        </developer>
+    </developers>
 
-      <dependency>
-        <groupId>org.onehippo.cms7</groupId>
-        <artifactId>hippo-cms-perspectives</artifactId>
-        <version>${hippo.release.version}</version>
-      </dependency>
+    <scm>
+        <connection>scm:git:git@github.com:bloomreach-forge/folder-context-menus.git</connection>
+        <developerConnection>scm:git:git@github.com:bloomreach-forge/folder-context-menus.git</developerConnection>
+        <url>https://github.com/bloomreach-forge/folder-context-menus.git</url>
+    </scm>
 
-      <dependency>
-        <groupId>org.onehippo.cms7</groupId>
-        <artifactId>hippo-services</artifactId>
-        <version>${hippo.release.version}</version>
-      </dependency>
+    <issueManagement>
+        <system>Jira</system>
+        <url>https://issues.onehippo.com/browse/FORGE</url>
+    </issueManagement>
 
-      <dependency>
-        <groupId>org.onehippo.cms7</groupId>
-        <artifactId>hippo-cms7-commons</artifactId>
-        <version>${hippo.release.version}</version>
-      </dependency>
+    <distributionManagement>
+        <repository>
+            <name>Bloomreach Maven 2 Forge Repository</name>
+            <id>bloomreach-maven2-forge</id>
+            <url>https://maven.bloomreach.com/content/repositories/forge-releases</url>
+            <uniqueVersion>false</uniqueVersion>
+        </repository>
+    </distributionManagement>
 
-    </dependencies>
+    <repositories>
+        <repository>
+            <id>bloomreach-maven2</id>
+            <name>Bloomreach Maven 2 Repository</name>
+            <url>https://maven.bloomreach.com/repository/maven2/</url>
+        </repository>
+        <repository>
+            <id>bloomreach-maven2-forge</id>
+            <name>Bloomreach Maven 2 Forge Repository</name>
+            <url>https://maven.bloomreach.com/repository/maven2-forge/</url>
+        </repository>
+    </repositories>
 
-  </dependencyManagement>
+    <dependencyManagement>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <!-- Preserve parent add-opens flags for Java 17 and append JaCoCo agent via @{argLine} -->
-          <argLine>-Xmx1024m
-            --add-opens java.base/java.io=ALL-UNNAMED
-            --add-opens java.base/java.lang=ALL-UNNAMED
-            --add-opens java.base/java.lang.reflect=ALL-UNNAMED
-            --add-opens java.base/java.text=ALL-UNNAMED
-            --add-opens java.base/java.time=ALL-UNNAMED
-            --add-opens java.base/java.util=ALL-UNNAMED
-            --add-opens java.base/java.util.regex=ALL-UNNAMED
-            --add-opens java.base/java.util.stream=ALL-UNNAMED
-            --add-opens java.rmi/sun.rmi.transport=ALL-UNNAMED
-            @{argLine}</argLine>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <version>${maven.plugin.jacoco.version}</version>
-        <executions>
-          <execution>
-            <id>jacoco-prepare-agent</id>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>jacoco-report</id>
-            <phase>test</phase>
-            <goals>
-              <goal>report</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+        <dependencies>
 
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-project-info-reports-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jxr-plugin</artifactId>
-        <version>${plugin.jxr.version}</version>
-      </plugin>
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <version>${maven.plugin.jacoco.version}</version>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <report>report</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration>
-          <encoding>${project.build.sourceEncoding}</encoding>
-          <skip>false</skip>
-        </configuration>
-        <reportSets>
-          <reportSet>
-            <id>default</id>
-            <reports>
-              <report>javadoc</report>
-              <report>test-javadoc</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>
-    </plugins>
-  </reporting>
+            <dependency>
+                <groupId>org.onehippo.cms7</groupId>
+                <artifactId>hippo-repository-api</artifactId>
+                <version>${hippo.release.version}</version>
+            </dependency>
 
-  <modules>
-    <module>common</module>
-    <module>repository</module>
-    <module>frontend</module>
-  </modules>
+            <dependency>
+                <groupId>org.onehippo.cms7</groupId>
+                <artifactId>hippo-repository-utilities</artifactId>
+                <version>${hippo.release.version}</version>
+            </dependency>
 
-  <profiles>
-    <profile>
-      <id>dist.src</id>
-      <build>
-        <defaultGoal>validate</defaultGoal>
+            <dependency>
+                <groupId>org.onehippo.cms7</groupId>
+                <artifactId>hippo-repository-workflow</artifactId>
+                <version>${hippo.release.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.onehippo.cms7</groupId>
+                <artifactId>hippo-cms-api</artifactId>
+                <version>${hippo.release.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.onehippo.cms7</groupId>
+                <artifactId>hippo-cms-builtin</artifactId>
+                <version>${hippo.release.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.onehippo.cms7</groupId>
+                <artifactId>hippo-cms-perspectives</artifactId>
+                <version>${hippo.release.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.onehippo.cms7</groupId>
+                <artifactId>hippo-services</artifactId>
+                <version>${hippo.release.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.onehippo.cms7</groupId>
+                <artifactId>hippo-cms7-commons</artifactId>
+                <version>${hippo.release.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.junit.vintage</groupId>
+                <artifactId>junit-vintage-engine</artifactId>
+                <version>${junit-jupiter.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+        </dependencies>
+
+    </dependencyManagement>
+
+    <build>
         <plugins>
-          <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>distro-assembly</id>
-                <phase>validate</phase>
-                <goals>
-                  <goal>single</goal>
-                </goals>
-                  <configuration>
-                    <descriptors>
-                      <descriptor>src-assembly.xml</descriptor>
-                    </descriptors>
-                  </configuration>
-              </execution>
-            </executions>
-          </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!-- Preserve parent add-opens flags for Java 17 and append JaCoCo agent via @{argLine} -->
+                    <argLine>-Xmx1024m
+                        --add-opens java.base/java.io=ALL-UNNAMED
+                        --add-opens java.base/java.lang=ALL-UNNAMED
+                        --add-opens java.base/java.lang.reflect=ALL-UNNAMED
+                        --add-opens java.base/java.text=ALL-UNNAMED
+                        --add-opens java.base/java.time=ALL-UNNAMED
+                        --add-opens java.base/java.util=ALL-UNNAMED
+                        --add-opens java.base/java.util.regex=ALL-UNNAMED
+                        --add-opens java.base/java.util.stream=ALL-UNNAMED
+                        --add-opens java.rmi/sun.rmi.transport=ALL-UNNAMED
+                        @{argLine}
+                    </argLine>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${maven.plugin.jacoco.version}</version>
+                <executions>
+                    <execution>
+                        <id>jacoco-prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>jacoco-report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
-      </build>
-    </profile>
+    </build>
 
-    <!-- Only for generating/publishing GitHub Site Pages into docs/ folder from master branch. -->
-    <profile>
-      <id>github.pages</id>
-      <build>
+    <reporting>
         <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-site-plugin</artifactId>
-            <configuration>
-              <outputDirectory>docs</outputDirectory>
-            </configuration>
-          </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>${plugin.jxr.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${maven.plugin.jacoco.version}</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>report</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <skip>false</skip>
+                </configuration>
+                <reportSets>
+                    <reportSet>
+                        <id>default</id>
+                        <reports>
+                            <report>javadoc</report>
+                            <report>test-javadoc</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
         </plugins>
-      </build>
-    </profile>
-  </profiles>
+    </reporting>
+
+    <modules>
+        <module>common</module>
+        <module>repository</module>
+        <module>frontend</module>
+    </modules>
+
+    <profiles>
+        <profile>
+            <id>dist.src</id>
+            <build>
+                <defaultGoal>validate</defaultGoal>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>distro-assembly</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <descriptors>
+                                        <descriptor>src-assembly.xml</descriptor>
+                                    </descriptors>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Only for generating/publishing GitHub Site Pages into docs/ folder from master branch. -->
+        <profile>
+            <id>github.pages</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-site-plugin</artifactId>
+                        <configuration>
+                            <outputDirectory>docs</outputDirectory>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
