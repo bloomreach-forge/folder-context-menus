@@ -23,34 +23,35 @@ The output is in the ```docs/``` directory by default. You can open ```docs/inde
 
 You can push it and GitHub Pages will be served for the site automatically.
 
-# Releasing
+# Release Process
 
-The release workflow is triggered by pushing a tag that matches the version in both `pom.xml` and `demo/pom.xml`.
+Releases are fully automated via GitHub Actions. No local version bumping or tagging required.
 
-1. Set the release version and commit
-```bash
-mvn versions:set -DgenerateBackupPoms=false -DnewVersion="x.y.z"
-mvn -f demo versions:set -DgenerateBackupPoms=false -DnewVersion="x.y.z"
-git commit -a -m "<ISSUE_ID> releasing x.y.z: set version"
-```
+## Steps
 
-2. Create and push the release tag
-```bash
-git tag x.y.z
-git push origin x.y.z
-```
+1. Merge `develop` into `master`
+2. Go to **Actions → Release → Run workflow** (from `master`)
+3. Enter the release version (e.g. `5.2.1`) and the next SNAPSHOT (e.g. `5.2.2-SNAPSHOT`)
+4. Click **Run workflow**
 
-3. Set the next snapshot version and push your branch
-```bash
-mvn versions:set -DgenerateBackupPoms=false -DnewVersion="x.y.z+1-SNAPSHOT"
-mvn -f demo versions:set -DgenerateBackupPoms=false -DnewVersion="x.y.z+1-SNAPSHOT"
-git commit -a -m "<ISSUE_ID> releasing x.y.z: set next development version"
-git push origin <branch>
-```
+The [Release](.github/workflows/release.yml) workflow will:
 
-The release workflow automatically:
-- Verifies the root and demo versions match the tag
-- Builds and tests the project and demo
-- Deploys to the Forge Maven repository
-- Creates a GitHub Release
-- Regenerates and publishes the docs to `master`
+1. Set the version in `pom.xml` and `demo/pom.xml` to the release version
+2. Build and test the project and demo
+3. Deploy the artifact to the Bloomreach Forge Maven repository
+4. Generate `forge-addon.yaml` from `.forge/addon-config.yaml`
+5. Commit the release files (`pom.xml` + `forge-addon.yaml`) to `master` and create the `x.y.z` tag — the tag points to this commit, so `forge-addon.yaml` is readable via the GitHub Contents API at that ref
+6. Create a GitHub Release with `forge-addon.yaml` also attached as a downloadable asset
+7. Bump `pom.xml` and `demo/pom.xml` to the next SNAPSHOT and commit
+
+Once the GitHub Release is published, the [Deploy Docs](.github/workflows/deploy-docs.yml) workflow runs automatically and publishes the updated site to `gh-pages`.
+
+The workflow also automatically pushes the next SNAPSHOT version to `develop`.
+
+### Branch model
+
+| Branch | Purpose |
+|---|---|
+| `develop` | Active development |
+| `master` | Release branch — the release workflow runs here |
+| `gh-pages` | Published documentation (managed by CI, do not edit manually) |
