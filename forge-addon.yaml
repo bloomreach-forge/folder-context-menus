@@ -1,6 +1,6 @@
 id: folderctxmenus
 name: Bloomreach XM Extra Folder Context Menus
-version: 7.2.0-SNAPSHOT
+version: 7.2.3
 description: Bloomreach XM Extra Folder Context Menus
 repository:
   url: https://github.com/bloomreach-forge/folder-context-menus
