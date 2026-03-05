@@ -15,8 +15,20 @@
  */
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
+import javax.jcr.AccessDeniedException;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.lock.LockException;
+import javax.jcr.nodetype.ConstraintViolationException;
 import javax.swing.tree.TreeNode;
 
 import org.apache.commons.lang3.StringUtils;
@@ -24,22 +36,27 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
+
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.model.LambdaModel;
+import org.apache.wicket.request.resource.CssResourceReference;
+import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.hippoecm.frontend.model.JcrNodeModel;
 import org.hippoecm.frontend.model.tree.IJcrTreeNode;
 import org.hippoecm.frontend.model.tree.JcrTreeModel;
 import org.hippoecm.frontend.model.tree.JcrTreeNode;
 import org.hippoecm.frontend.plugin.IPluginContext;
+import org.hippoecm.frontend.service.IBrowseService;
 import org.hippoecm.frontend.plugin.config.IPluginConfig;
 import org.hippoecm.frontend.plugins.standards.tree.FolderTreeNode;
 import org.hippoecm.frontend.session.UserSession;
 import org.hippoecm.repository.api.StringCodecFactory;
+import org.onehippo.forge.folderctxmenus.common.OperationCancelledException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,25 +65,50 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
     private static final long serialVersionUID = 1L;
 
     private static final Logger log = LoggerFactory.getLogger(CopyOrMoveFolderDialog.class);
-
-    private static final String DEFAULT_START_PATH = "/content/documents";
     public static final String DEFAULT_LINK_TRANSLATION = "default.linkTranslation";
-
-    private final FolderActionDocumentArguments folderActionDocumentModel;
+    private static final int PROGRESS_DIALOG_WIDTH = 450;
+    private static final CssResourceReference CSS_REFERENCE =
+            new CssResourceReference(CopyOrMoveFolderDialog.class, "CopyOrMoveFolderDialog.css");
+    private static final JavaScriptResourceReference JS_REFERENCE =
+            new JavaScriptResourceReference(CopyOrMoveFolderDialog.class, "CopyOrMoveFolderDialog.js");
+    private static final int MAX_CONCURRENT_OPERATIONS = Integer.getInteger("folderctxmenus.maxConcurrentOps", 4);
+    private static final ThreadPoolExecutor FOLDER_OP_EXECUTOR = new ThreadPoolExecutor(
+            1, MAX_CONCURRENT_OPERATIONS,
+            60L, TimeUnit.SECONDS,
+            new LinkedBlockingQueue<>(16),
+            runnable -> {
+                Thread thread = new Thread(runnable, "FolderContextMenus-Operation");
+                thread.setDaemon(true);
+                return thread;
+            },
+            new ThreadPoolExecutor.CallerRunsPolicy()
+    );
 
     private final FolderSelectionCmsJcrTree folderTree;
     private JcrTreeModel treeModel;
     private JcrTreeNode rootTreeNode;
     private JcrNodeModel rootNodeModel;
 
+    private WebMarkupContainer formContainer;
+    private WebMarkupContainer progressContainer;
+    private ProgressPanel progressPanel;
+    private ProgressTrackingOperationProgress operationProgress;
+    private final AtomicReference<Exception> operationError = new AtomicReference<>(null);
+    private final AtomicBoolean outcomeLogged = new AtomicBoolean(false);
+    private boolean inProgressMode = false;
+    private String operationUserId;
+    private String operationId;
+
     private String sourceFolderIdentifier = "";
     private String sourceFolderPath = "";
     private String sourceFolderPathDisplay = "";
     private String destinationFolderIdentifier = "";
+    private String destinationFolderPath = "";
     private String destinationFolderPathDisplay = "";
     private String newFolderName = "";
     private String newFolderUrlName = "";
     private Boolean linkAsTranslation = Boolean.FALSE;
+    private final boolean isCopyOperation;
 
     public CopyOrMoveFolderDialog(final IPluginContext pluginContext, final IPluginConfig pluginConfig,
                                   IModel<String> titleModel, IModel<FolderActionDocumentArguments> model,
@@ -74,7 +116,8 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
 
         super(pluginContext, pluginConfig, titleModel, model);
 
-        folderActionDocumentModel = model.getObject();
+        this.isCopyOperation = isCopyDialog;
+        final FolderActionDocumentArguments folderActionDocumentModel = model.getObject();
 
         boolean isSourceFolderTranslated = false;
         if (StringUtils.isNotEmpty(folderActionDocumentModel.getSourceFolderIdentifier())) {
@@ -91,15 +134,39 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
             }
         }
 
+        formContainer = new WebMarkupContainer("formContainer");
+        formContainer.setOutputMarkupId(true);
+        formContainer.setOutputMarkupPlaceholderTag(true);
+        add(formContainer);
+
+        progressContainer = new WebMarkupContainer("progressContainer");
+        progressContainer.setOutputMarkupId(true);
+        progressContainer.setOutputMarkupPlaceholderTag(true);
+        progressContainer.setVisible(false);
+        progressPanel = new ProgressPanel("progressPanel", new ProgressTrackingOperationProgress(), null) {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            protected void onCloseClicked(AjaxRequestTarget target) {
+                refreshJcrSession();
+                closeDialog();
+                browseToDestinationIfSuccessful();
+            }
+        };
+        progressPanel.setVisible(false);
+        progressContainer.add(progressPanel);
+        add(progressContainer);
+
         final Form form = new Form("form");
+        formContainer.add(form);
 
         final TextField<String> sourceFolderPathDisplayField =
-            new TextField<String>("sourceFolderPathDisplay", new PropertyModel<String>(this, "sourceFolderPathDisplay"));
+            new TextField<>("sourceFolderPathDisplay", LambdaModel.of(this::getSourceFolderPathDisplay, this::setSourceFolderPathDisplay));
         sourceFolderPathDisplayField.setEnabled(false);
         form.add(sourceFolderPathDisplayField);
 
         final TextField<String> destinationFolderPathDisplayField =
-            new TextField<String>("destinationFolderPathDisplay", new PropertyModel<String>(this, "destinationFolderPathDisplay"));
+            new TextField<>("destinationFolderPathDisplay", LambdaModel.of(this::getDestinationFolderPathDisplay, this::setDestinationFolderPathDisplay));
         destinationFolderPathDisplayField.setEnabled(false);
         destinationFolderPathDisplayField.setOutputMarkupId(true);
         form.add(destinationFolderPathDisplayField);
@@ -119,7 +186,8 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
                     try {
                         final IJcrTreeNode treeNodeModel = (IJcrTreeNode) clickedNode;
                         final Node folderNode = treeNodeModel.getNodeModel().getObject();
-                        destinationFolderIdentifier = treeNodeModel.getNodeModel().getObject().getIdentifier();
+                        destinationFolderIdentifier = folderNode.getIdentifier();
+                        destinationFolderPath = folderNode.getPath();
                         destinationFolderPathDisplay = getDisplayPathOfNode(folderNode);
                         target.add(destinationFolderPathDisplayField);
                     } catch (RepositoryException e) {
@@ -132,19 +200,12 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
         form.add(folderTree);
 
         final TextField<String> newFolderUrlNameField =
-            new TextField<String>("newFolderUrlName", new PropertyModel<String>(this, "newFolderUrlName"));
+            new TextField<>("newFolderUrlName", LambdaModel.of(this::getNewFolderUrlName, this::setNewFolderUrlName));
         newFolderUrlNameField.setOutputMarkupId(true);
-        newFolderUrlNameField.add(new AjaxFormComponentUpdatingBehavior("change") {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            protected void onUpdate(final AjaxRequestTarget target) {
-            }
-        });
         form.add(newFolderUrlNameField);
 
         final TextField<String> newFolderNameField =
-            new TextField<String>("newFolderName", new PropertyModel<String>(this, "newFolderName"));
+            new TextField<>("newFolderName", LambdaModel.of(this::getNewFolderName, this::setNewFolderName));
         newFolderNameField.setOutputMarkupId(true);
         newFolderNameField.add(new AjaxFormComponentUpdatingBehavior("change") {
             private static final long serialVersionUID = 1L;
@@ -162,26 +223,17 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
         form.add(row);
         linkAsTranslation = pluginConfig.getAsBoolean(DEFAULT_LINK_TRANSLATION);
         final CheckBox linkAsTranslationsField =
-            new CheckBox("linkAsTranslation", new PropertyModel<Boolean>(this, "linkAsTranslation"));
+            new CheckBox("linkAsTranslation", LambdaModel.of(this::getLinkAsTranslation, this::setLinkAsTranslation));
         linkAsTranslationsField.setOutputMarkupId(true);
         linkAsTranslationsField.setVisible(isCopyDialog && isSourceFolderTranslated);
         row.add(linkAsTranslationsField);
-
-        add(form);
     }
 
     @Override
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
-        response
-            .render(CssHeaderItem.forReference(new PackageResourceReference(CopyOrMoveFolderDialog.class,
-                                                                            CopyOrMoveFolderDialog.class
-                                                                                .getSimpleName() + ".css")));
-    }
-
-    @Override
-    protected void onOk() {
-        super.onOk();
+        response.render(CssHeaderItem.forReference(CSS_REFERENCE));
+        response.render(JavaScriptHeaderItem.forReference(JS_REFERENCE));
     }
 
     public String getSourceFolderIdentifier() {
@@ -230,5 +282,188 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
 
     public void setLinkAsTranslation(Boolean linkAsTranslation) {
         this.linkAsTranslation = linkAsTranslation;
+    }
+
+    @Override
+    protected void handleSubmit() {
+        onOk();
+        if (!hasError() && !inProgressMode) {
+            closeDialog();
+        }
+    }
+
+    protected void startOperationWithProgress(AjaxRequestTarget target, FolderOperationExecutor executor) {
+        inProgressMode = true;
+        operationProgress = new ProgressTrackingOperationProgress();
+        operationError.set(null);
+        outcomeLogged.set(false);
+        operationUserId = resolveUserId();
+        operationId = UUID.randomUUID().toString();
+
+        formContainer.setVisible(false);
+        setOkVisible(false);
+        setCancelVisible(false);
+
+        progressContainer.setVisible(true);
+        progressPanel.reinitialize(operationProgress, () -> {
+            if (operationProgress.isCancelled()) {
+                operationProgress.setCompletionSummary(buildCompletionSummary(operationError.get()));
+                operationProgress.markCompleted();
+                return;
+            }
+            CompletableFuture.runAsync(() -> {
+                try {
+                    executor.execute(operationProgress);
+                } catch (Exception e) {
+                    operationError.set(e);
+                } finally {
+                    Exception error = operationError.get();
+                    logOutcome(error);
+                    operationProgress.setCompletionSummary(buildCompletionSummary(error));
+                    operationProgress.markCompleted();
+                }
+            }, FOLDER_OP_EXECUTOR);
+        });
+        progressPanel.setVisible(true);
+
+        target.add(formContainer, progressContainer);
+        target.appendJavaScript("FolderContextMenus.resizeDialog(" + PROGRESS_DIALOG_WIDTH + ")");
+
+    }
+
+    protected boolean validateInput() {
+        if (StringUtils.isBlank(destinationFolderIdentifier)) {
+            error("Please select the target folder.");
+            return false;
+        }
+        if (StringUtils.isBlank(newFolderUrlName) || StringUtils.isBlank(newFolderName)) {
+            error("Please enter the destination folder name.");
+            return false;
+        }
+        return true;
+    }
+
+    protected boolean destinationExists(Session session) {
+        try {
+            Node destParentNode = session.getNodeByIdentifier(destinationFolderIdentifier);
+            String destPath = destParentNode.getPath() + "/" + newFolderUrlName;
+            if (session.nodeExists(destPath)) {
+                error("A folder named '" + newFolderName + "' already exists at the destination. " +
+                        "Please choose a different name or destination.");
+                return true;
+            }
+        } catch (RepositoryException e) {
+            log.error("Failed to check destination folder", e);
+            error("Failed to verify destination: " + e.getMessage());
+            return true;
+        }
+        return false;
+    }
+
+    private static String getUserFriendlyErrorMessage(Exception e) {
+        Throwable cause = e;
+        while (cause != null) {
+            if (cause instanceof AccessDeniedException) {
+                return "Access denied. You may not have permission to perform this operation.";
+            }
+            if (cause instanceof LockException) {
+                return "The content is currently locked by another user or process.";
+            }
+            if (cause instanceof ConstraintViolationException) {
+                return "The operation violates repository constraints.";
+            }
+            cause = cause.getCause();
+        }
+
+        if (e instanceof RepositoryException) {
+            return "A repository error occurred. Please try again or contact support.";
+        }
+        return "An unexpected error occurred.";
+    }
+
+    private ProgressCompletionSummary buildCompletionSummary(Exception error) {
+        long count = operationProgress.getCurrentCount();
+        boolean cancelled = error instanceof OperationCancelledException || operationProgress.isCancelled();
+        String verb = isCopyOperation ? "copied" : "moved";
+
+        if (cancelled) {
+            return new ProgressCompletionSummary("Cancelled after " + verb + " " + count + " items", false);
+        }
+        if (error != null) {
+            return new ProgressCompletionSummary(
+                    "Error after " + count + " items: " + getUserFriendlyErrorMessage(error),
+                    true);
+        }
+        return new ProgressCompletionSummary("Successfully " + verb + " " + count + " items", false);
+    }
+
+    private void logOutcome(Exception error) {
+        if (!outcomeLogged.compareAndSet(false, true)) {
+            return;
+        }
+
+        long count = operationProgress.getCurrentCount();
+        boolean cancelled = error instanceof OperationCancelledException || operationProgress.isCancelled();
+
+        if (cancelled) {
+            log.info("Folder {} operation was cancelled by user", isCopyOperation ? "copy" : "move");
+        } else if (error != null) {
+            log.error("Folder {} operation failed", isCopyOperation ? "copy" : "move", error);
+        } else {
+            logOperationEvent(count);
+        }
+    }
+
+    private void logOperationEvent(long itemCount) {
+        try {
+            String destJcrPath = destinationFolderPath + "/" + newFolderUrlName;
+            String operation = isCopyOperation ? "copy" : "move";
+
+            log.info("Folder {} completed: opId='{}', user='{}', source='{}', destination='{}', items={}",
+                    operation,
+                    operationId,
+                    operationUserId,
+                    sourceFolderPath,
+                    destJcrPath,
+                    itemCount);
+        } catch (Exception e) {
+            log.warn("Failed to log folder operation event: {}", e.getMessage(), e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void browseToDestinationIfSuccessful() {
+        if (operationProgress == null || operationProgress.isCancelled() || operationError.get() != null) {
+            return;
+        }
+        if (StringUtils.isBlank(destinationFolderPath) || StringUtils.isBlank(newFolderUrlName)) {
+            return;
+        }
+        IBrowseService<JcrNodeModel> browseService = getPluginContext()
+                .getService(IBrowseService.class.getName(), IBrowseService.class);
+        if (browseService != null) {
+            browseService.browse(new JcrNodeModel(destinationFolderPath + "/" + newFolderUrlName));
+        }
+    }
+
+    private void refreshJcrSession() {
+        try {
+            UserSession.get().getJcrSession().refresh(false);
+        } catch (RepositoryException e) {
+            log.warn("Failed to refresh JCR session after folder operation", e);
+        }
+    }
+
+    private String resolveUserId() {
+        try {
+            return UserSession.get().getJcrSession().getUserID();
+        } catch (Exception e) {
+            log.warn("Failed to resolve user id for folder operation logging", e);
+            return "unknown";
+        }
+    }
+
+    public interface FolderOperationExecutor {
+        void execute(ProgressTrackingOperationProgress progress) throws Exception;
     }
 }

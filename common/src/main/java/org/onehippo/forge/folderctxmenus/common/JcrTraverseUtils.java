@@ -15,6 +15,8 @@
  */
 package org.onehippo.forge.folderctxmenus.common;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
@@ -41,6 +43,37 @@ public class JcrTraverseUtils {
 
                 if (childNode != null) {
                     traverseNodes(childNode, nodeTraverser);
+                }
+            }
+        }
+    }
+
+    public static void traverseNodes(final Node node, final NodeTraverser nodeTraverser,
+            final OperationProgress progress, final AtomicLong counter, final long total) throws RepositoryException {
+        if (nodeTraverser == null) {
+            throw new IllegalArgumentException("Provide a non-null nodeTraverser!");
+        }
+
+        if (progress != null && progress.isCancelled()) {
+            throw new OperationCancelledException("Operation was cancelled");
+        }
+
+        // Report progress only for user-visible items (folders and handles)
+        if (progress != null && NodeTraverser.USER_VISIBLE_ITEMS.isAcceptable(node)) {
+            progress.updateProgress(counter.incrementAndGet(), total, node.getPath());
+            progress.onProgressUpdated();
+        }
+
+        if (nodeTraverser.isAcceptable(node)) {
+            nodeTraverser.accept(node);
+        }
+
+        if (nodeTraverser.isTraversable(node) && node.hasNodes()) {
+            for (NodeIterator nodeIt = node.getNodes(); nodeIt.hasNext(); ) {
+                Node childNode = nodeIt.nextNode();
+
+                if (childNode != null) {
+                    traverseNodes(childNode, nodeTraverser, progress, counter, total);
                 }
             }
         }

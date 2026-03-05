@@ -15,6 +15,8 @@
  */
 package org.onehippo.forge.folderctxmenus.common;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
@@ -62,6 +64,39 @@ public class JcrCopyUtils {
         final Node destNode = copyHandler.getCurrent();
         JcrUtils.copyToChain(srcNode, copyHandler);
         copyHandler.endNode();
+
+        return destNode;
+    }
+
+    public static Node copy(final Node srcNode, final String destNodeName, final Node destParentNode,
+            final OperationProgress progress, final long totalNodes) throws RepositoryException {
+
+        if (JcrUtils.isVirtual(srcNode)) {
+            return null;
+        }
+
+        if (destNodeName.indexOf('/') != -1) {
+            throw new IllegalArgumentException(destNodeName + " is a path, not a name");
+        }
+
+        if (srcNode.isSame(destParentNode)) {
+            throw new IllegalArgumentException("Destination parent node cannot be the same as source node");
+        }
+
+        if (isAncestor(srcNode, destParentNode)) {
+            throw new IllegalArgumentException("Destination parent node cannot be descendant of source node");
+        }
+
+        AtomicLong counter = new AtomicLong(0);
+        ProgressTrackingCopyHandler progressHandler = new ProgressTrackingCopyHandler(
+                destParentNode, progress, counter, totalNodes);
+
+        final NodeInfo nodeInfo = new NodeInfo(srcNode);
+        final NodeInfo newInfo = new NodeInfo(destNodeName, 0, nodeInfo.getNodeType(), nodeInfo.getMixinTypes());
+        progressHandler.startNode(newInfo);
+        final Node destNode = progressHandler.getCurrent();
+        JcrUtils.copyToChain(srcNode, progressHandler);
+        progressHandler.endNode();
 
         return destNode;
     }

@@ -66,7 +66,7 @@
 
     <section name="Release Notes for Bloomreach XM 16">
       <subsection name="7.1.4">
-        <p class="smallinfo">Release date: TBD</p>
+        <p class="smallinfo">Release date: 3 February 2026</p>
         <ul>
           <li>FORGE-575: Split copy and move folder permissions
             <ul>
@@ -74,6 +74,16 @@
               <li>New privileges: <code>folderctxmenus:copy</code> and <code>folderctxmenus:move</code></li>
               <li>Legacy privilege <code>folderctxmenus:editor</code> is deprecated but fully supported for backward compatibility</li>
               <li>See <a href="install.html">Installation Guide</a> and <a href="PERMISSIONS.html">Permission Configuration Guide</a> for details</li>
+            </ul>
+          </li>
+          <li>FORGE-574: Progress indicator for folder operations
+            <ul>
+              <li>Copy and move operations now display a progress bar showing operation status</li>
+              <li>Shows current item count, percentage complete, estimated time remaining, and current path being processed</li>
+              <li>Cancel button allows users to abort long-running operations</li>
+              <li>Cancelled operations show summary with count of items processed before cancellation</li>
+              <li>Post-processing (taking documents offline, resetting links) runs even after cancellation</li>
+              <li>Move operations complete instantly (atomic JCR operation); progress tracks post-move processing</li>
             </ul>
           </li>
         </ul>

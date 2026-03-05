@@ -15,12 +15,13 @@
  */
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
+import java.util.Locale;
+
 import javax.jcr.Node;
-import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.SimpleCredentials;
 
-import java.util.Optional;
-
-import org.apache.commons.lang3.StringUtils;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
@@ -30,8 +31,7 @@ import org.hippoecm.frontend.dialog.AbstractDialog;
 import org.hippoecm.frontend.plugin.IPluginContext;
 import org.hippoecm.frontend.plugin.config.IPluginConfig;
 import org.hippoecm.frontend.session.UserSession;
-import org.hippoecm.repository.api.HippoSession;
-import org.onehippo.forge.folderctxmenus.common.ExtendedFolderWorkflow;
+import org.onehippo.forge.folderctxmenus.common.FolderCopyTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +68,9 @@ public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
     @Override
     protected AbstractDialog<FolderActionDocumentArguments> createDialogInstance(
             final FolderActionDocumentArguments folderActionDocumentModel) {
-        return new CopyOrMoveFolderDialog(getPluginContext(), getPluginConfig(), getDialogTitleModel(),
+        final IPluginContext pluginContext = getPluginContext();
+
+        return new CopyOrMoveFolderDialog(pluginContext, getPluginConfig(), getDialogTitleModel(),
                 new Model<>(folderActionDocumentModel), true) {
 
             private static final long serialVersionUID = 1L;
@@ -76,51 +78,45 @@ public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
             @Override
             protected void onOk() {
                 if (!validateInput()) {
-                    super.onOk();
                     return;
                 }
 
-                executeCopy();
+                AjaxRequestTarget target = getRequestCycle().find(AjaxRequestTarget.class).orElse(null);
+                if (target != null) {
+                    executeCopy(target);
+                }
             }
 
-            private boolean validateInput() {
-                if (StringUtils.isBlank(getDestinationFolderIdentifier())) {
-                    error("Please select the target folder.");
-                    return false;
+            private void executeCopy(AjaxRequestTarget target) {
+                final String sourceId = getSourceFolderIdentifier();
+                final String destId = getDestinationFolderIdentifier();
+                final String newUrlName = getNewFolderUrlName();
+                final String newName = getNewFolderName();
+                final boolean resetTranslations = !getLinkAsTranslation();
+                final Locale locale = UserSession.get().getLocale();
+                final Session session = UserSession.get().getJcrSession();
+
+                if (destinationExists(session)) {
+                    return;
                 }
 
-                if (StringUtils.isBlank(getNewFolderUrlName()) || StringUtils.isBlank(getNewFolderName())) {
-                    error("Please enter the destination folder name.");
-                    return false;
-                }
+                startOperationWithProgress(target, progress -> {
+                    Session bgSession = session.impersonate(
+                            new SimpleCredentials(session.getUserID(), new char[0]));
+                    try {
+                        Node sourceNode = bgSession.getNodeByIdentifier(sourceId);
+                        Node destParentNode = bgSession.getNodeByIdentifier(destId);
 
-                return true;
-            }
-
-            private void executeCopy() {
-                try {
-                    HippoSession session = UserSession.get().getJcrSession();
-                    Node sourceNode = session.getNodeByIdentifier(getSourceFolderIdentifier());
-                    Optional<ExtendedFolderWorkflow> workflow = getExtendedFolderWorkflow(sourceNode);
-
-                    if (workflow.isPresent()) {
-                        workflow.get().copyFolder(
-                            UserSession.get().getLocale(),
-                            getSourceFolderIdentifier(),
-                            getDestinationFolderIdentifier(),
-                            getNewFolderUrlName(),
-                            getNewFolderName(),
-                            !getLinkAsTranslation()
-                        );
-                        super.onOk();
-                    } else {
-                        log.error("Extended folder workflow is not available");
-                        error("Unable to copy folder.");
+                        FolderCopyTask task = new FolderCopyTask(
+                                bgSession, locale, sourceNode, destParentNode,
+                                newUrlName, newName, resetTranslations);
+                        task.setOperationProgress(progress);
+                        task.execute();
+                        bgSession.save();
+                    } finally {
+                        bgSession.logout();
                     }
-                } catch (Exception e) {
-                    log.error("Failed to copy folder.", e);
-                    error(e.getLocalizedMessage());
-                }
+                });
             }
         };
     }

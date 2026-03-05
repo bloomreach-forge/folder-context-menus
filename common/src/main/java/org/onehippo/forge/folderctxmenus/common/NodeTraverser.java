@@ -24,6 +24,52 @@ import javax.jcr.RepositoryException;
 public interface NodeTraverser {
 
     /**
+     * A traverser that accepts and traverses all nodes without performing any action.
+     */
+    NodeTraverser ACCEPT_ALL = new NodeTraverser() {
+        @Override
+        public boolean isAcceptable(Node node) {
+            return true;
+        }
+
+        @Override
+        public boolean isTraversable(Node node) {
+            return true;
+        }
+
+        @Override
+        public void accept(Node node) {
+            // no-op
+        }
+    };
+
+    /**
+     * A traverser that only accepts user-visible items: folders and document handles.
+     * This excludes internal nodes like document variants (draft/preview/live).
+     */
+    NodeTraverser USER_VISIBLE_ITEMS = new NodeTraverser() {
+        @Override
+        public boolean isAcceptable(Node node) throws RepositoryException {
+            return isUserVisibleItem(node);
+        }
+
+        @Override
+        public boolean isTraversable(Node node) throws RepositoryException {
+            // Don't traverse into document handles - their children are variants, not user-visible items
+            return !node.isNodeType("hippo:handle");
+        }
+
+        @Override
+        public void accept(Node node) {
+            // no-op
+        }
+
+        private boolean isUserVisibleItem(Node node) throws RepositoryException {
+            return node.isNodeType("hippo:handle") || node.isNodeType("nt:folder");
+        }
+    };
+
+    /**
      * Returns true if the {@code node} is acceptable.
      * @param node node
      * @return true if the {@code node} is acceptable

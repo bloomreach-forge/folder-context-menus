@@ -10,51 +10,73 @@
   OR CONDITIONS OF ANY KIND, either express or implied. See the License for
   the specific language governing permissions and limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.onehippo.forge.folderctxmenus</groupId>
-    <artifactId>folderctxmenus</artifactId>
-    <version>7.1.4-SNAPSHOT</version>
-  </parent>
+    <parent>
+        <groupId>org.onehippo.forge.folderctxmenus</groupId>
+        <artifactId>folderctxmenus</artifactId>
+        <version>7.1.4-SNAPSHOT</version>
+    </parent>
 
-  <name>Bloomreach XM Extra Folder Context Menus Common</name>
-  <description>Bloomreach XM Extra Folder Context Menus Common</description>
-  <artifactId>folderctxmenus-common</artifactId>
+    <name>Bloomreach XM Extra Folder Context Menus Common</name>
+    <description>Bloomreach XM Extra Folder Context Menus Common</description>
+    <artifactId>folderctxmenus-common</artifactId>
 
-  <dependencies>
+    <dependencies>
 
-    <dependency>
-      <groupId>javax.jcr</groupId>
-      <artifactId>jcr</artifactId>
-      <scope>provided</scope>
-    </dependency>
+        <dependency>
+            <groupId>javax.jcr</groupId>
+            <artifactId>jcr</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
-    <dependency>
-      <groupId>org.onehippo.cms7</groupId>
-      <artifactId>hippo-repository-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
+        <dependency>
+            <groupId>org.onehippo.cms7</groupId>
+            <artifactId>hippo-repository-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
-    <dependency>
-      <groupId>org.onehippo.cms7</groupId>
-      <artifactId>hippo-repository-utilities</artifactId>
-      <scope>provided</scope>
-    </dependency>
+        <dependency>
+            <groupId>org.onehippo.cms7</groupId>
+            <artifactId>hippo-repository-utilities</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
-    <dependency>
-      <groupId>org.onehippo.cms7</groupId>
-      <artifactId>hippo-repository-workflow</artifactId>
-      <scope>provided</scope>
-    </dependency>
+        <dependency>
+            <groupId>org.onehippo.cms7</groupId>
+            <artifactId>hippo-repository-workflow</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.bloomreach.forge.brut</groupId>
+            <artifactId>brut-common</artifactId>
+            <version>${brut.version}</version>
+            <scope>test</scope>
+        </dependency>
 
-  </dependencies>
+    </dependencies>
 
 </project>

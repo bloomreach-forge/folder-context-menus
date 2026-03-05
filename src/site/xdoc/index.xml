@@ -79,6 +79,88 @@
       <img alt="After moving a folder"
            src="images/movefolder2.png" />
 
+      <p><strong>Progress indicator</strong></p>
+      <p>
+        When copying or moving folders with many items, a progress indicator is displayed showing:
+      </p>
+      <ul>
+        <li>The current item count and total (e.g., "Processing 45/293 items")</li>
+        <li>A visual progress bar with percentage complete</li>
+        <li>The path of the item currently being processed</li>
+        <li>Estimated time remaining</li>
+        <li>A cancel button to abort long-running operations</li>
+      </ul>
+      <p>
+        This provides visibility into the operation's progress and allows users to cancel if needed.
+      </p>
+
+      <p><strong>Operation behavior differences</strong></p>
+      <p>
+        Copy and move operations behave differently due to their underlying implementation:
+      </p>
+      <ul>
+        <li><strong>Move</strong> uses JCR's native <code>Session.move()</code> which is atomic - the entire folder tree
+            is relocated instantly regardless of size. The progress bar tracks post-move processing (path recomputation),
+            not the move itself.</li>
+        <li><strong>Copy</strong> creates nodes one by one, so progress accurately reflects the copying process.
+            Larger folders take proportionally longer.</li>
+      </ul>
+      <p>
+        For small folders or move operations, the dialog may show the completion summary immediately
+        because the operation finishes before the progress display fully renders.
+      </p>
+
+      <p><strong>Cancellation behavior</strong></p>
+      <p>
+        When an operation is cancelled:
+      </p>
+      <ul>
+        <li><strong>Copy cancelled</strong>: Already-copied content remains at the destination. The plugin automatically
+            runs post-processing on partial content: documents are marked as unpublished, internal links are updated,
+            and translation IDs are reset. You may want to review the destination and either delete the partial copy
+            or complete it manually.</li>
+        <li><strong>Move cancelled</strong>: Since move is atomic, the folder has already been fully relocated.
+            Cancellation only affects post-move path recomputation. Content is safe and accessible.</li>
+      </ul>
+      <p>
+        The completion summary shows how many items were processed before cancellation
+        (e.g., "Cancelled after copying 45 items").
+      </p>
+
+      <p><strong>Post-processing steps</strong></p>
+      <p>
+        After copying, the plugin performs important cleanup:
+      </p>
+      <ul>
+        <li><strong>Take documents offline</strong>: Copied documents are marked as unpublished to prevent
+            duplicate published content on your site.</li>
+        <li><strong>Reset internal links</strong>: <code>hippo:docbase</code> references within copied content
+            are updated to point to the corresponding copied nodes.</li>
+        <li><strong>Reset translation IDs</strong>: New UUIDs are generated for <code>hippotranslation:id</code>
+            properties to prevent translation conflicts (unless linking as translation is enabled).</li>
+      </ul>
+      <p>
+        These steps run automatically, even after cancellation, on any content that was successfully copied.
+      </p>
+
+      <p><strong>Known limitations</strong></p>
+      <p>
+        <em>Move operation dialog may close before summary is viewed:</em> In rare cases, the progress dialog
+        may close automatically after a move operation completes, before the user has a chance to review the
+        summary. This occurs because:
+      </p>
+      <ul>
+        <li>Move operations delete the source folder from JCR</li>
+        <li>When <code>session.save()</code> persists changes, JCR fires repository events</li>
+        <li>The CMS UI may respond to these events by refreshing, which closes modal dialogs</li>
+      </ul>
+      <p>
+        This is a CMS framework behavior, not a bug in this plugin. The operation completes successfully;
+        only the summary display is affected. Copy operations are not affected because they do not remove
+        the source folder. All operations are logged to the server logs with operation ID, user, source path,
+        destination path, and item count for traceability.
+      </p>
+
     </section>
 
     <section name="Programmatic Folder Copy and Move">
