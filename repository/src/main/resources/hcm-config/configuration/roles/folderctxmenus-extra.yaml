@@ -6,6 +6,9 @@ definitions:
     /hippo:configuration/hippo:roles/folderctxmenus-move:
       jcr:primaryType: hipposys:role
       hipposys:privileges: ['folderctxmenus:move']
+    /hippo:configuration/hippo:roles/folderctxmenus-delete:
+      jcr:primaryType: hipposys:role
+      hipposys:privileges: ['folderctxmenus:delete']
     /hippo:configuration/hippo:roles/folderctxmenus-editor:
       jcr:primaryType: hipposys:role
-      hipposys:privileges: ['folderctxmenus:copy', 'folderctxmenus:move']
+      hipposys:privileges: ['folderctxmenus:copy', 'folderctxmenus:move', 'folderctxmenus:delete']

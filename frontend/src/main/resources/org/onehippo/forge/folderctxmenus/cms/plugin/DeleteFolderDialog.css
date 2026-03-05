@@ -1,0 +1,27 @@
+
+.delete-folder-dialog {
+  padding: 8px 4px;
+}
+
+.delete-folder-dialog .delete-warning {
+  color: #b71c1c;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.delete-folder-dialog .delete-folder-name {
+  margin-bottom: 10px;
+}
+
+.delete-folder-dialog .delete-folder-name .field-label {
+  margin-right: 6px;
+  color: #555;
+}
+
+.delete-folder-dialog .delete-published-note {
+  color: #666;
+  font-style: italic;
+  border-left: 3px solid #e0e0e0;
+  padding-left: 8px;
+  margin-top: 12px;
+}

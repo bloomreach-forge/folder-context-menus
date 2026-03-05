@@ -60,6 +60,8 @@ public abstract class AbstractFolderActionWorkflowMenuItemPlugin extends RenderP
 
     private static final String PRIVILEGE_FOLDERCTXMENUS_MOVE = "folderctxmenus:move";
 
+    private static final String PRIVILEGE_FOLDERCTXMENUS_DELETE = "folderctxmenus:delete";
+
     private static final Logger log = LoggerFactory.getLogger(AbstractFolderActionWorkflowMenuItemPlugin.class);
 
     private String destinationIdentifier;
@@ -175,6 +177,15 @@ public abstract class AbstractFolderActionWorkflowMenuItemPlugin extends RenderP
      */
     protected boolean userHasMoveFolderPrivilege() {
         return checkPrivilege(PRIVILEGE_FOLDERCTXMENUS_MOVE);
+    }
+
+    /**
+     * Checks if the current user has delete folder privilege.
+     *
+     * @return true if user has folderctxmenus:delete privilege, false otherwise
+     */
+    protected boolean userHasDeleteFolderPrivilege() {
+        return checkPrivilege(PRIVILEGE_FOLDERCTXMENUS_DELETE);
     }
 
     /**
