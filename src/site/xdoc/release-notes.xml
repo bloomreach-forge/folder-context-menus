@@ -65,8 +65,8 @@
     </section>
 
     <section name="Release Notes for Bloomreach XM 16">
-      <subsection name="7.1.4">
-        <p class="smallinfo">Release date: 3 February 2026</p>
+      <subsection name="7.2.0">
+        <p class="smallinfo">Release date: 5 March 2026</p>
         <ul>
           <li>FORGE-575: Split copy and move folder permissions
             <ul>
