@@ -1,5 +1,5 @@
 <!--
-  Copyright 2024 Bloomreach (https://www.bloomreach.com)
+  Copyright 2024-2025 Bloomreach (https://www.bloomreach.com)
 
   Licensed under the Apache License, Version 2.0
   (the "License"); you may not use this file except in compliance with the
@@ -11,70 +11,75 @@
 -->
 <html xmlns:wicket="http://wicket.apache.org/">
 <wicket:extend>
-  <form wicket:id="form">
-    <table class="hippo-window-form folderctxmenus-dialog">
-      <tr>
-        <td>
-          <div class="field-label">
-            <wicket:message key="folder.action.label.source.folder.path">Source Folder:</wicket:message>
-          </div>
-        </td>
-        <td>
-          <div class="field-value">
-            <input type="text" wicket:id="sourceFolderPathDisplay" />
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td style="vertical-align: middle;">
-          <div class="field-label">
-            <wicket:message key="folder.action.label.destination.folder.path">Destination:</wicket:message>
-          </div>
-        </td>
-        <td>
-          <div class="field-value">
-            <input type="text" wicket:id="destinationFolderPathDisplay" /><br/>
-            <div wicket:id="folderTree" class="folder-tree">Tree goes here</div>
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <div class="field-label">
-            <wicket:message key="folder.action.label.destination.folder.name">Destination Folder:</wicket:message>
-          </div>
-        </td>
-        <td>
-          <div class="field-value">
-            <input type="text" wicket:id="newFolderName" />
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <div class="field-label">
-            <wicket:message key="folder.action.label.destination.folder.url.name">URL Name:</wicket:message>
-          </div>
-        </td>
-        <td>
-          <div class="field-value">
-            <input type="text" wicket:id="newFolderUrlName" />
-          </div>
-        </td>
-      </tr>
-      <tr wicket:id="linkAsTranslationRow">
-        <td>
-          <div class="field-label">
-            <wicket:message key="folder.action.label.destination.folder.translation">Link as Translation:</wicket:message>
-          </div>
-        </td>
-        <td>
-          <div class="field-value">
-            <input type="checkbox" wicket:id="linkAsTranslation" />
-          </div>
-        </td>
-      </tr>
-    </table>
-  </form>
+  <div wicket:id="formContainer">
+    <form wicket:id="form">
+      <table class="hippo-window-form folderctxmenus-dialog">
+        <tr>
+          <td>
+            <div class="field-label">
+              <wicket:message key="folder.action.label.source.folder.path">Source Folder:</wicket:message>
+            </div>
+          </td>
+          <td>
+            <div class="field-value">
+              <input type="text" wicket:id="sourceFolderPathDisplay" />
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: middle;">
+            <div class="field-label">
+              <wicket:message key="folder.action.label.destination.folder.path">Destination:</wicket:message>
+            </div>
+          </td>
+          <td>
+            <div class="field-value">
+              <input type="text" wicket:id="destinationFolderPathDisplay" /><br/>
+              <div wicket:id="folderTree" class="folder-tree">Tree goes here</div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="field-label">
+              <wicket:message key="folder.action.label.destination.folder.name">Destination Folder:</wicket:message>
+            </div>
+          </td>
+          <td>
+            <div class="field-value">
+              <input type="text" wicket:id="newFolderName" />
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="field-label">
+              <wicket:message key="folder.action.label.destination.folder.url.name">URL Name:</wicket:message>
+            </div>
+          </td>
+          <td>
+            <div class="field-value">
+              <input type="text" wicket:id="newFolderUrlName" />
+            </div>
+          </td>
+        </tr>
+        <tr wicket:id="linkAsTranslationRow">
+          <td>
+            <div class="field-label">
+              <wicket:message key="folder.action.label.destination.folder.translation">Link as Translation:</wicket:message>
+            </div>
+          </td>
+          <td>
+            <div class="field-value">
+              <input type="checkbox" wicket:id="linkAsTranslation" />
+            </div>
+          </td>
+        </tr>
+      </table>
+    </form>
+  </div>
+  <div wicket:id="progressContainer">
+    <div wicket:id="progressPanel"></div>
+  </div>
 </wicket:extend>
 </html>

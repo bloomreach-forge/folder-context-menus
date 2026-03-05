@@ -15,10 +15,7 @@
  */
 package org.onehippo.forge.folderctxmenus.common;
 
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
-import java.util.UUID;
 
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
@@ -26,7 +23,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 
-import com.google.common.base.Strings;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hippoecm.repository.util.JcrUtils;
@@ -35,8 +31,13 @@ public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
 
     public FolderCopyTask(final Session session, final Locale locale, final Node sourceFolderNode,
             final Node destParentFolderNode, final String destFolderNodeName, final String destFolderDisplayName,
-            final Boolean resetTranslations) {
+            final boolean resetTranslations) {
         super(session, locale, sourceFolderNode, destParentFolderNode, destFolderNodeName, destFolderDisplayName, resetTranslations);
+    }
+
+    @Override
+    protected String getOperationName() {
+        return "Copying";
     }
 
     @Override
@@ -56,127 +57,100 @@ public class FolderCopyTask extends AbstractFolderCopyOrMoveTask {
             throw new RuntimeException("Destination folder already exists: " + getDestFolderPath());
         }
 
-        getLogger().info("Copying nodes: from {} to {}.", getSourceFolderNode().getPath(), getDestFolderPath());
-
-        if (getCopyHandler() != null) {
-            JcrCopyUtils.copy(getSourceFolderNode(), getDestFolderNodeName(), getDestParentFolderNode(),
-                    getCopyHandler());
-        } else {
-            JcrCopyUtils.copy(getSourceFolderNode(), getDestFolderNodeName(), getDestParentFolderNode());
+        try {
+            if (getOperationProgress() != null) {
+                long totalNodes = countSourceNodes();
+                JcrCopyUtils.copy(getSourceFolderNode(), getDestFolderNodeName(), getDestParentFolderNode(),
+                        getOperationProgress(), totalNodes);
+            } else if (getCopyHandler() != null) {
+                JcrCopyUtils.copy(getSourceFolderNode(), getDestFolderNodeName(), getDestParentFolderNode(),
+                        getCopyHandler());
+            } else {
+                JcrCopyUtils.copy(getSourceFolderNode(), getDestFolderNodeName(), getDestParentFolderNode());
+            }
+        } finally {
+            // Set destFolderNode even on cancellation so doAfterExecute can clean up partial copy
+            setDestFolderNode(JcrUtils.getNodeIfExists(getDestParentFolderNode(), getDestFolderNodeName()));
         }
-
-        setDestFolderNode(JcrUtils.getNodeIfExists(getDestParentFolderNode(), getDestFolderNodeName()));
 
         updateFolderTranslations(getDestFolderNode(), getDestFolderDisplayName(), getLocale().getLanguage());
     }
 
     @Override
     protected void doAfterExecute() throws RepositoryException {
-        resetHippoDocBaseLinks();
-        takeOfflineHippoDocs();
-        resetHippoDocumentTranslationIds(getResetTranslations());
+        // Combined post-processing: all operations in single traversal
+        performDestinationPostProcessing(getResetTranslations(), false);
+        logOperationCompleted();
     }
 
-    /**
-     * Search all the link holder nodes having hippo:docbase property under destFolderNode
-     * and reset the hippo:docbase properties to the copied nodes under destFolderNode
-     * by comparing the relative paths with the corresponding nodes under the sourceFolderNode.
-     */
-    protected void resetHippoDocBaseLinks() {
-        String destFolderNodePath = null;
+    @Override
+    protected void processNodeDuringPostProcessing(Node node, PostProcessingContext context) throws RepositoryException {
+        // Call parent for translation ID reset
+        super.processNodeDuringPostProcessing(node, context);
+
+        // Copy-specific: reset docbase links on mirror nodes
+        resetDocBaseLinkIfNeeded(node);
+
+        // Copy-specific: take offline live published documents
+        takeOfflineIfNeeded(node);
+    }
+
+    private void resetDocBaseLinkIfNeeded(Node node) throws RepositoryException {
+        if (!node.isNodeType("hippo:mirror") || !node.hasProperty("hippo:docbase")) {
+            return;
+        }
+
+        String destLinkDocBase = JcrUtils.getStringProperty(node, "hippo:docbase", null);
+        if (StringUtils.isBlank(destLinkDocBase)) {
+            return;
+        }
 
         try {
-            destFolderNodePath = getDestFolderNode().getPath();
+            String sourceFolderBase = getSourceFolderNode().getPath() + "/";
+            Node sourceLinkedNode = getSession().getNodeByIdentifier(destLinkDocBase);
 
-            JcrTraverseUtils.traverseNodes(getDestFolderNode(),
-                    new NodeTraverser() {
-                        private final String sourceFolderBase = getSourceFolderNode().getPath() + "/";
+            if (StringUtils.startsWith(sourceLinkedNode.getPath(), sourceFolderBase)) {
+                String sourceLinkedNodeRelPath = StringUtils.removeStart(sourceLinkedNode.getPath(), sourceFolderBase);
+                Node destLinkedNode = JcrUtils.getNodeIfExists(getDestFolderNode(), sourceLinkedNodeRelPath);
 
-                        @Override
-                        public boolean isAcceptable(Node node) throws RepositoryException {
-                            return node.isNodeType("hippo:mirror") && node.hasProperty("hippo:docbase");
-                        }
-
-                        @Override
-                        public boolean isTraversable(Node node) throws RepositoryException {
-                            return !node.isNodeType("hippo:mirror");
-                        }
-
-                        @Override
-                        public void accept(Node destLinkHolderNode) throws RepositoryException {
-                            String destLinkDocBase = JcrUtils.getStringProperty(destLinkHolderNode, "hippo:docbase", null);
-
-                            if (StringUtils.isNotBlank(destLinkDocBase)) {
-                                try {
-                                    Node sourceLinkedNode = getSession().getNodeByIdentifier(destLinkDocBase);
-
-                                    if (StringUtils.startsWith(sourceLinkedNode.getPath(), sourceFolderBase)) {
-                                        String sourceLinkedNodeRelPath = StringUtils.removeStart(sourceLinkedNode.getPath(),
-                                                sourceFolderBase);
-                                        Node destLinkedNode = JcrUtils.getNodeIfExists(getDestFolderNode(), sourceLinkedNodeRelPath);
-
-                                        if (destLinkedNode != null) {
-                                            getLogger().info("Updating the linked node at '{}'.", destLinkHolderNode.getPath());
-                                            destLinkHolderNode.setProperty("hippo:docbase", destLinkedNode.getIdentifier());
-                                        }
-                                    }
-                                } catch (ItemNotFoundException ignore) {
-                                }
-                            }
-                        }
-                    });
-        } catch (RepositoryException e) {
-            getLogger().error("Failed to reset link Nodes under destination folder: {}.", destFolderNodePath, e);
+                if (destLinkedNode != null) {
+                    getLogger().info("Updating the linked node at '{}'.", node.getPath());
+                    node.setProperty("hippo:docbase", destLinkedNode.getIdentifier());
+                }
+            }
+        } catch (ItemNotFoundException ignore) {
+            // Source linked node no longer exists, skip
         }
     }
 
-    /**
-     * Takes offline all the hippo documents under the {@code destFolderNode}.
-     */
-    protected void takeOfflineHippoDocs() {
-        String destFolderNodePath = null;
-
-        try {
-            destFolderNodePath = getDestFolderNode().getPath();
-
-            JcrTraverseUtils.traverseNodes(getDestFolderNode(),
-                    new NodeTraverser() {
-                        @Override
-                        public boolean isAcceptable(Node node) throws RepositoryException {
-                            if (!node.isNodeType("hippostdpubwf:document")) {
-                                return false;
-                            }
-
-                            return isLiveVariantNode(node) &&
-                                    StringUtils.equals("published", JcrUtils.getStringProperty(node, "hippostd:state", null));
-                        }
-
-                        @Override
-                        public boolean isTraversable(Node node) throws RepositoryException {
-                            return !node.isNodeType("hippostdpubwf:document");
-                        }
-
-                        private boolean isLiveVariantNode(final Node variantNode) throws RepositoryException {
-                            if (variantNode.hasProperty("hippo:availability")) {
-                                for (Value value : variantNode.getProperty("hippo:availability").getValues()) {
-                                    if (StringUtils.equals("live", value.getString())) {
-                                        return true;
-                                    }
-                                }
-                            }
-
-                            return false;
-                        }
-
-                        @Override
-                        public void accept(Node liveVariant) throws RepositoryException {
-                            liveVariant.setProperty("hippo:availability", ArrayUtils.EMPTY_STRING_ARRAY);
-                            liveVariant.setProperty("hippostd:stateSummary", "new");
-                        }
-                    });
-        } catch (RepositoryException e) {
-            getLogger().error("Failed to take offline link hippostd:publishableSummary nodes under {}.", destFolderNodePath, e);
+    private void takeOfflineIfNeeded(Node node) throws RepositoryException {
+        if (!node.isNodeType("hippostdpubwf:document")) {
+            return;
         }
+
+        if (!isLivePublishedVariant(node)) {
+            return;
+        }
+
+        node.setProperty("hippo:availability", ArrayUtils.EMPTY_STRING_ARRAY);
+        node.setProperty("hippostd:stateSummary", "new");
+    }
+
+    private boolean isLivePublishedVariant(Node node) throws RepositoryException {
+        if (!StringUtils.equals("published", JcrUtils.getStringProperty(node, "hippostd:state", null))) {
+            return false;
+        }
+
+        if (!node.hasProperty("hippo:availability")) {
+            return false;
+        }
+
+        for (Value value : node.getProperty("hippo:availability").getValues()) {
+            if (StringUtils.equals("live", value.getString())) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

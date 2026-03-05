@@ -34,23 +34,27 @@ import org.hippoecm.repository.util.JcrUtils;
 
 public abstract class AbstractFolderCopyOrMoveTask extends AbstractFolderTask {
 
+    private static final int POST_PROCESSING_SAVE_BATCH_SIZE =
+            Integer.getInteger("folderctxmenus.saveBatchSize", 200);
+
     private final Node destParentFolderNode;
     private final String destFolderNodeName;
     private final String destFolderDisplayName;
     private Node destFolderNode;
-    private Boolean resetTranslations;
+    private boolean resetTranslations;
 
     private CopyHandler copyHandler;
+    private OperationProgress operationProgress;
 
     public AbstractFolderCopyOrMoveTask(final Session session, final Locale locale, final Node sourceFolderNode,
                                         final Node destParentFolderNode, final String destFolderNodeName, final String destFolderDisplayName) {
         //when moving, we want to keep any existing translation links
-        this(session, locale, sourceFolderNode, destParentFolderNode, destFolderNodeName, destFolderDisplayName, Boolean.FALSE);
+        this(session, locale, sourceFolderNode, destParentFolderNode, destFolderNodeName, destFolderDisplayName, false);
     }
 
     public AbstractFolderCopyOrMoveTask(final Session session, final Locale locale, final Node sourceFolderNode,
             final Node destParentFolderNode, final String destFolderNodeName, final String destFolderDisplayName,
-            final Boolean resetTranslations) {
+            final boolean resetTranslations) {
         super(session, locale, sourceFolderNode);
 
         this.destParentFolderNode = destParentFolderNode;
@@ -83,7 +87,7 @@ public abstract class AbstractFolderCopyOrMoveTask extends AbstractFolderTask {
         return getDestParentFolderNode().getPath() + "/" + getDestFolderNodeName();
     }
 
-    public Boolean getResetTranslations() {
+    public boolean getResetTranslations() {
         return resetTranslations;
     }
 
@@ -95,106 +99,185 @@ public abstract class AbstractFolderCopyOrMoveTask extends AbstractFolderTask {
         this.copyHandler = copyHandler;
     }
 
-    protected void recomputeHippoPaths(final Node folderNode) {
+    public OperationProgress getOperationProgress() {
+        return operationProgress;
+    }
+
+    public void setOperationProgress(OperationProgress operationProgress) {
+        this.operationProgress = operationProgress;
+    }
+
+    protected abstract String getOperationName();
+
+    @Override
+    protected void doBeforeExecute() throws RepositoryException {
+        getLogger().info("{} folder '{}' to '{}'",
+                getOperationName(),
+                getSourceFolderNode().getPath(),
+                getDestFolderPath());
+    }
+
+    protected void logOperationCompleted() throws RepositoryException {
+        if (getDestFolderNode() == null) {
+            getLogger().info("{} folder operation completed (no destination created): '{}'",
+                    getOperationName(),
+                    getSourceFolderNode().getPath());
+            return;
+        }
+        getLogger().info("{} folder operation completed: '{}' -> '{}'",
+                getOperationName(),
+                getSourceFolderNode().getPath(),
+                getDestFolderNode().getPath());
+    }
+
+    protected long countSourceNodes() throws RepositoryException {
+        return NodeCounter.countNodes(getSourceFolderNode(), NodeTraverser.USER_VISIBLE_ITEMS);
+    }
+
+    /**
+     * Performs all destination post-processing in a single traversal.
+     * Subclasses can override {@link #processNodeDuringPostProcessing} to add additional operations.
+     *
+     * @param resetTranslationIds whether to reset translation IDs
+     * @param recomputePaths whether to recompute hippo:paths
+     */
+    protected void performDestinationPostProcessing(boolean resetTranslationIds, boolean recomputePaths) {
+        if (getDestFolderNode() == null) {
+            return;
+        }
+
+        if (getOperationProgress() != null) {
+            getOperationProgress().enterFinalizingPhase();
+        }
+
         try {
-            JcrTraverseUtils.traverseNodes(getDestFolderNode(),
-                    new NodeTraverser() {
-                        @Override
-                        public boolean isAcceptable(Node node) throws RepositoryException {
-                            if (!(node instanceof HippoNode)) {
-                                return false;
-                            }
+            final Map<String, String> uuidMappings = new HashMap<>();
+            final String parentLocale = JcrUtils.getStringProperty(
+                    getDestFolderNode().getParent(), HippoTranslationNodeType.LOCALE, null);
+            final PostProcessingContext context = new PostProcessingContext(
+                    uuidMappings, parentLocale, resetTranslationIds, recomputePaths);
 
-                            if (node.isNodeType(HippoNodeType.NT_DERIVED)) {
-                                return true;
-                            }
+            // Process the root node first for translations
+            processTranslationNode(getDestFolderNode(), context);
 
-                            if (node.isNodeType(HippoNodeType.NT_DOCUMENT) && node.hasProperty(HippoNodeType.HIPPO_PATHS)) {
-                                return true;
-                            }
+            int[] postProcessingNodeCount = {0};
+            int[] userVisibleCount = {0};
+            JcrTraverseUtils.traverseNodes(getDestFolderNode(), new NodeTraverser() {
+                @Override
+                public boolean isAcceptable(Node node) {
+                    return true;
+                }
 
-                            return false;
-                        }
+                @Override
+                public boolean isTraversable(Node node) throws RepositoryException {
+                    // Stop at document nodes and mirror nodes (mirrors don't have meaningful children)
+                    return !node.isNodeType(HippoStdPubWfNodeType.HIPPOSTDPUBWF_DOCUMENT)
+                            && !node.isNodeType("hippo:mirror");
+                }
 
-                        @Override
-                        public boolean isTraversable(Node node) throws RepositoryException {
-                            return !node.isNodeType(HippoStdPubWfNodeType.HIPPOSTDPUBWF_DOCUMENT);
-                        }
-
-                        @Override
-                        public void accept(Node node) throws RepositoryException {
-                            ((HippoNode) node).recomputeDerivedData();
-                        }
-                    });
+                @Override
+                public void accept(Node node) throws RepositoryException {
+                    processNodeDuringPostProcessing(node, context);
+                    postProcessingNodeCount[0]++;
+                    if (getOperationProgress() != null && NodeTraverser.USER_VISIBLE_ITEMS.isAcceptable(node)) {
+                        getOperationProgress().updateFinalizingProgress(++userVisibleCount[0]);
+                    }
+                    maybeSaveAndRefreshPostProcessing(node, postProcessingNodeCount[0]);
+                }
+            });
         } catch (RepositoryException e) {
-            getLogger().error("Failed to touch hippo:paths properties.", e);
+            getLogger().error("Failed to perform post-processing under {}.", getDestFolderNodePath(), e);
+        }
+    }
+
+    void maybeSaveAndRefreshPostProcessing(Node node, int nodeCount) throws RepositoryException {
+        if (POST_PROCESSING_SAVE_BATCH_SIZE <= 0) {
+            return;
+        }
+        if (nodeCount % POST_PROCESSING_SAVE_BATCH_SIZE != 0) {
+            return;
+        }
+        Session session = node.getSession();
+        session.save();
+        session.refresh(false);
+    }
+
+    /**
+     * Processes a single node during post-processing traversal.
+     * Subclasses can override to add additional operations.
+     */
+    protected void processNodeDuringPostProcessing(Node node, PostProcessingContext context) throws RepositoryException {
+        // Recompute hippo:paths for derived nodes
+        if (context.recomputePaths && node instanceof HippoNode) {
+            if (node.isNodeType(HippoNodeType.NT_DERIVED) ||
+                    (node.isNodeType(HippoNodeType.NT_DOCUMENT) && node.hasProperty(HippoNodeType.HIPPO_PATHS))) {
+                ((HippoNode) node).recomputeDerivedData();
+            }
+        }
+
+        // Reset translation IDs
+        processTranslationNode(node, context);
+    }
+
+    private void processTranslationNode(Node node, PostProcessingContext context) throws RepositoryException {
+        if (!node.isNodeType(HippoTranslationNodeType.NT_TRANSLATED)) {
+            return;
+        }
+
+        boolean shouldResetIds = context.resetTranslationIds || context.parentLocale == null;
+        if (shouldResetIds) {
+            String translationUuid = JcrUtils.getStringProperty(node, HippoTranslationNodeType.ID, null);
+            if (UUIDUtils.isValidPattern(translationUuid)) {
+                String newUuid = context.uuidMappings.computeIfAbsent(translationUuid, k -> UUID.randomUUID().toString());
+                node.setProperty(HippoTranslationNodeType.ID, newUuid);
+            }
+        }
+
+        if (!Strings.isNullOrEmpty(context.parentLocale)) {
+            node.setProperty(HippoTranslationNodeType.LOCALE, context.parentLocale);
+        }
+    }
+
+    private String getDestFolderNodePath() {
+        try {
+            return getDestFolderNode() != null ? getDestFolderNode().getPath() : null;
+        } catch (RepositoryException e) {
+            return null;
         }
     }
 
     /**
-     * Search all the hippotranslation:translated nodes under {@code destFolderNode} including {@code destFolderNode}
-     * and reset the hippotranslation:id property to a newly generate UUID.
+     * Context object holding shared state for post-processing operations.
      */
-    protected void resetHippoDocumentTranslationIds(boolean resetIds) {
-        String destFolderNodePath = null;
+    protected static class PostProcessingContext {
+        final Map<String, String> uuidMappings;
+        final String parentLocale;
+        final boolean resetTranslationIds;
+        final boolean recomputePaths;
 
-        try {
-            destFolderNodePath = getDestFolderNode().getPath();
-
-            final Map<String, String> uuidMappings = new HashMap<String, String>();
-
-            String parentLocale = JcrUtils.getStringProperty(getDestFolderNode().getParent(), "hippotranslation:locale", null);
-
-            resetHippoTranslatedNodeWithNewUuid(getDestFolderNode(), uuidMappings, resetIds, parentLocale);
-
-            JcrTraverseUtils.traverseNodes(getDestFolderNode(),
-                new NodeTraverser() {
-                    @Override
-                    public boolean isAcceptable(Node node) throws RepositoryException {
-                        return node.isNodeType("hippotranslation:translated");
-                    }
-
-                    @Override
-                    public boolean isTraversable(Node node) throws RepositoryException {
-                        return !node.isNodeType("hippostdpubwf:document");
-                    }
-
-                    @Override
-                    public void accept(Node translatedNode) throws RepositoryException {
-                        resetHippoTranslatedNodeWithNewUuid(translatedNode, uuidMappings, resetIds, parentLocale);
-                    }
-                });
-        } catch (RepositoryException e) {
-            getLogger().error("Failed to reset hippotranslation:id properties under {}.", destFolderNodePath, e);
+        PostProcessingContext(Map<String, String> uuidMappings, String parentLocale,
+                              boolean resetTranslationIds, boolean recomputePaths) {
+            this.uuidMappings = uuidMappings;
+            this.parentLocale = parentLocale;
+            this.resetTranslationIds = resetTranslationIds;
+            this.recomputePaths = recomputePaths;
         }
     }
 
-    private void resetHippoTranslatedNodeWithNewUuid(final Node translatedNode, final Map<String, String> uuidMappings,
-                                                     final boolean resetIds, final String parentLocale)
-        throws RepositoryException {
-        if (translatedNode != null && translatedNode.isNodeType("hippotranslation:translated")) {
-            //reset translation IDs if the parent folder is not translated
-            if (resetIds || parentLocale == null) {
-                String translationUuid = JcrUtils.getStringProperty(translatedNode, "hippotranslation:id", null);
+    /**
+     * @deprecated Use {@link #performDestinationPostProcessing(boolean, boolean)} instead for better performance.
+     */
+    @Deprecated
+    protected void recomputeHippoPaths() {
+        performDestinationPostProcessing(false, true);
+    }
 
-                if (UUIDUtils.isValidPattern(translationUuid)) {
-                    String newTranslationUuid;
-
-                    if (uuidMappings.containsKey(translationUuid)) {
-                        newTranslationUuid = uuidMappings.get(translationUuid);
-                    } else {
-                        newTranslationUuid = UUID.randomUUID().toString();
-                        uuidMappings.put(translationUuid, newTranslationUuid);
-                    }
-
-                    translatedNode.setProperty("hippotranslation:id", newTranslationUuid);
-                }
-            }
-
-            if(!Strings.isNullOrEmpty(parentLocale)) {
-                translatedNode.setProperty("hippotranslation:locale", parentLocale);
-            }
-        }
+    /**
+     * @deprecated Use {@link #performDestinationPostProcessing(boolean, boolean)} instead for better performance.
+     */
+    @Deprecated
+    protected void resetHippoDocumentTranslationIds(boolean resetIds) {
+        performDestinationPostProcessing(resetIds, false);
     }
 
 }

@@ -66,6 +66,9 @@
     <!-- project logging -->
     <Logger name="org.example" level="info"/>
 
+    <!-- folder context menus logging -->
+    <Logger name="org.onehippo.forge.folderctxmenus" level="info"/>
+
     <Root level="warn">
       <AppenderRef ref="console"/>
     </Root>

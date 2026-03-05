@@ -74,7 +74,14 @@ public abstract class AbstractFolderTask {
 
     public final void execute() throws RepositoryException {
         doBeforeExecute();
-        doExecute();
+        try {
+            doExecute();
+        } catch (OperationCancelledException e) {
+            // Run post-processing on partially completed operation before re-throwing
+            getLogger().info("Operation cancelled, running post-processing cleanup");
+            doAfterExecute();
+            throw e;
+        }
         doAfterExecute();
     }
 

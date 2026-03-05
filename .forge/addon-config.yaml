@@ -1,0 +1,27 @@
+# Bloomreach XM Extra Folder Context Menus
+# Config for forge-addon.yaml auto-generation
+
+category: content-management
+pluginTier: forge-addon
+
+compatibility:
+  brxm:
+    min: "16.0.0"
+
+repository:
+  branch: master
+
+artifacts:
+  - artifactId: folderctxmenus-frontend
+    target: cms/webapp
+    scope: compile
+    description: "CMS plugin providing copy and move context menu actions for repository folders"
+
+documentation:
+  - type: site
+    url: https://bloomreach-forge.github.io/folder-context-menus/
+
+installation:
+  target:
+    - cms
+  verification: "Copy and Move context menu items appear in the CMS document browser folder context menu"

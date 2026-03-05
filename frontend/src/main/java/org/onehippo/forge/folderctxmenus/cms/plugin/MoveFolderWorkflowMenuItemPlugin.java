@@ -15,7 +15,13 @@
  */
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.Locale;
+
+import javax.jcr.Node;
+import javax.jcr.Session;
+import javax.jcr.SimpleCredentials;
+
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
@@ -25,12 +31,9 @@ import org.hippoecm.frontend.dialog.AbstractDialog;
 import org.hippoecm.frontend.plugin.IPluginContext;
 import org.hippoecm.frontend.plugin.config.IPluginConfig;
 import org.hippoecm.frontend.session.UserSession;
-import org.hippoecm.repository.api.HippoSession;
-import org.onehippo.forge.folderctxmenus.common.ExtendedFolderWorkflow;
+import org.onehippo.forge.folderctxmenus.common.FolderMoveTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Optional;
 
 public class MoveFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkflowMenuItemPlugin {
 
@@ -40,6 +43,11 @@ public class MoveFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
 
     public MoveFolderWorkflowMenuItemPlugin(IPluginContext context, IPluginConfig config) {
         super(context, config);
+    }
+
+    @Override
+    protected boolean hasRequiredPrivilege() {
+        return userHasMoveFolderPrivilege();
     }
 
     @Override
@@ -58,42 +66,58 @@ public class MoveFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
     }
 
     @Override
-    protected AbstractDialog<FolderActionDocumentArguments> createDialogInstance(final FolderActionDocumentArguments folderActionDocumentModel) {
-        return new CopyOrMoveFolderDialog(getPluginContext(), getPluginConfig(), getDialogTitleModel(),
-            new Model<FolderActionDocumentArguments>(folderActionDocumentModel), false) {
+    protected AbstractDialog<FolderActionDocumentArguments> createDialogInstance(
+            final FolderActionDocumentArguments folderActionDocumentModel) {
+        final IPluginContext pluginContext = getPluginContext();
+
+        return new CopyOrMoveFolderDialog(pluginContext, getPluginConfig(), getDialogTitleModel(),
+                new Model<>(folderActionDocumentModel), false) {
 
             private static final long serialVersionUID = 1L;
 
             @Override
             protected void onOk() {
-                if (StringUtils.isBlank(getDestinationFolderIdentifier())) {
-                    error("Please select the target folder.");
-                    super.onOk();
+                if (!validateInput()) {
                     return;
                 }
 
-                if (StringUtils.isBlank(getNewFolderUrlName()) || StringUtils.isBlank(getNewFolderName())) {
-                    error("Please enter the destination folder name.");
-                    super.onOk();
+                AjaxRequestTarget target = getRequestCycle().find(AjaxRequestTarget.class).orElse(null);
+                if (target != null) {
+                    executeMove(target);
+                }
+            }
+
+            private void executeMove(AjaxRequestTarget target) {
+                final String sourceId = getSourceFolderIdentifier();
+                final String destId = getDestinationFolderIdentifier();
+                final String newUrlName = getNewFolderUrlName();
+                final String newName = getNewFolderName();
+                final Locale locale = UserSession.get().getLocale();
+                final Session session = UserSession.get().getJcrSession();
+
+                if (destinationExists(session)) {
                     return;
                 }
 
-                try {
-                    final HippoSession hippoSession = UserSession.get().getJcrSession();
-                    final Optional<ExtendedFolderWorkflow> advancedFolderWorkflow = getExtendedFolderWorkflow(hippoSession.getNodeByIdentifier(getSourceFolderIdentifier()));
-                    if (advancedFolderWorkflow.isPresent()) {
-                        advancedFolderWorkflow.get().moveFolder(UserSession.get().getLocale(), getSourceFolderIdentifier(),
-                                getDestinationFolderIdentifier(), getNewFolderUrlName(), getNewFolderName());
-                    } else {
-                        log.error("Extended folder workflow is not available");
-                        error("Unable to move folder.");
+                startOperationWithProgress(target, progress -> {
+                    Session bgSession = session.impersonate(
+                            new SimpleCredentials(session.getUserID(), new char[0]));
+                    try {
+                        Node sourceNode = bgSession.getNodeByIdentifier(sourceId);
+                        Node destParentNode = bgSession.getNodeByIdentifier(destId);
+
+                        FolderMoveTask task = new FolderMoveTask(
+                                bgSession, locale, sourceNode, destParentNode,
+                                newUrlName, newName);
+                        task.setOperationProgress(progress);
+                        task.execute();
+                        bgSession.save();
+                    } finally {
+                        bgSession.logout();
                     }
-                    super.onOk();
-                } catch (final Exception e) {
-                    log.error("Failed to move folder.", e);
-                    error(e.getLocalizedMessage());
-                }
+                });
             }
         };
     }
+
 }

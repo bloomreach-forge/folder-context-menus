@@ -1,5 +1,11 @@
 definitions:
   config:
+    /hippo:configuration/hippo:roles/folderctxmenus-copy:
+      jcr:primaryType: hipposys:role
+      hipposys:privileges: ['folderctxmenus:copy']
+    /hippo:configuration/hippo:roles/folderctxmenus-move:
+      jcr:primaryType: hipposys:role
+      hipposys:privileges: ['folderctxmenus:move']
     /hippo:configuration/hippo:roles/folderctxmenus-editor:
       jcr:primaryType: hipposys:role
-      hipposys:privileges: ['folderctxmenus:editor']
+      hipposys:privileges: ['folderctxmenus:copy', 'folderctxmenus:move']

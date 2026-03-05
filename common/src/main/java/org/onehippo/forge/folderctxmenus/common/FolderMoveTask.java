@@ -16,6 +16,7 @@
 package org.onehippo.forge.folderctxmenus.common;
 
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
@@ -29,6 +30,11 @@ public class FolderMoveTask extends AbstractFolderCopyOrMoveTask {
     public FolderMoveTask(final Session session, final Locale locale, final Node sourceFolderNode,
             final Node destParentFolderNode, final String destFolderNodeName, final String destFolderDisplayName) {
         super(session, locale, sourceFolderNode, destParentFolderNode, destFolderNodeName, destFolderDisplayName);
+    }
+
+    @Override
+    protected String getOperationName() {
+        return "Moving";
     }
 
     @Override
@@ -47,19 +53,53 @@ public class FolderMoveTask extends AbstractFolderCopyOrMoveTask {
             throw new RuntimeException("Destination folder already exists: " + getDestFolderPath());
         }
 
-        getLogger().info("Moving nodes: from {} to {}.", getSourceFolderNode().getPath(), getDestFolderPath());
+        // Phase 1: Count with progress (read-only traversal of SOURCE before move)
+        // This shows progress to user without triggering JCR events
+        if (getOperationProgress() != null) {
+            countSourceNodesWithProgress();
+        }
+
+        // Phase 2: Atomic move (instant, no progress tracking needed)
         getSession().move(getSourceFolderNode().getPath(), getDestFolderPath());
-
         setDestFolderNode(JcrUtils.getNodeIfExists(getDestParentFolderNode(), getDestFolderNodeName()));
-
-        recomputeHippoPaths(getDestFolderNode());
 
         updateFolderTranslations(getDestFolderNode(), getDestFolderDisplayName(), getLocale().getLanguage());
     }
 
+    /**
+     * Count source nodes with progress tracking. This is a read-only traversal
+     * that shows progress to the user before the actual move happens.
+     * No JCR changes occur during this phase, avoiding the race condition.
+     */
+    private void countSourceNodesWithProgress() throws RepositoryException {
+        long total = countSourceNodes();
+        AtomicLong counter = new AtomicLong(0);
+
+        JcrTraverseUtils.traverseNodes(getSourceFolderNode(),
+                new NodeTraverser() {
+                    @Override
+                    public boolean isAcceptable(Node node) {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean isTraversable(Node node) {
+                        return true;
+                    }
+
+                    @Override
+                    public void accept(Node node) {
+                        // No-op: traversal is only for progress display
+                    }
+                },
+                getOperationProgress(), counter, total);
+    }
+
     @Override
     protected void doAfterExecute() throws RepositoryException {
-        resetHippoDocumentTranslationIds(getResetTranslations());
+        // Combined post-processing: recompute paths + reset translation IDs in single traversal
+        performDestinationPostProcessing(getResetTranslations(), true);
+        logOperationCompleted();
     }
 
 }
