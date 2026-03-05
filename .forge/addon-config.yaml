@@ -12,8 +12,12 @@ repository:
   branch: master
 
 artifacts:
+  - artifactId: folderctxmenus-repository
+    target: cms-dependencies
+    scope: compile
+    description: "Repository-tier workflow extension enabling folder copy and move operations"
   - artifactId: folderctxmenus-frontend
-    target: cms/webapp
+    target: cms-dependencies
     scope: compile
     description: "CMS plugin providing copy and move context menu actions for repository folders"
 
