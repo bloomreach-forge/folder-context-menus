@@ -16,9 +16,7 @@
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -71,18 +69,7 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
             new CssResourceReference(CopyOrMoveFolderDialog.class, "CopyOrMoveFolderDialog.css");
     private static final JavaScriptResourceReference JS_REFERENCE =
             new JavaScriptResourceReference(CopyOrMoveFolderDialog.class, "CopyOrMoveFolderDialog.js");
-    private static final int MAX_CONCURRENT_OPERATIONS = Integer.getInteger("folderctxmenus.maxConcurrentOps", 4);
-    private static final ThreadPoolExecutor FOLDER_OP_EXECUTOR = new ThreadPoolExecutor(
-            1, MAX_CONCURRENT_OPERATIONS,
-            60L, TimeUnit.SECONDS,
-            new LinkedBlockingQueue<>(16),
-            runnable -> {
-                Thread thread = new Thread(runnable, "FolderContextMenus-Operation");
-                thread.setDaemon(true);
-                return thread;
-            },
-            new ThreadPoolExecutor.CallerRunsPolicy()
-    );
+    private static final ThreadPoolExecutor FOLDER_OP_EXECUTOR = FolderOperationExecutors.SHARED_EXECUTOR;
 
     private final FolderSelectionCmsJcrTree folderTree;
     private JcrTreeModel treeModel;

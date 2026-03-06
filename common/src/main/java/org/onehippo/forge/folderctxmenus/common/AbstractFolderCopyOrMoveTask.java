@@ -20,6 +20,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.jcr.NamespaceException;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -152,8 +153,7 @@ public abstract class AbstractFolderCopyOrMoveTask extends AbstractFolderTask {
 
         try {
             final Map<String, String> uuidMappings = new HashMap<>();
-            final String parentLocale = JcrUtils.getStringProperty(
-                    getDestFolderNode().getParent(), HippoTranslationNodeType.LOCALE, null);
+            final String parentLocale = resolveParentLocale(getDestFolderNode());
             final PostProcessingContext context = new PostProcessingContext(
                     uuidMappings, parentLocale, resetTranslationIds, recomputePaths);
 
@@ -219,8 +219,45 @@ public abstract class AbstractFolderCopyOrMoveTask extends AbstractFolderTask {
         processTranslationNode(node, context);
     }
 
+    /**
+     * Resolves the locale of the destination folder's parent.
+     * Guards against {@link NamespaceException} on sites where the
+     * {@code hippotranslation} module is not installed — in that case locale
+     * propagation is simply skipped rather than aborting post-processing entirely.
+     * This is a copy/move concern only; it is unrelated to the delete operation.
+     */
+    private String resolveParentLocale(Node destFolderNode) {
+        try {
+            return JcrUtils.getStringProperty(destFolderNode.getParent(), HippoTranslationNodeType.LOCALE, null);
+        } catch (NamespaceException e) {
+            getLogger().debug("hippotranslation namespace not available; skipping locale propagation.");
+            return null;
+        } catch (RepositoryException e) {
+            getLogger().warn("Could not resolve parent locale for post-processing.", e);
+            return null;
+        }
+    }
+
+    /**
+     * Null-safe node-type check for {@code hippotranslation:translated}.
+     * Returns {@code false} rather than propagating a {@link NamespaceException}
+     * on sites without the hippotranslation module, so that post-processing
+     * (including {@code hippo:paths} recomputation) continues uninterrupted.
+     * This is a copy/move concern only; it is unrelated to the delete operation.
+     */
+    private boolean isTranslatedNodeType(Node node) {
+        try {
+            return node.isNodeType(HippoTranslationNodeType.NT_TRANSLATED);
+        } catch (NamespaceException e) {
+            return false;
+        } catch (RepositoryException e) {
+            getLogger().warn("Could not check node type {}.", HippoTranslationNodeType.NT_TRANSLATED, e);
+            return false;
+        }
+    }
+
     private void processTranslationNode(Node node, PostProcessingContext context) throws RepositoryException {
-        if (!node.isNodeType(HippoTranslationNodeType.NT_TRANSLATED)) {
+        if (!isTranslatedNodeType(node)) {
             return;
         }
 
