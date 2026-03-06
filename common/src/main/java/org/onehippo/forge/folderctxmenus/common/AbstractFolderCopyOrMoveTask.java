@@ -219,6 +219,13 @@ public abstract class AbstractFolderCopyOrMoveTask extends AbstractFolderTask {
         processTranslationNode(node, context);
     }
 
+    /**
+     * Resolves the locale of the destination folder's parent.
+     * Guards against {@link NamespaceException} on sites where the
+     * {@code hippotranslation} module is not installed — in that case locale
+     * propagation is simply skipped rather than aborting post-processing entirely.
+     * This is a copy/move concern only; it is unrelated to the delete operation.
+     */
     private String resolveParentLocale(Node destFolderNode) {
         try {
             return JcrUtils.getStringProperty(destFolderNode.getParent(), HippoTranslationNodeType.LOCALE, null);
@@ -231,6 +238,13 @@ public abstract class AbstractFolderCopyOrMoveTask extends AbstractFolderTask {
         }
     }
 
+    /**
+     * Null-safe node-type check for {@code hippotranslation:translated}.
+     * Returns {@code false} rather than propagating a {@link NamespaceException}
+     * on sites without the hippotranslation module, so that post-processing
+     * (including {@code hippo:paths} recomputation) continues uninterrupted.
+     * This is a copy/move concern only; it is unrelated to the delete operation.
+     */
     private boolean isTranslatedNodeType(Node node) {
         try {
             return node.isNodeType(HippoTranslationNodeType.NT_TRANSLATED);

@@ -22,6 +22,7 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.Value;
 
 import org.hippoecm.repository.api.HippoNodeType;
 
@@ -113,7 +114,7 @@ public class FolderDeleteTask extends AbstractFolderTask {
         while (variants.hasNext()) {
             final Node variant = variants.nextNode();
             if (variant.hasProperty(HIPPO_AVAILABILITY)) {
-                for (javax.jcr.Value v : variant.getProperty(HIPPO_AVAILABILITY).getValues()) {
+                for (Value v : variant.getProperty(HIPPO_AVAILABILITY).getValues()) {
                     if (AVAILABILITY_LIVE.equals(v.getString())) {
                         return true;
                     }

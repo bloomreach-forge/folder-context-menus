@@ -17,12 +17,10 @@ package org.onehippo.forge.folderctxmenus.cms.plugin;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.jcr.Node;
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 
@@ -35,10 +33,8 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
-import org.hippoecm.frontend.model.JcrNodeModel;
 import org.hippoecm.frontend.plugin.IPluginContext;
 import org.hippoecm.frontend.plugin.config.IPluginConfig;
-import org.hippoecm.frontend.service.IBrowseService;
 import org.hippoecm.frontend.session.UserSession;
 import org.onehippo.forge.folderctxmenus.common.FolderDeleteTask;
 import org.onehippo.forge.folderctxmenus.common.PublishedContentException;
@@ -56,20 +52,9 @@ public class DeleteFolderDialog extends AbstractFolderDialog {
     private static final CssResourceReference CSS_REFERENCE =
             new CssResourceReference(DeleteFolderDialog.class, "DeleteFolderDialog.css");
 
+    // Reuses the shared dialog JS (FolderContextMenus.resizeDialog) from CopyOrMoveFolderDialog.
     private static final JavaScriptResourceReference JS_REFERENCE =
             new JavaScriptResourceReference(CopyOrMoveFolderDialog.class, "CopyOrMoveFolderDialog.js");
-
-    private static final ThreadPoolExecutor DELETE_OP_EXECUTOR = new ThreadPoolExecutor(
-            1, 4,
-            60L, TimeUnit.SECONDS,
-            new LinkedBlockingQueue<>(8),
-            r -> {
-                Thread t = new Thread(r, "FolderContextMenus-Delete");
-                t.setDaemon(true);
-                return t;
-            },
-            new ThreadPoolExecutor.CallerRunsPolicy()
-    );
 
     private final WebMarkupContainer formContainer;
     private final WebMarkupContainer progressContainer;
@@ -80,7 +65,8 @@ public class DeleteFolderDialog extends AbstractFolderDialog {
 
     private final String sourceFolderIdentifier;
     private final String sourceFolderName;
-    private String sourceFolderParentPath = "";
+    // Resolved at construction time so it remains available for logging after the node is deleted.
+    private String sourceFolderPath = "";
 
     public DeleteFolderDialog(final IPluginContext pluginContext, final IPluginConfig pluginConfig,
                               final IModel<String> titleModel,
@@ -93,11 +79,9 @@ public class DeleteFolderDialog extends AbstractFolderDialog {
 
         try {
             final Node sourceFolderNode = UserSession.get().getJcrSession().getNodeByIdentifier(sourceFolderIdentifier);
-            final String sourceFolderPath = sourceFolderNode.getPath();
-            final int lastSlash = sourceFolderPath.lastIndexOf('/');
-            sourceFolderParentPath = lastSlash > 0 ? sourceFolderPath.substring(0, lastSlash) : "/";
+            sourceFolderPath = sourceFolderNode.getPath();
         } catch (Exception e) {
-            log.warn("Failed to resolve source folder path for post-delete navigation", e);
+            log.warn("Failed to resolve source folder path", e);
         }
 
         formContainer = new WebMarkupContainer("formContainer");
@@ -117,8 +101,8 @@ public class DeleteFolderDialog extends AbstractFolderDialog {
 
             @Override
             protected void onCloseClicked(AjaxRequestTarget target) {
-                browseToParentIfSuccessful();
                 closeDialog();
+                refreshJcrSession();
             }
         };
         progressPanel.setVisible(false);
@@ -157,6 +141,8 @@ public class DeleteFolderDialog extends AbstractFolderDialog {
 
         formContainer.setVisible(false);
         setOkVisible(false);
+        // Delete is a single atomic JCR operation (node.remove() + save) and cannot be interrupted
+        // mid-execution, so the Cancel button is intentionally hidden during progress.
         setCancelVisible(false);
 
         progressContainer.setVisible(true);
@@ -180,7 +166,7 @@ public class DeleteFolderDialog extends AbstractFolderDialog {
                         operationProgress.setCompletionSummary(buildCompletionSummary(operationError.get()));
                         operationProgress.markCompleted();
                     }
-                }, DELETE_OP_EXECUTOR)
+                }, FolderOperationExecutors.SHARED_EXECUTOR)
         );
         progressPanel.setVisible(true);
 
@@ -201,26 +187,29 @@ public class DeleteFolderDialog extends AbstractFolderDialog {
             return new ProgressCompletionSummary(msg.toString(), true);
         }
         if (error != null) {
-            log.error("Folder delete failed for '{}'", sourceFolderName, error);
+            log.error("Folder delete failed: user='{}', path='{}'", resolveUserId(), sourceFolderPath, error);
             return new ProgressCompletionSummary(
                     "Delete failed: " + error.getMessage(), true);
         }
-        log.info("Folder delete completed: folder='{}'", sourceFolderName);
+        log.info("Folder delete completed: user='{}', path='{}'", resolveUserId(), sourceFolderPath);
         return new ProgressCompletionSummary(
                 "Folder '" + sourceFolderName + "' and its contents were successfully deleted.", false);
     }
 
-    @SuppressWarnings("unchecked")
-    private void browseToParentIfSuccessful() {
-        if (operationError.get() != null || sourceFolderParentPath.isEmpty()) {
-            return;
+    private void refreshJcrSession() {
+        try {
+            UserSession.get().getJcrSession().refresh(false);
+        } catch (RepositoryException e) {
+            log.warn("Failed to refresh JCR session after folder delete", e);
         }
-        IBrowseService<JcrNodeModel> browseService = getPluginContext()
-                .getService(IBrowseService.class.getName(), IBrowseService.class);
-        if (browseService != null) {
-            browseService.browse(new JcrNodeModel(sourceFolderParentPath));
+    }
+
+    private String resolveUserId() {
+        try {
+            return UserSession.get().getJcrSession().getUserID();
+        } catch (Exception e) {
+            return "unknown";
         }
     }
 
 }
-
