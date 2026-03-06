@@ -67,6 +67,8 @@ public class DeleteFolderDialog extends AbstractFolderDialog {
     private final String sourceFolderName;
     // Resolved at construction time so it remains available for logging after the node is deleted.
     private String sourceFolderPath = "";
+    // Captured on the request thread in executeDelete(); background threads cannot access UserSession.
+    private String operationUserId = "unknown";
 
     public DeleteFolderDialog(final IPluginContext pluginContext, final IPluginConfig pluginConfig,
                               final IModel<String> titleModel,
@@ -134,6 +136,7 @@ public class DeleteFolderDialog extends AbstractFolderDialog {
 
     private void executeDelete(final AjaxRequestTarget target) {
         final Session session = UserSession.get().getJcrSession();
+        operationUserId = resolveUserId();
 
         inProgressMode = true;
         operationProgress = new ProgressTrackingOperationProgress();
@@ -187,11 +190,11 @@ public class DeleteFolderDialog extends AbstractFolderDialog {
             return new ProgressCompletionSummary(msg.toString(), true);
         }
         if (error != null) {
-            log.error("Folder delete failed: user='{}', path='{}'", resolveUserId(), sourceFolderPath, error);
+            log.error("Folder delete failed: user='{}', path='{}'", operationUserId, sourceFolderPath, error);
             return new ProgressCompletionSummary(
                     "Delete failed: " + error.getMessage(), true);
         }
-        log.info("Folder delete completed: user='{}', path='{}'", resolveUserId(), sourceFolderPath);
+        log.info("Folder delete completed: user='{}', path='{}'", operationUserId, sourceFolderPath);
         return new ProgressCompletionSummary(
                 "Folder '" + sourceFolderName + "' and its contents were successfully deleted.", false);
     }

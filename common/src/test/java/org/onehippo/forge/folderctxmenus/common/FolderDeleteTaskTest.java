@@ -41,7 +41,7 @@ class FolderDeleteTaskTest {
         when(folderNode.getPath()).thenReturn("/content/documents/site/myfolder");
     }
 
-    // --- Helper factories ---
+    // --- Helpers: fully stubbed before being passed to thenReturn() ---
 
     private NodeIterator emptyIterator() {
         NodeIterator it = mock(NodeIterator.class);
@@ -49,25 +49,26 @@ class FolderDeleteTaskTest {
         return it;
     }
 
-    private NodeIterator iteratorOf(Node... nodes) {
+    private NodeIterator iteratorOf(Node first, Node... rest) {
         NodeIterator it = mock(NodeIterator.class);
-        boolean[] consumed = {false};
-        if (nodes.length == 0) {
-            when(it.hasNext()).thenReturn(false);
-        } else if (nodes.length == 1) {
+        if (rest.length == 0) {
             when(it.hasNext()).thenReturn(true, false);
-            when(it.nextNode()).thenReturn(nodes[0]);
+            when(it.nextNode()).thenReturn(first);
         } else {
-            // Build return value chains for hasNext() and nextNode()
-            Boolean[] hasNextValues = new Boolean[nodes.length + 1];
-            for (int i = 0; i < nodes.length; i++) {
-                hasNextValues[i] = true;
+            Node[] all = new Node[1 + rest.length];
+            all[0] = first;
+            System.arraycopy(rest, 0, all, 1, rest.length);
+
+            Boolean[] hasNextSeq = new Boolean[all.length + 1];
+            for (int i = 0; i < all.length; i++) {
+                hasNextSeq[i] = true;
             }
-            hasNextValues[nodes.length] = false;
-            when(it.hasNext()).thenReturn(hasNextValues[0],
-                    java.util.Arrays.copyOfRange(hasNextValues, 1, hasNextValues.length));
-            when(it.nextNode()).thenReturn(nodes[0],
-                    java.util.Arrays.copyOfRange(nodes, 1, nodes.length));
+            hasNextSeq[all.length] = false;
+
+            when(it.hasNext()).thenReturn(hasNextSeq[0],
+                    java.util.Arrays.copyOfRange(hasNextSeq, 1, hasNextSeq.length));
+            when(it.nextNode()).thenReturn(all[0],
+                    java.util.Arrays.copyOfRange(all, 1, all.length));
         }
         return it;
     }
@@ -81,14 +82,19 @@ class FolderDeleteTaskTest {
         when(handle.isNodeType("hippostd:folder")).thenReturn(false);
         when(handle.isNodeType("hippotranslation:translated")).thenReturn(false);
 
-        Node variant = mock(Node.class);
-        Property availProp = mock(Property.class);
         Value liveValue = mock(Value.class);
         when(liveValue.getString()).thenReturn("live");
+
+        Property availProp = mock(Property.class);
         when(availProp.getValues()).thenReturn(new Value[]{liveValue});
+
+        Node variant = mock(Node.class);
         when(variant.hasProperty("hippo:availability")).thenReturn(true);
         when(variant.getProperty("hippo:availability")).thenReturn(availProp);
-        when(handle.getNodes("article")).thenReturn(iteratorOf(variant));
+
+        // iteratorOf fully set up before being used
+        NodeIterator variantIt = iteratorOf(variant);
+        when(handle.getNodes("article")).thenReturn(variantIt);
 
         return handle;
     }
@@ -102,13 +108,15 @@ class FolderDeleteTaskTest {
         when(handle.isNodeType("hippostd:folder")).thenReturn(false);
         when(handle.isNodeType("hippotranslation:translated")).thenReturn(false);
 
-        Node variant = mock(Node.class);
         Property availProp = mock(Property.class);
-        // Empty availability = document is offline
         when(availProp.getValues()).thenReturn(new Value[0]);
+
+        Node variant = mock(Node.class);
         when(variant.hasProperty("hippo:availability")).thenReturn(true);
         when(variant.getProperty("hippo:availability")).thenReturn(availProp);
-        when(handle.getNodes("offline")).thenReturn(iteratorOf(variant));
+
+        NodeIterator variantIt = iteratorOf(variant);
+        when(handle.getNodes("offline")).thenReturn(variantIt);
 
         return handle;
     }
@@ -117,7 +125,8 @@ class FolderDeleteTaskTest {
 
     @Test
     void execute_emptyFolder_removesSourceNode() throws RepositoryException {
-        when(folderNode.getNodes()).thenReturn(emptyIterator());
+        NodeIterator children = emptyIterator();
+        when(folderNode.getNodes()).thenReturn(children);
 
         FolderDeleteTask task = new FolderDeleteTask(session, folderNode);
         task.execute();
@@ -128,7 +137,8 @@ class FolderDeleteTaskTest {
     @Test
     void execute_folderWithOfflineDocument_removesSourceNode() throws RepositoryException {
         Node handle = mockHandleWithOfflineVariant();
-        when(folderNode.getNodes()).thenReturn(iteratorOf(handle));
+        NodeIterator children = iteratorOf(handle);
+        when(folderNode.getNodes()).thenReturn(children);
 
         FolderDeleteTask task = new FolderDeleteTask(session, folderNode);
         task.execute();
@@ -139,7 +149,8 @@ class FolderDeleteTaskTest {
     @Test
     void execute_folderWithLiveDocument_throwsPublishedContentException() throws RepositoryException {
         Node handle = mockHandleWithLiveVariant("/content/documents/site/myfolder/article");
-        when(folderNode.getNodes()).thenReturn(iteratorOf(handle));
+        NodeIterator children = iteratorOf(handle);
+        when(folderNode.getNodes()).thenReturn(children);
 
         FolderDeleteTask task = new FolderDeleteTask(session, folderNode);
         PublishedContentException ex = assertThrows(PublishedContentException.class, task::execute);
@@ -152,7 +163,8 @@ class FolderDeleteTaskTest {
     void execute_folderWithMultipleLiveDocs_collectsAllPaths() throws RepositoryException {
         Node handle1 = mockHandleWithLiveVariant("/content/documents/site/folder/doc1");
         Node handle2 = mockHandleWithLiveVariant("/content/documents/site/folder/doc2");
-        when(folderNode.getNodes()).thenReturn(iteratorOf(handle1, handle2));
+        NodeIterator children = iteratorOf(handle1, handle2);
+        when(folderNode.getNodes()).thenReturn(children);
 
         FolderDeleteTask task = new FolderDeleteTask(session, folderNode);
         PublishedContentException ex = assertThrows(PublishedContentException.class, task::execute);
@@ -163,7 +175,8 @@ class FolderDeleteTaskTest {
 
     @Test
     void execute_withOperationProgress_updatesProgress() throws RepositoryException {
-        when(folderNode.getNodes()).thenReturn(emptyIterator());
+        NodeIterator children = emptyIterator();
+        when(folderNode.getNodes()).thenReturn(children);
         OperationProgress progress = mock(OperationProgress.class);
 
         FolderDeleteTask task = new FolderDeleteTask(session, folderNode);
@@ -176,7 +189,8 @@ class FolderDeleteTaskTest {
 
     @Test
     void execute_withNoOperationProgress_doesNotThrow() throws RepositoryException {
-        when(folderNode.getNodes()).thenReturn(emptyIterator());
+        NodeIterator children = emptyIterator();
+        when(folderNode.getNodes()).thenReturn(children);
 
         FolderDeleteTask task = new FolderDeleteTask(session, folderNode);
         assertDoesNotThrow(task::execute);
@@ -184,15 +198,17 @@ class FolderDeleteTaskTest {
 
     @Test
     void execute_nestedFolderWithLiveDoc_isDetected() throws RepositoryException {
-        // Sub-folder containing a live document
+        Node handle = mockHandleWithLiveVariant("/content/documents/site/folder/sub/article");
+        NodeIterator subChildren = iteratorOf(handle);
+
         Node subFolder = mock(Node.class);
         when(subFolder.isNodeType(HippoNodeType.NT_HANDLE)).thenReturn(false);
         when(subFolder.isNodeType(HippoNodeType.NT_DOCUMENT)).thenReturn(false);
         when(subFolder.isNodeType("hippostd:folder")).thenReturn(true);
+        when(subFolder.getNodes()).thenReturn(subChildren);
 
-        Node handle = mockHandleWithLiveVariant("/content/documents/site/folder/sub/article");
-        when(subFolder.getNodes()).thenReturn(iteratorOf(handle));
-        when(folderNode.getNodes()).thenReturn(iteratorOf(subFolder));
+        NodeIterator topChildren = iteratorOf(subFolder);
+        when(folderNode.getNodes()).thenReturn(topChildren);
 
         FolderDeleteTask task = new FolderDeleteTask(session, folderNode);
         PublishedContentException ex = assertThrows(PublishedContentException.class, task::execute);

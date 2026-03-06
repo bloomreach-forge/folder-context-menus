@@ -16,6 +16,7 @@
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
