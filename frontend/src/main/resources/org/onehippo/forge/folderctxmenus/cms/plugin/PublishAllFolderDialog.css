@@ -1,0 +1,27 @@
+
+.publish-all-folder-dialog {
+  padding: 8px 4px;
+}
+
+.publish-all-folder-dialog .publishall-warning {
+  color: #1565c0;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.publish-all-folder-dialog .publishall-folder-name {
+  margin-bottom: 10px;
+}
+
+.publish-all-folder-dialog .publishall-folder-name .field-label {
+  margin-right: 6px;
+  color: #555;
+}
+
+.publish-all-folder-dialog .publishall-note {
+  color: #666;
+  font-style: italic;
+  border-left: 3px solid #e0e0e0;
+  padding-left: 8px;
+  margin-top: 12px;
+}

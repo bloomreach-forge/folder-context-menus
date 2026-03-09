@@ -43,6 +43,8 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LambdaModel;
 import org.apache.wicket.request.resource.CssResourceReference;
+import org.apache.wicket.util.value.IValueMap;
+import org.apache.wicket.util.value.ValueMap;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.hippoecm.frontend.model.JcrNodeModel;
 import org.hippoecm.frontend.model.tree.IJcrTreeNode;
@@ -214,6 +216,11 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
         linkAsTranslationsField.setOutputMarkupId(true);
         linkAsTranslationsField.setVisible(isCopyDialog && isSourceFolderTranslated);
         row.add(linkAsTranslationsField);
+    }
+
+    @Override
+    public IValueMap getProperties() {
+        return new ValueMap("width=640,height=480").makeImmutable();
     }
 
     @Override

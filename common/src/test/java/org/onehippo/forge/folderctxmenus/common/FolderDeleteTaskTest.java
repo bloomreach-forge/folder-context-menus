@@ -27,6 +27,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 class FolderDeleteTaskTest {
@@ -125,8 +126,10 @@ class FolderDeleteTaskTest {
 
     @Test
     void execute_emptyFolder_removesSourceNode() throws RepositoryException {
-        NodeIterator children = emptyIterator();
-        when(folderNode.getNodes()).thenReturn(children);
+        // getNodes() is called twice: once for count+check, once for delete
+        NodeIterator it1 = emptyIterator();
+        NodeIterator it2 = emptyIterator();
+        when(folderNode.getNodes()).thenReturn(it1, it2);
 
         FolderDeleteTask task = new FolderDeleteTask(session, folderNode);
         task.execute();
@@ -137,20 +140,24 @@ class FolderDeleteTaskTest {
     @Test
     void execute_folderWithOfflineDocument_removesSourceNode() throws RepositoryException {
         Node handle = mockHandleWithOfflineVariant();
-        NodeIterator children = iteratorOf(handle);
-        when(folderNode.getNodes()).thenReturn(children);
+        // getNodes() called twice: count+check pass, then delete pass
+        NodeIterator it1 = iteratorOf(handle);
+        NodeIterator it2 = iteratorOf(handle);
+        when(folderNode.getNodes()).thenReturn(it1, it2);
 
         FolderDeleteTask task = new FolderDeleteTask(session, folderNode);
         task.execute();
 
+        verify(handle).remove();
         verify(folderNode).remove();
     }
 
     @Test
     void execute_folderWithLiveDocument_throwsPublishedContentException() throws RepositoryException {
         Node handle = mockHandleWithLiveVariant("/content/documents/site/myfolder/article");
-        NodeIterator children = iteratorOf(handle);
-        when(folderNode.getNodes()).thenReturn(children);
+        // Only one pass runs (check throws before the delete pass)
+        NodeIterator it1 = iteratorOf(handle);
+        when(folderNode.getNodes()).thenReturn(it1);
 
         FolderDeleteTask task = new FolderDeleteTask(session, folderNode);
         PublishedContentException ex = assertThrows(PublishedContentException.class, task::execute);
@@ -163,8 +170,9 @@ class FolderDeleteTaskTest {
     void execute_folderWithMultipleLiveDocs_collectsAllPaths() throws RepositoryException {
         Node handle1 = mockHandleWithLiveVariant("/content/documents/site/folder/doc1");
         Node handle2 = mockHandleWithLiveVariant("/content/documents/site/folder/doc2");
-        NodeIterator children = iteratorOf(handle1, handle2);
-        when(folderNode.getNodes()).thenReturn(children);
+        // Only one pass runs (throws before delete)
+        NodeIterator it1 = iteratorOf(handle1, handle2);
+        when(folderNode.getNodes()).thenReturn(it1);
 
         FolderDeleteTask task = new FolderDeleteTask(session, folderNode);
         PublishedContentException ex = assertThrows(PublishedContentException.class, task::execute);
@@ -174,9 +182,28 @@ class FolderDeleteTaskTest {
     }
 
     @Test
-    void execute_withOperationProgress_updatesProgress() throws RepositoryException {
-        NodeIterator children = emptyIterator();
-        when(folderNode.getNodes()).thenReturn(children);
+    void execute_withOperationProgress_tracksPerHandleProgress() throws RepositoryException {
+        Node handle = mockHandleWithOfflineVariant();
+        NodeIterator it1 = iteratorOf(handle);
+        NodeIterator it2 = iteratorOf(handle);
+        when(folderNode.getNodes()).thenReturn(it1, it2);
+        OperationProgress progress = mock(OperationProgress.class);
+
+        FolderDeleteTask task = new FolderDeleteTask(session, folderNode);
+        task.setOperationProgress(progress);
+        task.execute();
+
+        // Initial 0% status before check pass
+        verify(progress).updateProgress(0, 1, "Checking for published content...");
+        // Per-handle progress during delete pass: 1 handle, total=1
+        verify(progress).updateProgress(1, 1, "/content/documents/site/myfolder/offline");
+    }
+
+    @Test
+    void execute_withOperationProgress_emptyFolder_onlyShowsCheckingState() throws RepositoryException {
+        NodeIterator it1 = emptyIterator();
+        NodeIterator it2 = emptyIterator();
+        when(folderNode.getNodes()).thenReturn(it1, it2);
         OperationProgress progress = mock(OperationProgress.class);
 
         FolderDeleteTask task = new FolderDeleteTask(session, folderNode);
@@ -184,13 +211,14 @@ class FolderDeleteTaskTest {
         task.execute();
 
         verify(progress).updateProgress(0, 1, "Checking for published content...");
-        verify(progress).updateProgress(1, 1, "Deleting folder...");
+        verify(progress, times(1)).updateProgress(anyLong(), anyLong(), any());
     }
 
     @Test
     void execute_withNoOperationProgress_doesNotThrow() throws RepositoryException {
-        NodeIterator children = emptyIterator();
-        when(folderNode.getNodes()).thenReturn(children);
+        NodeIterator it1 = emptyIterator();
+        NodeIterator it2 = emptyIterator();
+        when(folderNode.getNodes()).thenReturn(it1, it2);
 
         FolderDeleteTask task = new FolderDeleteTask(session, folderNode);
         assertDoesNotThrow(task::execute);
@@ -207,6 +235,7 @@ class FolderDeleteTaskTest {
         when(subFolder.isNodeType("hippostd:folder")).thenReturn(true);
         when(subFolder.getNodes()).thenReturn(subChildren);
 
+        // Only one pass runs (throws before delete)
         NodeIterator topChildren = iteratorOf(subFolder);
         when(folderNode.getNodes()).thenReturn(topChildren);
 

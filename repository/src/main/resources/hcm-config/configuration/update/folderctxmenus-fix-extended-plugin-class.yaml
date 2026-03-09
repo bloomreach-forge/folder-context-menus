@@ -1,0 +1,29 @@
+definitions:
+  config:
+    /hippo:configuration/hippo:update/hippo:queue/folderctxmenus-fix-extended-plugin-class:
+      jcr:primaryType: hipposys:updaterinfo
+      hipposys:description: "Fix plugin.class for folder-extended renderer/extended node (folderctxmenus)"
+      hipposys:query: "//element(extended, frontend:plugin)[@plugin.class='org.hippoecm.frontend.plugins.reviewedactions.ExtendedFolderWorkflowPlugin']"
+      hipposys:language: xpath
+      hipposys:script: |
+        package org.onehippo.repository.update
+
+        import javax.jcr.Node
+
+        class HidePlatformExtendedFolderWorkflowUpdater extends BaseNodeUpdateVisitor {
+
+            static final String NEW_CLASS = 'org.onehippo.forge.folderctxmenus.cms.plugin.NullWorkflowMenuItemPlugin'
+
+            boolean doUpdate(Node node) {
+                node.setProperty('plugin.class', NEW_CLASS)
+                log.info('folderctxmenus: Updated extended node plugin.class to NullWorkflowMenuItemPlugin at ' + node.getPath())
+                return true
+            }
+
+            boolean undoUpdate(Node node) {
+                return false
+            }
+        }
+      hipposys:batchsize: 1
+      hipposys:dryrun: false
+      hipposys:throttle: 0

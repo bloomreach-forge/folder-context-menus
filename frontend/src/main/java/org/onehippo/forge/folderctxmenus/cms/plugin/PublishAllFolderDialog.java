@@ -15,7 +15,6 @@
  */
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -36,22 +35,21 @@ import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.hippoecm.frontend.plugin.IPluginContext;
 import org.hippoecm.frontend.plugin.config.IPluginConfig;
 import org.hippoecm.frontend.session.UserSession;
-import org.onehippo.forge.folderctxmenus.common.FolderDeleteTask;
+import org.onehippo.forge.folderctxmenus.common.FolderPublishAllTask;
 import org.onehippo.forge.folderctxmenus.common.OperationCancelledException;
-import org.onehippo.forge.folderctxmenus.common.PublishedContentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DeleteFolderDialog extends AbstractFolderDialog {
+public class PublishAllFolderDialog extends AbstractFolderDialog {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Logger log = LoggerFactory.getLogger(DeleteFolderDialog.class);
+    private static final Logger log = LoggerFactory.getLogger(PublishAllFolderDialog.class);
 
     private static final int PROGRESS_DIALOG_WIDTH = 450;
 
     private static final CssResourceReference CSS_REFERENCE =
-            new CssResourceReference(DeleteFolderDialog.class, "DeleteFolderDialog.css");
+            new CssResourceReference(PublishAllFolderDialog.class, "PublishAllFolderDialog.css");
 
     // Reuses the shared dialog JS (FolderContextMenus.resizeDialog) from CopyOrMoveFolderDialog.
     private static final JavaScriptResourceReference JS_REFERENCE =
@@ -66,14 +64,12 @@ public class DeleteFolderDialog extends AbstractFolderDialog {
 
     private final String sourceFolderIdentifier;
     private final String sourceFolderName;
-    // Resolved at construction time so it remains available for logging after the node is deleted.
     private String sourceFolderPath = "";
-    // Captured on the request thread in executeDelete(); background threads cannot access UserSession.
     private String operationUserId = "unknown";
 
-    public DeleteFolderDialog(final IPluginContext pluginContext, final IPluginConfig pluginConfig,
-                              final IModel<String> titleModel,
-                              final IModel<FolderActionDocumentArguments> model) {
+    public PublishAllFolderDialog(final IPluginContext pluginContext, final IPluginConfig pluginConfig,
+                                  final IModel<String> titleModel,
+                                  final IModel<FolderActionDocumentArguments> model) {
         super(pluginContext, pluginConfig, titleModel, model);
 
         final FolderActionDocumentArguments args = model.getObject();
@@ -114,11 +110,10 @@ public class DeleteFolderDialog extends AbstractFolderDialog {
     }
 
     /**
-     * Suppresses model-change reactions while a delete is in progress.
-     * When {@code bgSession.save()} commits the deletion the CMS fires JCR observation
-     * events that can cause the document browser to navigate away and trigger a page-level
-     * refresh, which would auto-close this dialog before the user has a chance to read the
-     * result. Absorbing model-change events during the operation prevents that.
+     * Suppresses model-change reactions while the operation is in progress.
+     * Each {@code DocumentWorkflow.publish()} call commits independently and fires JCR
+     * observation events that could otherwise cause the CMS to navigate away and
+     * auto-close this dialog before the user sees the result.
      */
     @Override
     public void onModelChanged() {
@@ -146,11 +141,11 @@ public class DeleteFolderDialog extends AbstractFolderDialog {
     protected void onOk() {
         AjaxRequestTarget target = getRequestCycle().find(AjaxRequestTarget.class).orElse(null);
         if (target != null) {
-            executeDelete(target);
+            executePublishAll(target);
         }
     }
 
-    private void executeDelete(final AjaxRequestTarget target) {
+    private void executePublishAll(final AjaxRequestTarget target) {
         final Session session = UserSession.get().getJcrSession();
         operationUserId = resolveUserId();
 
@@ -170,14 +165,10 @@ public class DeleteFolderDialog extends AbstractFolderDialog {
                                 new SimpleCredentials(session.getUserID(), new char[0]));
                         try {
                             final Node sourceNode = bgSession.getNodeByIdentifier(sourceFolderIdentifier);
-                            final FolderDeleteTask task = new FolderDeleteTask(bgSession, sourceNode);
+                            final FolderPublishAllTask task = new FolderPublishAllTask(bgSession, sourceNode);
                             task.setOperationProgress(operationProgress);
                             task.execute();
-                            // Signal the finalizing phase so the UI shows "Saving changes..."
-                            // while the JCR commit runs. For large folders the save can take
-                            // several seconds; this keeps the progress bar visibly active.
-                            operationProgress.enterFinalizingPhase();
-                            bgSession.save();
+                            bgSession.refresh(false);
                         } finally {
                             bgSession.logout();
                         }
@@ -196,37 +187,26 @@ public class DeleteFolderDialog extends AbstractFolderDialog {
     }
 
     private ProgressCompletionSummary buildCompletionSummary(final Exception error) {
-        if (error instanceof PublishedContentException) {
-            final List<String> paths = ((PublishedContentException) error).getDocumentPaths();
-            final StringBuilder msg = new StringBuilder(
-                    "Cannot delete: the following document(s) are still live. "
-                            + "Please take them offline and try again.\n");
-            paths.stream().limit(5).forEach(p -> msg.append("  \u2022 ").append(p).append("\n"));
-            if (paths.size() > 5) {
-                msg.append("  \u2026 and ").append(paths.size() - 5).append(" more.");
-            }
-            return new ProgressCompletionSummary(msg.toString(), true);
-        }
         if (error instanceof OperationCancelledException || operationProgress.isCancelled()) {
-            log.info("Folder delete cancelled: user='{}', path='{}'", operationUserId, sourceFolderPath);
+            log.info("Publish all cancelled: user='{}', path='{}'", operationUserId, sourceFolderPath);
             return new ProgressCompletionSummary(
-                    "Cancelled after deleting " + operationProgress.getCurrentCount() + " items.", false);
+                    "Cancelled after publishing " + operationProgress.getCurrentCount() + " items.", false);
         }
         if (error != null) {
-            log.error("Folder delete failed: user='{}', path='{}'", operationUserId, sourceFolderPath, error);
+            log.error("Publish all failed: user='{}', path='{}'", operationUserId, sourceFolderPath, error);
             return new ProgressCompletionSummary(
-                    "Delete failed: " + error.getMessage(), true);
+                    "Publish all failed: " + error.getMessage(), true);
         }
-        log.info("Folder delete committed: user='{}', path='{}'", operationUserId, sourceFolderPath);
+        log.info("Publish all completed: user='{}', path='{}'", operationUserId, sourceFolderPath);
         return new ProgressCompletionSummary(
-                "Folder '" + sourceFolderName + "' and its contents were successfully deleted.", false);
+                "All documents in '" + sourceFolderName + "' have been published.", false);
     }
 
     private void refreshJcrSession() {
         try {
             UserSession.get().getJcrSession().refresh(false);
         } catch (RepositoryException e) {
-            log.warn("Failed to refresh JCR session after folder delete", e);
+            log.warn("Failed to refresh JCR session after publish all", e);
         }
     }
 
