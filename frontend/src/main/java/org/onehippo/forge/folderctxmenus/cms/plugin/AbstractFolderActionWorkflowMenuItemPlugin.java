@@ -60,6 +60,12 @@ public abstract class AbstractFolderActionWorkflowMenuItemPlugin extends RenderP
 
     private static final String PRIVILEGE_FOLDERCTXMENUS_MOVE = "folderctxmenus:move";
 
+    private static final String PRIVILEGE_FOLDERCTXMENUS_DELETE = "folderctxmenus:delete";
+
+    private static final String PRIVILEGE_FOLDERCTXMENUS_TAKEOFFLINE = "folderctxmenus:takeoffline";
+
+    private static final String PRIVILEGE_FOLDERCTXMENUS_PUBLISHALL = "folderctxmenus:publishall";
+
     private static final Logger log = LoggerFactory.getLogger(AbstractFolderActionWorkflowMenuItemPlugin.class);
 
     private String destinationIdentifier;
@@ -175,6 +181,33 @@ public abstract class AbstractFolderActionWorkflowMenuItemPlugin extends RenderP
      */
     protected boolean userHasMoveFolderPrivilege() {
         return checkPrivilege(PRIVILEGE_FOLDERCTXMENUS_MOVE);
+    }
+
+    /**
+     * Checks if the current user has delete folder privilege.
+     *
+     * @return true if user has folderctxmenus:delete privilege, false otherwise
+     */
+    protected boolean userHasDeleteFolderPrivilege() {
+        return checkPrivilege(PRIVILEGE_FOLDERCTXMENUS_DELETE);
+    }
+
+    /**
+     * Checks if the current user has take-offline folder privilege.
+     *
+     * @return true if user has folderctxmenus:takeoffline privilege, false otherwise
+     */
+    protected boolean userHasTakeOfflineFolderPrivilege() {
+        return checkPrivilege(PRIVILEGE_FOLDERCTXMENUS_TAKEOFFLINE);
+    }
+
+    /**
+     * Checks if the current user has publish-all folder privilege.
+     *
+     * @return true if user has folderctxmenus:publishall privilege, false otherwise
+     */
+    protected boolean userHasPublishAllFolderPrivilege() {
+        return checkPrivilege(PRIVILEGE_FOLDERCTXMENUS_PUBLISHALL);
     }
 
     /**

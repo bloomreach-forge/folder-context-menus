@@ -1,0 +1,38 @@
+<!--
+  Copyright 2025 Bloomreach (https://www.bloomreach.com)
+
+  Licensed under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with the
+  License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
+  OR CONDITIONS OF ANY KIND, either express or implied. See the License for
+  the specific language governing permissions and limitations under the License.
+-->
+<html xmlns:wicket="http://wicket.apache.org/">
+<wicket:extend>
+  <div wicket:id="formContainer">
+    <div class="take-offline-folder-dialog">
+      <p class="takeoffline-warning">
+        <wicket:message key="folder.action.takeoffline.warning">
+          This will take all published documents in this folder offline. Live documents will no longer be visible on the site.
+        </wicket:message>
+      </p>
+      <p class="takeoffline-folder-name">
+        <span class="field-label">
+          <wicket:message key="folder.action.takeoffline.label.folder.name">Folder:</wicket:message>
+        </span>
+        <strong wicket:id="folderName">Folder Name</strong>
+      </p>
+      <p class="takeoffline-note">
+        <wicket:message key="folder.action.takeoffline.note">
+          Note: only documents that are currently live will be affected. Unpublished documents are not changed.
+        </wicket:message>
+      </p>
+    </div>
+  </div>
+  <div wicket:id="progressContainer">
+    <div wicket:id="progressPanel"></div>
+  </div>
+</wicket:extend>
+</html>

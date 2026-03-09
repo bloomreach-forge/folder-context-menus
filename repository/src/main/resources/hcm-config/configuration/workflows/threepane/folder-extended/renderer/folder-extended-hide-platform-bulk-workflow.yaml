@@ -1,0 +1,8 @@
+definitions:
+  config:
+    /hippo:configuration/hippo:workflows/threepane/folder-extended/frontend:renderer/extended:
+      plugin.class:
+        .meta:category: config
+        operation: override
+        type: string
+        value: org.onehippo.forge.folderctxmenus.cms.plugin.NullWorkflowMenuItemPlugin

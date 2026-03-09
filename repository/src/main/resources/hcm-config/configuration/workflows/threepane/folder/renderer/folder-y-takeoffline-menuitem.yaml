@@ -1,0 +1,6 @@
+definitions:
+  config:
+    /hippo:configuration/hippo:workflows/threepane/folder/frontend:renderer/takeOfflineFolder:
+      jcr:primaryType: frontend:plugin
+      plugin.class: org.onehippo.forge.folderctxmenus.cms.plugin.TakeOfflineFolderWorkflowMenuItemPlugin
+      wicket.id: ${item}

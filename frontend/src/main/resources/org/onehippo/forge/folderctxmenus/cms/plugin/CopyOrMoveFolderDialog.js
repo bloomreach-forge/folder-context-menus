@@ -55,7 +55,6 @@ FolderContextMenus.startProgressPolling = function(options) {
     }
 
     var intervalMs = options.intervalMs || 200;
-    var maxPathLength = options.maxPathLength || 60;
 
     var statusEl = document.getElementById(options.statusId);
     var progressBarEl = document.getElementById(options.progressBarId);
@@ -64,11 +63,12 @@ FolderContextMenus.startProgressPolling = function(options) {
     var cancelEl = document.getElementById(options.cancelId);
     var closeEl = document.getElementById(options.closeId);
 
-    var truncatePath = function(path) {
-        if (!path || path.length <= maxPathLength) {
-            return path || '';
+    var getFilename = function(path) {
+        if (!path) {
+            return '';
         }
-        return '...' + path.substring(path.length - maxPathLength + 3);
+        var slash = path.lastIndexOf('/');
+        return slash >= 0 ? path.substring(slash + 1) : path;
     };
 
     var applySummaryToElements = function(summary, elements) {
@@ -161,7 +161,7 @@ FolderContextMenus.startProgressPolling = function(options) {
 
         if (pathEl) {
             pathEl.style.display = '';
-            pathEl.textContent = truncatePath(data.path || '');
+            pathEl.textContent = getFilename(data.path || '');
         }
 
         if (data.cancelled && cancelEl) {
