@@ -1,5 +1,6 @@
 # Extra Folder Context Menus
 
+
 This project provides extra Folder Context Menu items such as 'Copy folder...' and 'Move folder...'
 for BloomReach XM with extensible base implementations for developers.
 
