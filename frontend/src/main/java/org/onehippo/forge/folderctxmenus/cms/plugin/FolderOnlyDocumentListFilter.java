@@ -33,10 +33,6 @@ public class FolderOnlyDocumentListFilter extends DocumentListFilter {
     }
 
     @Override
-    public NodeIterator filter(Node current, final NodeIterator iter) {
-        return filter(iter);
-    }
-
     public NodeIterator filter(final NodeIterator iter) {
         return new NodeIterator() {
             private int index = 0;

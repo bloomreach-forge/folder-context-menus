@@ -17,17 +17,17 @@ package org.onehippo.forge.folderctxmenus.cms.plugin;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ProgressPanelJsonTest {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private ProgressTrackingOperationProgress progress;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         progress = new ProgressTrackingOperationProgress();
     }
@@ -136,7 +136,7 @@ public class ProgressPanelJsonTest {
         assertEquals(42, node.get("finalizingCount").asLong());
         // summary must ALSO be present alongside finalizing so the JS
         // summary-first check can stop polling after completion
-        assertTrue("summary must be present even while finalizing", node.has("summary"));
+        assertTrue(node.has("summary"), "summary must be present even while finalizing");
         assertEquals("Successfully copied 42 items", node.get("summary").get("message").asText());
         assertFalse(node.get("summary").get("error").asBoolean());
         assertTrue(node.get("completed").asBoolean());
