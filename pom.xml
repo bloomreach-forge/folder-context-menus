@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright 2024 Bloomreach (https://www.bloomreach.com)
+  Copyright 2026 Bloomreach (https://www.bloomreach.com)
 
   Licensed under the Apache License, Version 2.0
   (the "License"); you may not use this file except in compliance with the
@@ -17,20 +17,20 @@
     <parent>
         <groupId>org.onehippo.cms7</groupId>
         <artifactId>hippo-cms7-project</artifactId>
-        <version>16.6.5</version>
+        <version>17.0.0</version>
     </parent>
 
     <name>Bloomreach XM Extra Folder Context Menus</name>
     <description>Bloomreach XM Extra Folder Context Menus</description>
     <groupId>org.onehippo.forge.folderctxmenus</groupId>
     <artifactId>folderctxmenus</artifactId>
-    <version>7.2.0-SNAPSHOT</version>
+    <version>8.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <url>https://bloomreach-forge.github.io/folder-context-menus</url>
 
     <properties>
-        <plugin.jxr.version>3.3.0</plugin.jxr.version>
-        <brut.version>5.0.1</brut.version>
+        <plugin.jxr.version>3.6.0</plugin.jxr.version>
+        <brut.version>6.1.0</brut.version>
     </properties>
 
     <licenses>
@@ -63,7 +63,7 @@
 
     <issueManagement>
         <system>Jira</system>
-        <url>https://issues.onehippo.com/browse/FORGE</url>
+        <url>https://bloomreach.atlassian.net/browse/FORGE</url>
     </issueManagement>
 
     <distributionManagement>
@@ -140,13 +140,6 @@
                 <version>${hippo.release.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>org.junit.vintage</groupId>
-                <artifactId>junit-vintage-engine</artifactId>
-                <version>${junit-jupiter.version}</version>
-                <scope>test</scope>
-            </dependency>
-
         </dependencies>
 
     </dependencyManagement>
@@ -157,7 +150,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <!-- Preserve parent add-opens flags for Java 17 and append JaCoCo agent via @{argLine} -->
+                    <!-- Preserve parent add-opens flags for Java 21 and append JaCoCo agent via @{argLine} -->
                     <argLine>-Xmx1024m
                         --add-opens java.base/java.io=ALL-UNNAMED
                         --add-opens java.base/java.lang=ALL-UNNAMED
