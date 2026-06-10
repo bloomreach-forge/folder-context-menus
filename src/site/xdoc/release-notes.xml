@@ -68,6 +68,16 @@
       </table>
     </section>
 
+    <section name="Release Notes for Bloomreach XM 17">
+      <subsection name="8.0.0">
+        <p class="smallinfo">Release date: 10 June 2026</p>
+        <ul>
+          <li><a href='https://bloomreach.atlassian.net/browse/FORGE-600'>FORGE-600</a><br/>
+            Upgrade for Experience Manager 17 compatibility.
+          </li>
+        </ul>
+      </subsection>
+    </section>
     <section name="Release Notes for Bloomreach XM 16">
       <subsection name="7.2.0">
         <p class="smallinfo">Release date: 5 March 2026</p>
