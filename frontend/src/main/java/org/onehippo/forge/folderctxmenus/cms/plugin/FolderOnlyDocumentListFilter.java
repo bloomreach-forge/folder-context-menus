@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Bloomreach (https://www.bloomreach.com)
+ * Copyright 2026 Bloomreach (https://www.bloomreach.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,10 +33,6 @@ public class FolderOnlyDocumentListFilter extends DocumentListFilter {
     }
 
     @Override
-    public NodeIterator filter(Node current, final NodeIterator iter) {
-        return filter(iter);
-    }
-
     public NodeIterator filter(final NodeIterator iter) {
         return new NodeIterator() {
             private int index = 0;

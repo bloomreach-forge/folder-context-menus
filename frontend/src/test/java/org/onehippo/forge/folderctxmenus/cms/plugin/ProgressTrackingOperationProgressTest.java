@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Bloomreach (https://www.bloomreach.com)
+ * Copyright 2026 Bloomreach (https://www.bloomreach.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,16 @@
  */
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ProgressTrackingOperationProgressTest {
 
     private ProgressTrackingOperationProgress progress;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         progress = new ProgressTrackingOperationProgress();
     }
@@ -214,7 +214,7 @@ public class ProgressTrackingOperationProgressTest {
         String eta = progress.getEstimatedTimeRemaining();
         // ETA should be non-empty and contain "remaining"
         if (!eta.isEmpty()) {
-            assertTrue("ETA should contain 'remaining': " + eta, eta.contains("remaining"));
+            assertTrue(eta.contains("remaining"), "ETA should contain 'remaining': " + eta);
         }
     }
 
