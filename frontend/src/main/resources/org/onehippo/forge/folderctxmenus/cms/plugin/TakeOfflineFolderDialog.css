@@ -1,0 +1,27 @@
+
+.take-offline-folder-dialog {
+  padding: 8px 4px;
+}
+
+.take-offline-folder-dialog .takeoffline-warning {
+  color: #e65100;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.take-offline-folder-dialog .takeoffline-folder-name {
+  margin-bottom: 10px;
+}
+
+.take-offline-folder-dialog .takeoffline-folder-name .field-label {
+  margin-right: 6px;
+  color: #555;
+}
+
+.take-offline-folder-dialog .takeoffline-note {
+  color: #666;
+  font-style: italic;
+  border-left: 3px solid #e0e0e0;
+  padding-left: 8px;
+  margin-top: 12px;
+}

@@ -1,7 +1,25 @@
 # Extra Folder Context Menus
 
-This project provides extra Folder Context Menu items such as 'Copy folder...' and 'Move folder...'
-for BloomReach XM with extensible base implementations for developers.
+This project provides extra Folder Context Menu items for Bloomreach CMS with extensible base
+implementations for developers. The following actions are included:
+
+| Menu item | Description | Required privilege |
+|---|---|---|
+| **Copy folder...** | Copies a folder and all its contents to a new location | `folderctxmenus:copy` |
+| **Move folder...** | Moves a folder and all its contents to a new location | `folderctxmenus:move` |
+| **Delete folder and contents...** | Deletes a folder and all its contents. Blocked if the folder contains any live (published) documents — take them offline first. | `folderctxmenus:delete` |
+
+### Privileges
+
+Each action is guarded by a dedicated JCR privilege. The `folderctxmenus-editor` role bundles all
+three privileges and can be assigned to groups via the CMS Console or repository bootstrap.
+
+| Role | Privileges granted |
+|---|---|
+| `folderctxmenus-copy` | `folderctxmenus:copy` |
+| `folderctxmenus-move` | `folderctxmenus:move` |
+| `folderctxmenus-delete` | `folderctxmenus:delete` |
+| `folderctxmenus-editor` | All of the above |
 
 # Documentation (Local)
 

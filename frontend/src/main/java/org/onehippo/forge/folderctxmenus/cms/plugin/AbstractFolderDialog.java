@@ -41,7 +41,7 @@ public abstract class AbstractFolderDialog extends AbstractDialog<FolderActionDo
     private final IPluginContext pluginContext;
     private final IPluginConfig pluginConfig;
 
-    private final IValueMap dialogProperties = new ValueMap("width=640,height=480").makeImmutable();
+    private final IValueMap dialogProperties = new ValueMap("width=450,height=300").makeImmutable();
 
     private final IModel<String> titleModel;
 

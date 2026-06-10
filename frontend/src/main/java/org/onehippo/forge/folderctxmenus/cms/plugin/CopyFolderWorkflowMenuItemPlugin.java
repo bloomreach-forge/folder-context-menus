@@ -57,7 +57,7 @@ public class CopyFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
 
     @Override
     protected ResourceReference getMenuItemIconResourceReference() {
-        return new PackageResourceReference(getClass(), "copy-folder-16.png");
+        return new PackageResourceReference(getClass(), "copy-folder.svg");
     }
 
     @Override

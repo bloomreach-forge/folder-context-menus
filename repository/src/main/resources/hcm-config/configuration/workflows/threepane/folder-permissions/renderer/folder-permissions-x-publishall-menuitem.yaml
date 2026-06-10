@@ -1,0 +1,6 @@
+definitions:
+  config:
+    /hippo:configuration/hippo:workflows/threepane/folder-permissions/frontend:renderer/publishAllFolder:
+      jcr:primaryType: frontend:plugin
+      plugin.class: org.onehippo.forge.folderctxmenus.cms.plugin.PublishAllFolderWorkflowMenuItemPlugin
+      wicket.id: ${item}

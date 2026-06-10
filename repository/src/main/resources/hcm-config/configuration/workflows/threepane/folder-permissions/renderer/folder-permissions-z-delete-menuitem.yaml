@@ -1,0 +1,6 @@
+definitions:
+  config:
+    /hippo:configuration/hippo:workflows/threepane/folder-permissions/frontend:renderer/deleteFolder:
+      jcr:primaryType: frontend:plugin
+      plugin.class: org.onehippo.forge.folderctxmenus.cms.plugin.DeleteFolderWorkflowMenuItemPlugin
+      wicket.id: ${item}

@@ -16,9 +16,7 @@
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -45,6 +43,8 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LambdaModel;
 import org.apache.wicket.request.resource.CssResourceReference;
+import org.apache.wicket.util.value.IValueMap;
+import org.apache.wicket.util.value.ValueMap;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.hippoecm.frontend.model.JcrNodeModel;
 import org.hippoecm.frontend.model.tree.IJcrTreeNode;
@@ -71,18 +71,7 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
             new CssResourceReference(CopyOrMoveFolderDialog.class, "CopyOrMoveFolderDialog.css");
     private static final JavaScriptResourceReference JS_REFERENCE =
             new JavaScriptResourceReference(CopyOrMoveFolderDialog.class, "CopyOrMoveFolderDialog.js");
-    private static final int MAX_CONCURRENT_OPERATIONS = Integer.getInteger("folderctxmenus.maxConcurrentOps", 4);
-    private static final ThreadPoolExecutor FOLDER_OP_EXECUTOR = new ThreadPoolExecutor(
-            1, MAX_CONCURRENT_OPERATIONS,
-            60L, TimeUnit.SECONDS,
-            new LinkedBlockingQueue<>(16),
-            runnable -> {
-                Thread thread = new Thread(runnable, "FolderContextMenus-Operation");
-                thread.setDaemon(true);
-                return thread;
-            },
-            new ThreadPoolExecutor.CallerRunsPolicy()
-    );
+    private static final ThreadPoolExecutor FOLDER_OP_EXECUTOR = FolderOperationExecutors.SHARED_EXECUTOR;
 
     private final FolderSelectionCmsJcrTree folderTree;
     private JcrTreeModel treeModel;
@@ -227,6 +216,11 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
         linkAsTranslationsField.setOutputMarkupId(true);
         linkAsTranslationsField.setVisible(isCopyDialog && isSourceFolderTranslated);
         row.add(linkAsTranslationsField);
+    }
+
+    @Override
+    public IValueMap getProperties() {
+        return new ValueMap("width=640,height=480").makeImmutable();
     }
 
     @Override

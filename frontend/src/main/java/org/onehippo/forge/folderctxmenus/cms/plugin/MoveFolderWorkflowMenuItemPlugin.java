@@ -57,7 +57,7 @@ public class MoveFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
 
     @Override
     protected ResourceReference getMenuItemIconResourceReference() {
-        return new PackageResourceReference(getClass(), "move-folder-16.png");
+        return new PackageResourceReference(getClass(), "move-folder.svg");
     }
 
     @Override
