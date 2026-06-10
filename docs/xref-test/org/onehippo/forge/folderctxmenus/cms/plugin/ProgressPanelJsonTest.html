@@ -5,9 +5,9 @@
 <link type="text/css" rel="stylesheet" href="../../../../../../stylesheet.css" />
 </head>
 <body>
-<div id="overview"><a href="../../../../../../../../target/site/testapidocs/org/onehippo/forge/folderctxmenus/cms/plugin/ProgressPanelJsonTest.html">View Javadoc</a></div><pre>
+<div id="overview"><a href="../../../../../../../testapidocs/org/onehippo/forge/folderctxmenus/cms/plugin/ProgressPanelJsonTest.html">View Javadoc</a></div><pre>
 <a class="jxr_linenumber" name="L1" href="#L1">1</a>   <em class="jxr_comment">/*</em>
-<a class="jxr_linenumber" name="L2" href="#L2">2</a>   <em class="jxr_comment"> * Copyright 2025 Bloomreach (<a href="https://www.bloomreach.com)" target="alexandria_uri">https://www.bloomreach.com)</a></em>
+<a class="jxr_linenumber" name="L2" href="#L2">2</a>   <em class="jxr_comment"> * Copyright 2026 Bloomreach (<a href="https://www.bloomreach.com)" target="alexandria_uri">https://www.bloomreach.com)</a></em>
 <a class="jxr_linenumber" name="L3" href="#L3">3</a>   <em class="jxr_comment"> *</em>
 <a class="jxr_linenumber" name="L4" href="#L4">4</a>   <em class="jxr_comment"> * Licensed under the Apache License, Version 2.0 (the "License");</em>
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_comment"> * you may not use this file except in compliance with the License.</em>
@@ -25,17 +25,17 @@
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">import</strong> com.fasterxml.jackson.databind.JsonNode;
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> com.fasterxml.jackson.databind.ObjectMapper;
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> org.junit.Before;
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.BeforeEach;
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.*;
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.*;
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>  
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="ProgressPanelJsonTest" href="../../../../../../org/onehippo/forge/folderctxmenus/cms/plugin/ProgressPanelJsonTest.html#ProgressPanelJsonTest">ProgressPanelJsonTest</a> {
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> ObjectMapper MAPPER = <strong class="jxr_keyword">new</strong> ObjectMapper();
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>      <strong class="jxr_keyword">private</strong> ProgressTrackingOperationProgress progress;
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>  
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>      @Before
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>      @BeforeEach
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setUp() {
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>          progress = <strong class="jxr_keyword">new</strong> ProgressTrackingOperationProgress();
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>      }
@@ -144,7 +144,7 @@
 <a class="jxr_linenumber" name="L136" href="#L136">136</a>         assertEquals(42, node.get(<span class="jxr_string">"finalizingCount"</span>).asLong());
 <a class="jxr_linenumber" name="L137" href="#L137">137</a>         <em class="jxr_comment">// summary must ALSO be present alongside finalizing so the JS</em>
 <a class="jxr_linenumber" name="L138" href="#L138">138</a>         <em class="jxr_comment">// summary-first check can stop polling after completion</em>
-<a class="jxr_linenumber" name="L139" href="#L139">139</a>         assertTrue(<span class="jxr_string">"summary must be present even while finalizing"</span>, node.has(<span class="jxr_string">"summary"</span>));
+<a class="jxr_linenumber" name="L139" href="#L139">139</a>         assertTrue(node.has(<span class="jxr_string">"summary"</span>), <span class="jxr_string">"summary must be present even while finalizing"</span>);
 <a class="jxr_linenumber" name="L140" href="#L140">140</a>         assertEquals(<span class="jxr_string">"Successfully copied 42 items"</span>, node.get(<span class="jxr_string">"summary"</span>).get(<span class="jxr_string">"message"</span>).asText());
 <a class="jxr_linenumber" name="L141" href="#L141">141</a>         assertFalse(node.get(<span class="jxr_string">"summary"</span>).get(<span class="jxr_string">"error"</span>).asBoolean());
 <a class="jxr_linenumber" name="L142" href="#L142">142</a>         assertTrue(node.get(<span class="jxr_string">"completed"</span>).asBoolean());
@@ -182,6 +182,6 @@
 <a class="jxr_linenumber" name="L174" href="#L174">174</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2007&#x2013;2026 <a href="https://www.bloomreach.com">Bloomreach</a>. All rights reserved.</div>
+<div id="footer">© 2007–2026 <a href="https://www.bloomreach.com">Bloomreach</a></div>
 </body>
 </html>
