@@ -37,7 +37,6 @@ import org.apache.wicket.request.resource.CssResourceReference;
 public abstract class ProgressPanel extends Panel {
 
     private static final long serialVersionUID = 1L;
-    private static final int MAX_PATH_DISPLAY_LENGTH = 60;
     private static final int POLLING_INTERVAL_MS = 200;
 
     private ProgressTrackingOperationProgress progress;
@@ -175,7 +174,6 @@ public abstract class ProgressPanel extends Panel {
                 progressBehavior.getCallbackUrl().toString(),
                 getMarkupId(),
                 POLLING_INTERVAL_MS,
-                MAX_PATH_DISPLAY_LENGTH,
                 statusLabel.getMarkupId(),
                 progressBar.getMarkupId(),
                 progressLabel.getMarkupId(),

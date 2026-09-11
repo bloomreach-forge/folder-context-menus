@@ -65,7 +65,6 @@ final class ProgressPanelJsonBuilder {
                 .put("url", config.url)
                 .put("panelId", config.panelId)
                 .put("intervalMs", config.intervalMs)
-                .put("maxPathLength", config.maxPathLength)
                 .put("statusId", config.statusId)
                 .put("progressBarId", config.progressBarId)
                 .put("progressLabelId", config.progressLabelId)
@@ -88,7 +87,6 @@ final class ProgressPanelJsonBuilder {
         final String url;
         final String panelId;
         final int intervalMs;
-        final int maxPathLength;
         final String statusId;
         final String progressBarId;
         final String progressLabelId;
@@ -96,13 +94,12 @@ final class ProgressPanelJsonBuilder {
         final String cancelId;
         final String closeId;
 
-        PollingConfig(String url, String panelId, int intervalMs, int maxPathLength,
+        PollingConfig(String url, String panelId, int intervalMs,
                       String statusId, String progressBarId, String progressLabelId,
                       String pathId, String cancelId, String closeId) {
             this.url = url;
             this.panelId = panelId;
             this.intervalMs = intervalMs;
-            this.maxPathLength = maxPathLength;
             this.statusId = statusId;
             this.progressBarId = progressBarId;
             this.progressLabelId = progressLabelId;

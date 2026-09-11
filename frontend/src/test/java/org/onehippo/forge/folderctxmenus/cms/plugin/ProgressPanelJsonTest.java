@@ -148,7 +148,6 @@ public class ProgressPanelJsonTest {
                 "http://callback",
                 "panel1",
                 200,
-                60,
                 "status1",
                 "bar1",
                 "label1",
@@ -163,7 +162,6 @@ public class ProgressPanelJsonTest {
         assertEquals("http://callback", node.get("url").asText());
         assertEquals("panel1", node.get("panelId").asText());
         assertEquals(200, node.get("intervalMs").asInt());
-        assertEquals(60, node.get("maxPathLength").asInt());
         assertEquals("status1", node.get("statusId").asText());
         assertEquals("bar1", node.get("progressBarId").asText());
         assertEquals("label1", node.get("progressLabelId").asText());
