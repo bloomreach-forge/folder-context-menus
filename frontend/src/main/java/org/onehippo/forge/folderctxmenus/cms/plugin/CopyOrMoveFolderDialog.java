@@ -56,6 +56,7 @@ import org.hippoecm.frontend.plugin.config.IPluginConfig;
 import org.hippoecm.frontend.plugins.standards.tree.FolderTreeNode;
 import org.hippoecm.frontend.session.UserSession;
 import org.hippoecm.repository.api.StringCodecFactory;
+import org.hippoecm.repository.api.WorkflowException;
 import org.onehippo.forge.folderctxmenus.common.OperationCancelledException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -284,6 +285,10 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
         this.linkAsTranslation = linkAsTranslation;
     }
 
+    protected String getOperationId() {
+        return operationId;
+    }
+
     @Override
     protected void handleSubmit() {
         onOk();
@@ -375,6 +380,9 @@ public class CopyOrMoveFolderDialog extends AbstractFolderDialog {
             cause = cause.getCause();
         }
 
+        if (e instanceof WorkflowException && StringUtils.isNotBlank(e.getMessage())) {
+            return e.getMessage();
+        }
         if (e instanceof RepositoryException) {
             return "A repository error occurred. Please try again or contact support.";
         }

@@ -1,0 +1,10 @@
+definitions:
+  config:
+    /hippo:configuration/hippo:domains/extra-folder-options/authors:
+      jcr:primaryType: hipposys:authrole
+      hipposys:role: folderctxmenus-editor
+      hipposys:groups:
+        .meta:category: system
+        .meta:add-new-system-values: true
+        type: string
+        value: [author]
