@@ -16,6 +16,7 @@
 package org.onehippo.forge.folderctxmenus.cms.plugin;
 
 import java.util.Locale;
+import java.util.Optional;
 
 import javax.jcr.Node;
 import javax.jcr.Session;
@@ -31,7 +32,9 @@ import org.hippoecm.frontend.dialog.AbstractDialog;
 import org.hippoecm.frontend.plugin.IPluginContext;
 import org.hippoecm.frontend.plugin.config.IPluginConfig;
 import org.hippoecm.frontend.session.UserSession;
-import org.onehippo.forge.folderctxmenus.common.FolderMoveTask;
+import org.hippoecm.repository.api.WorkflowException;
+import org.onehippo.forge.folderctxmenus.common.ExtendedFolderWorkflow;
+import org.onehippo.forge.folderctxmenus.common.OperationProgressRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,19 +103,21 @@ public class MoveFolderWorkflowMenuItemPlugin extends AbstractFolderActionWorkfl
                 }
 
                 startOperationWithProgress(target, progress -> {
+                    final String operationId = getOperationId();
                     Session bgSession = session.impersonate(
                             new SimpleCredentials(session.getUserID(), new char[0]));
                     try {
+                        OperationProgressRegistry.register(operationId, progress);
                         Node sourceNode = bgSession.getNodeByIdentifier(sourceId);
-                        Node destParentNode = bgSession.getNodeByIdentifier(destId);
+                        Optional<ExtendedFolderWorkflow> workflow = getExtendedFolderWorkflow(sourceNode);
 
-                        FolderMoveTask task = new FolderMoveTask(
-                                bgSession, locale, sourceNode, destParentNode,
-                                newUrlName, newName);
-                        task.setOperationProgress(progress);
-                        task.execute();
-                        bgSession.save();
+                        if (!workflow.isPresent()) {
+                            throw new WorkflowException("Extended folder workflow is not available");
+                        }
+
+                        workflow.get().moveFolder(locale, sourceId, destId, newUrlName, newName, operationId);
                     } finally {
+                        OperationProgressRegistry.unregister(operationId);
                         bgSession.logout();
                     }
                 });
