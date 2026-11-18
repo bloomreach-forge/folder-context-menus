@@ -49,6 +49,17 @@ public class ExtendedFolderWorkflowImpl extends FolderWorkflowImpl implements Ex
                            final String destFolderNodeName,
                            final String destFolderDisplayName,
                            final Boolean resetTranslations) throws WorkflowException {
+        copyFolder(locale, sourceFolderId, destParentFolderId, destFolderNodeName, destFolderDisplayName,
+                resetTranslations, null);
+    }
+
+    public void copyFolder(final Locale locale,
+                           final String sourceFolderId,
+                           final String destParentFolderId,
+                           final String destFolderNodeName,
+                           final String destFolderDisplayName,
+                           final Boolean resetTranslations,
+                           final String operationId) throws WorkflowException {
         try {
             final Node sourceFolderNode = rootSession.getNodeByIdentifier(sourceFolderId);
             final Node destParentFolderNode = rootSession.getNodeByIdentifier(destParentFolderId);
@@ -69,11 +80,15 @@ public class ExtendedFolderWorkflowImpl extends FolderWorkflowImpl implements Ex
                     destFolderNodeName,
                     destFolderDisplayName,
                     resetTranslations);
+            task.setOperationProgress(OperationProgressRegistry.get(operationId));
             task.execute();
             rootSession.save();
+        } catch (final OperationCancelledException e) {
+            log.info("Folder copy operation was cancelled by user");
+            throw new WorkflowException("Folder copy operation was cancelled", e);
         } catch (final RepositoryException e) {
             log.error("Error while copying folder", e);
-            throw new WorkflowException("Unable to copy folder");
+            throw new WorkflowException("Unable to copy folder", e);
         } finally {
             refreshRootSession();
         }
@@ -84,6 +99,15 @@ public class ExtendedFolderWorkflowImpl extends FolderWorkflowImpl implements Ex
                            final String destParentFolderId,
                            final String destFolderNodeName,
                            final String destFolderDisplayName) throws WorkflowException {
+        moveFolder(locale, sourceFolderId, destParentFolderId, destFolderNodeName, destFolderDisplayName, null);
+    }
+
+    public void moveFolder(final Locale locale,
+                           final String sourceFolderId,
+                           final String destParentFolderId,
+                           final String destFolderNodeName,
+                           final String destFolderDisplayName,
+                           final String operationId) throws WorkflowException {
         try {
             final Node sourceFolderNode = rootSession.getNodeByIdentifier(sourceFolderId);
             final Node destParentFolderNode = rootSession.getNodeByIdentifier(destParentFolderId);
@@ -103,11 +127,15 @@ public class ExtendedFolderWorkflowImpl extends FolderWorkflowImpl implements Ex
                     destParentFolderNode,
                     destFolderNodeName,
                     destFolderDisplayName);
+            task.setOperationProgress(OperationProgressRegistry.get(operationId));
             task.execute();
             rootSession.save();
+        } catch (final OperationCancelledException e) {
+            log.info("Folder move operation was cancelled by user");
+            throw new WorkflowException("Folder move operation was cancelled", e);
         } catch (final RepositoryException e) {
             log.error("Error while moving folder", e);
-            throw new WorkflowException("Unable to move folder");
+            throw new WorkflowException("Unable to move folder", e);
         } finally {
             refreshRootSession();
         }

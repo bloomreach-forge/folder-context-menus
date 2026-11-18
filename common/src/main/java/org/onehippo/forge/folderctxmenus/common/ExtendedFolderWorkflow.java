@@ -43,6 +43,27 @@ public interface ExtendedFolderWorkflow extends Workflow {
                     final Boolean resetTranslations)
             throws WorkflowException;
 
+    /**
+     * Copy a folder into another folder, reporting progress via the {@link OperationProgress} registered
+     * under {@code operationId} in {@link OperationProgressRegistry} (if any).
+     * @param locale the locale of the folder
+     * @param sourceFolderId the UUID of the source folder
+     * @param destParentFolderId the UUID of the destination folder into which the folder is copied
+     * @param destFolderNodeName the node name of the new folder
+     * @param destFolderDisplayName the display name of the new folder
+     * @param resetTranslations false to reset translation IDs, true to link the target documents as translations of the source
+     * @param operationId id under which a caller may have registered an {@link OperationProgress} in
+     *                     {@link OperationProgressRegistry}, or {@code null} if progress reporting is not needed
+     * @throws WorkflowException when an exception occurs while copying
+     */
+    void copyFolder(final Locale locale,
+                    final String sourceFolderId,
+                    final String destParentFolderId,
+                    final String destFolderNodeName,
+                    final String destFolderDisplayName,
+                    final Boolean resetTranslations,
+                    final String operationId)
+            throws WorkflowException;
 
     /**
      * Move a folder to another folder.
@@ -58,6 +79,26 @@ public interface ExtendedFolderWorkflow extends Workflow {
                     final String destParentFolderId,
                     final String destFolderNodeName,
                     final String destFolderDisplayName)
+            throws WorkflowException;
+
+    /**
+     * Move a folder into another folder, reporting progress via the {@link OperationProgress} registered
+     * under {@code operationId} in {@link OperationProgressRegistry} (if any).
+     * @param locale the locale of the folder
+     * @param sourceFolderId the UUID of the source folder
+     * @param destParentFolderId the UUID of the destination folder into which the folder is copied
+     * @param destFolderNodeName the node name of the new folder
+     * @param destFolderDisplayName the display name of the new folder
+     * @param operationId id under which a caller may have registered an {@link OperationProgress} in
+     *                     {@link OperationProgressRegistry}, or {@code null} if progress reporting is not needed
+     * @throws WorkflowException when an exception occurs while copying
+     */
+    void moveFolder(final Locale locale,
+                    final String sourceFolderId,
+                    final String destParentFolderId,
+                    final String destFolderNodeName,
+                    final String destFolderDisplayName,
+                    final String operationId)
             throws WorkflowException;
 
 }

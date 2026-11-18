@@ -69,6 +69,13 @@
     </section>
 
     <section name="Release Notes for Bloomreach XM 17">
+      <subsection name="8.1.0">
+        <p class="smallinfo">Release date: 18 November 2026</p>
+        <ul>
+          <li>FORGE-676: Fixed an issue where folder copy/move bypasses workflow, breaking permissions for non-admins
+          </li>
+        </ul>
+      </subsection>
       <subsection name="8.0.0">
         <p class="smallinfo">Release date: 10 June 2026</p>
         <ul>
