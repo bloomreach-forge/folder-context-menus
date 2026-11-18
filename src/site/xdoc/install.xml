@@ -335,8 +335,7 @@ definitions:
 
         <p>
           For more information about Bloomreach Authorization model concepts and advanced permission configuration,
-          check out the <a href="https://xmdocumentation.bloomreach.com/library/concepts/security/authorization-model-concepts.html" target="_blank">Bloomreach Authorization Model Concepts</a>
-          and the <a href="PERMISSIONS.md">Permission Configuration Guide</a>.
+          check out the <a href="https://xmdocumentation.bloomreach.com/library/concepts/security/authorization-model-concepts.html" target="_blank">Bloomreach Authorization Model Concepts</a>.
         </p>
       </subsection>
 
